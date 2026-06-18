@@ -113,6 +113,8 @@ import { AuthService } from "../../core/services/auth.service";
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 94%, white 6%), var(--bg-sidebar));
+        box-shadow: var(--shadow-lg);
       }
 
       .sidebar-head {
@@ -142,6 +144,7 @@ import { AuthService } from "../../core/services/auth.service";
         display: grid;
         place-items: center;
         font-weight: 800;
+        box-shadow: 0 14px 26px rgba(20, 184, 166, 0.18);
       }
 
       .brand-title,
@@ -187,6 +190,8 @@ import { AuthService } from "../../core/services/auth.service";
         color: var(--text-secondary);
         text-align: left;
         cursor: pointer;
+        transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease,
+          box-shadow 200ms ease;
       }
 
       .nav a.active,
@@ -195,6 +200,8 @@ import { AuthService } from "../../core/services/auth.service";
         background: var(--bg-accent-soft);
         border-color: rgba(20, 184, 166, 0.2);
         color: var(--accent);
+        box-shadow: inset 3px 0 0 var(--accent);
+        transform: translateX(2px);
       }
 
       .sidebar-footer {
@@ -228,6 +235,7 @@ import { AuthService } from "../../core/services/auth.service";
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        box-shadow: var(--shadow-md);
       }
 
       .topbar h1 {
@@ -269,6 +277,14 @@ import { AuthService } from "../../core/services/auth.service";
         border-radius: 999px;
         background: var(--bg-panel);
         color: var(--text);
+        box-shadow: var(--shadow-xs);
+        transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+      }
+
+      .user-pill:hover {
+        background: var(--bg-panel-muted);
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-sm);
       }
 
       .content {
