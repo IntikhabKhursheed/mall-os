@@ -50,10 +50,17 @@ export class AuthService {
     role: User["role"];
     department?: string;
     status?: "active" | "inactive";
-  }): Observable<User> {
+  }, persistSession = true): Observable<User> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/register`, payload)
-      .pipe(tap((response) => this.storeSession(response.data)), map((response) => response.data.user));
+      .pipe(
+        tap((response) => {
+          if (persistSession) {
+            this.storeSession(response.data);
+          }
+        }),
+        map((response) => response.data.user)
+      );
   }
 
   me(): Observable<User> {

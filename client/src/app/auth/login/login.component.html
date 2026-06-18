@@ -1,0 +1,181 @@
+<section class="auth-shell">
+  <div class="toast" *ngIf="toast.visible" [class.error]="toast.tone === 'error'" [class.success]="toast.tone === 'success'">
+    {{ toast.message }}
+  </div>
+
+  <aside class="brand-panel">
+    <div class="brand-bar">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">MallOS</div>
+    </div>
+
+    <div class="brand-content">
+      <div class="brand-copy">
+        <h1>Smart Mall Management</h1>
+        <p>One platform for every department, every employee, every sale.</p>
+      </div>
+
+      <ul class="feature-list">
+        <li><span class="check"><i class="pi pi-check"></i></span>Real-time inventory tracking</li>
+        <li><span class="check"><i class="pi pi-check"></i></span>Role-based access control</li>
+        <li><span class="check"><i class="pi pi-check"></i></span>AI-powered sales insights</li>
+      </ul>
+
+      <div class="brand-stats">185+ Stores · 10K+ Products · 3 Role Levels</div>
+    </div>
+
+    <div class="brand-footer">© 2026 MallOS</div>
+  </aside>
+
+  <main class="form-panel">
+    <div class="form-shell">
+      <div class="tab-switcher">
+        <button type="button" [class.active]="activeTab === 'signin'" (click)="setActiveTab('signin')">Sign In</button>
+        <button type="button" [class.active]="activeTab === 'register'" (click)="setActiveTab('register')">Create Account</button>
+      </div>
+
+      <div class="form-stage">
+        <section class="form-view" [class.active]="activeTab === 'signin'">
+          <div class="form-copy">
+            <h2>Welcome back</h2>
+            <p>Sign in to your MallOS account</p>
+          </div>
+
+          <form [formGroup]="signInForm" (ngSubmit)="submitSignIn()" novalidate>
+            <label>
+              <span>Email</span>
+              <input type="email" formControlName="email" placeholder="you@mallos.com" [class.invalid]="isInvalid(signInForm, 'email')" />
+              <small *ngIf="isInvalid(signInForm, 'email')">Enter a valid email address.</small>
+            </label>
+
+            <label>
+              <span>Password</span>
+              <div class="password-field" [class.invalid]="isInvalid(signInForm, 'password')">
+                <input
+                  [type]="showSignInPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                />
+                <button type="button" class="toggle" (click)="showSignInPassword = !showSignInPassword">
+                  <i class="pi" [class.pi-eye]="!showSignInPassword" [class.pi-eye-slash]="showSignInPassword"></i>
+                </button>
+              </div>
+              <small *ngIf="isInvalid(signInForm, 'password')">Password must be at least 8 characters.</small>
+            </label>
+
+            <div class="meta-row">
+              <a href="#" (click)="$event.preventDefault()">Forgot password?</a>
+            </div>
+
+            <button class="submit" type="submit" [disabled]="signInSubmitting">
+              <span class="spinner" *ngIf="signInSubmitting"></span>
+              <span>{{ signInSubmitting ? "Signing In..." : "Sign In" }}</span>
+            </button>
+          </form>
+
+          <div class="divider"><span>or continue with</span></div>
+
+          <div class="demo-grid">
+            <button type="button" class="demo-button" *ngFor="let account of demoAccounts" (click)="useDemoAccount(account)">
+              <i [class]="account.icon"></i>
+              <span>{{ account.label }}</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="form-view" [class.active]="activeTab === 'register'">
+          <div class="form-copy">
+            <h2>Create your account</h2>
+            <p>Set up your MallOS workspace</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="submitRegister()" novalidate>
+            <div class="two-up">
+              <label>
+                <span>First Name</span>
+                <input type="text" formControlName="firstName" placeholder="First name" [class.invalid]="isInvalid(registerForm, 'firstName')" />
+                <small *ngIf="isInvalid(registerForm, 'firstName')">First name is required.</small>
+              </label>
+
+              <label>
+                <span>Last Name</span>
+                <input type="text" formControlName="lastName" placeholder="Last name" [class.invalid]="isInvalid(registerForm, 'lastName')" />
+                <small *ngIf="isInvalid(registerForm, 'lastName')">Last name is required.</small>
+              </label>
+            </div>
+
+            <label>
+              <span>Email</span>
+              <input type="email" formControlName="email" placeholder="name@mallos.com" [class.invalid]="isInvalid(registerForm, 'email')" />
+              <small *ngIf="isInvalid(registerForm, 'email')">Enter a valid email address.</small>
+            </label>
+
+            <label>
+              <span>Password</span>
+              <div class="password-field" [class.invalid]="isInvalid(registerForm, 'password')">
+                <input
+                  [type]="showRegisterPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Create a password"
+                />
+                <button type="button" class="toggle" (click)="showRegisterPassword = !showRegisterPassword">
+                  <i class="pi" [class.pi-eye]="!showRegisterPassword" [class.pi-eye-slash]="showRegisterPassword"></i>
+                </button>
+              </div>
+              <small *ngIf="isInvalid(registerForm, 'password')">Password must be at least 8 characters.</small>
+              <div class="strength-meter">
+                <div class="bar" [class.fair]="getPasswordStrength() === 'fair'" [class.strong]="getPasswordStrength() === 'strong'"></div>
+              </div>
+              <div class="strength-label" [class.fair]="getPasswordStrength() === 'fair'" [class.strong]="getPasswordStrength() === 'strong'">
+                {{ getPasswordStrength() }}
+              </div>
+            </label>
+
+            <label>
+              <span>Confirm Password</span>
+              <div class="password-field" [class.invalid]="isInvalid(registerForm, 'confirmPassword') || hasPasswordMismatch()">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm your password"
+                />
+                <button type="button" class="toggle" (click)="showConfirmPassword = !showConfirmPassword">
+                  <i class="pi" [class.pi-eye]="!showConfirmPassword" [class.pi-eye-slash]="showConfirmPassword"></i>
+                </button>
+              </div>
+              <small *ngIf="isInvalid(registerForm, 'confirmPassword')">Confirm password is required.</small>
+              <small *ngIf="hasPasswordMismatch()">Passwords must match.</small>
+            </label>
+
+            <label>
+              <span>Role</span>
+              <select formControlName="role" [class.invalid]="isInvalid(registerForm, 'role')">
+                <option value="">Select Role</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="cashier">Cashier</option>
+              </select>
+              <small *ngIf="isInvalid(registerForm, 'role')">Select a role.</small>
+            </label>
+
+            <label *ngIf="shouldShowDepartment">
+              <span>Department</span>
+              <select formControlName="department" [class.invalid]="isInvalid(registerForm, 'department')">
+                <option value="">Select Department</option>
+                <option *ngFor="let department of departments" [value]="department">{{ department }}</option>
+              </select>
+              <small *ngIf="isInvalid(registerForm, 'department')">Department is required for this role.</small>
+            </label>
+
+            <button class="submit" type="submit" [disabled]="registerSubmitting">
+              <span class="spinner" *ngIf="registerSubmitting"></span>
+              <span>{{ registerSubmitting ? "Creating Account..." : "Create Account" }}</span>
+            </button>
+          </form>
+
+          <div class="terms-text">By creating an account you agree to our Terms of Service</div>
+        </section>
+      </div>
+    </div>
+  </main>
+</section>
