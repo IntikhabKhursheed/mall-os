@@ -30,7 +30,10 @@ const connectDB = async () => {
     console.log("MongoDB connected");
   } catch (error) {
     console.error("MongoDB connection failed.");
-    console.error("Check that MongoDB is running or that MONGO_URI is correct.");
+    if (error.message.includes("querySrv")) {
+      console.error("Atlas SRV DNS lookup failed. Switching to a standard mongodb:// URI usually fixes this.");
+    }
+    console.error("Check that MONGO_URI is correct and that your Atlas network access list allows this machine.");
     throw error;
   }
 };
