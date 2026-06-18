@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { User } from "../models/user.model";
+import { API_BASE_URL } from "./api.service";
 
 interface AuthResponse {
   success: boolean;
@@ -22,7 +23,7 @@ interface MeResponse {
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
-  private readonly apiUrl = "http://localhost:5000/api/auth";
+  private readonly apiUrl = `${API_BASE_URL}/auth`;
   private readonly tokenKey = "mallos_token";
   private readonly userKey = "mallos_user";
   private readonly currentUserSubject = new BehaviorSubject<User | null>(this.readUser());

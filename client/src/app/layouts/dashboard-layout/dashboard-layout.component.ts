@@ -12,7 +12,7 @@ import { AuthService } from "../../core/services/auth.service";
       <aside class="sidebar surface-panel">
         <div class="brand">MallOS</div>
         <nav>
-          <a *ngFor="let item of navItems" [routerLink]="item.link" routerLinkActive="active">
+          <a *ngFor="let item of visibleNavItems" [routerLink]="item.link" routerLinkActive="active">
             <i [class]="item.icon"></i>
             <span>{{ item.label }}</span>
           </a>
@@ -110,22 +110,27 @@ import { AuthService } from "../../core/services/auth.service";
 export class DashboardLayoutComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly currentRole = this.authService.getCurrentUser()?.role ?? "admin";
   currentUserName = this.authService.getCurrentUser()?.name ?? "Guest";
 
   navItems = [
-    { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar" },
-    { label: "Manager Dashboard", link: "/dashboard/manager", icon: "pi pi-briefcase" },
-    { label: "Cashier Dashboard", link: "/dashboard/cashier", icon: "pi pi-desktop" },
-    { label: "Employees", link: "/employees", icon: "pi pi-users" },
-    { label: "Departments", link: "/departments", icon: "pi pi-building" },
-    { label: "Products", link: "/products", icon: "pi pi-tag" },
-    { label: "POS", link: "/pos", icon: "pi pi-shopping-cart" },
-    { label: "Sales", link: "/sales", icon: "pi pi-chart-line" },
-    { label: "Reports", link: "/reports", icon: "pi pi-file" },
-    { label: "AI Insights", link: "/ai-insights", icon: "pi pi-star" },
-    { label: "Users", link: "/users", icon: "pi pi-id-card" },
-    { label: "Settings", link: "/settings", icon: "pi pi-cog" }
+    { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar", roles: ["admin"] },
+    { label: "Manager Dashboard", link: "/dashboard/manager", icon: "pi pi-briefcase", roles: ["admin", "manager"] },
+    { label: "Cashier Dashboard", link: "/dashboard/cashier", icon: "pi pi-desktop", roles: ["admin", "cashier"] },
+    { label: "Employees", link: "/employees", icon: "pi pi-users", roles: ["admin", "manager"] },
+    { label: "Departments", link: "/departments", icon: "pi pi-building", roles: ["admin", "manager"] },
+    { label: "Products", link: "/products", icon: "pi pi-tag", roles: ["admin", "manager"] },
+    { label: "POS", link: "/pos", icon: "pi pi-shopping-cart", roles: ["admin", "cashier"] },
+    { label: "Sales", link: "/sales", icon: "pi pi-chart-line", roles: ["admin", "manager"] },
+    { label: "Reports", link: "/reports", icon: "pi pi-file", roles: ["admin", "manager"] },
+    { label: "AI Insights", link: "/ai-insights", icon: "pi pi-star", roles: ["admin", "manager"] },
+    { label: "Users", link: "/users", icon: "pi pi-id-card", roles: ["admin"] },
+    { label: "Settings", link: "/settings", icon: "pi pi-cog", roles: ["admin", "manager", "cashier"] }
   ];
+
+  get visibleNavItems() {
+    return this.navItems.filter((item) => item.roles.includes(this.currentRole));
+  }
 
   logout(): void {
     this.authService.logout();

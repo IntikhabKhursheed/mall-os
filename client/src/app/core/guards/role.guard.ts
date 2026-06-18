@@ -17,6 +17,6 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   }
 
   const fallback =
-    user.role === "manager" ? "/dashboard/manager" : user.role === "cashier" ? "/dashboard/cashier" : "/dashboard/admin";
+    user.role === "manager" ? "/dashboard/manager" : user.role === "cashier" ? "/pos" : "/dashboard/admin";
   return router.createUrlTree([fallback]);
 };
