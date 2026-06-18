@@ -44,10 +44,19 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+
+    if (!email || !password) {
+      return apiResponse(res, 400, false, "Email and password are required");
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user || !(await user.matchPassword(password))) {
       return apiResponse(res, 401, false, "Invalid credentials");
+    }
+
+    if (user.status !== "active") {
+      return apiResponse(res, 403, false, "Account is inactive");
     }
 
     user.lastLogin = new Date();
