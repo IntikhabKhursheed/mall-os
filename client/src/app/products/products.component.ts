@@ -33,7 +33,7 @@ import { Department } from "../core/models/department.model";
         <div *ngIf="loading" class="state">Loading products...</div>
         <div *ngIf="!loading && products.length === 0" class="state">No products found.</div>
 
-        <table *ngIf="!loading && products.length > 0">
+        <table *ngIf="!loading && products.length > 0" class="data-grid">
           <thead>
             <tr>
               <th>Name</th>
@@ -54,8 +54,16 @@ import { Department } from "../core/models/department.model";
               <td>{{ product.stockQuantity }}</td>
               <td><span class="badge" [ngClass]="product.status || 'healthy'">{{ product.status || "healthy" }}</span></td>
               <td class="actions-col">
-                <button type="button" class="secondary" (click)="startEdit(product)">Edit</button>
-                <button type="button" class="danger" (click)="removeProduct(product)">Delete</button>
+                <div class="action-group">
+                  <button type="button" class="secondary icon-action" (click)="startEdit(product)" aria-label="Edit product">
+                    <i class="pi pi-pencil"></i>
+                    <span class="sr-only">Edit</span>
+                  </button>
+                  <button type="button" class="danger icon-action" (click)="removeProduct(product)" aria-label="Delete product">
+                    <i class="pi pi-trash"></i>
+                    <span class="sr-only">Delete</span>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -162,22 +170,7 @@ import { Department } from "../core/models/department.model";
 
       .panel {
         padding: 1rem;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th,
-      td {
-        text-align: left;
-        padding: 0.75rem;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-      }
-
-      tbody tr:hover {
-        background: rgba(96, 165, 250, 0.08);
+        box-shadow: var(--shadow-lg);
       }
 
       .actions-col {
@@ -210,6 +203,7 @@ import { Department } from "../core/models/department.model";
         display: grid;
         gap: 0.85rem;
         align-self: start;
+        box-shadow: var(--shadow-xl);
       }
 
       .form-head {

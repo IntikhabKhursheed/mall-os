@@ -33,7 +33,7 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         <div *ngIf="loading" class="state">Loading employees...</div>
         <div *ngIf="!loading && employees.length === 0" class="state">No employees found.</div>
 
-        <table *ngIf="!loading && employees.length > 0">
+        <table *ngIf="!loading && employees.length > 0" class="data-grid">
           <thead>
             <tr>
               <th>Name</th>
@@ -54,8 +54,16 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
               <td>{{ employee.department || "-" }}</td>
               <td><span class="badge" [class.active]="employee.status === 'active'">{{ employee.status || "active" }}</span></td>
               <td class="actions-col">
-                <button type="button" class="secondary" (click)="startEdit(employee)">Edit</button>
-                <button type="button" class="danger" (click)="removeEmployee(employee)">Delete</button>
+                <div class="action-group">
+                  <button type="button" class="secondary icon-action" (click)="startEdit(employee)" aria-label="Edit employee">
+                    <i class="pi pi-pencil"></i>
+                    <span class="sr-only">Edit</span>
+                  </button>
+                  <button type="button" class="danger icon-action" (click)="removeEmployee(employee)" aria-label="Delete employee">
+                    <i class="pi pi-trash"></i>
+                    <span class="sr-only">Delete</span>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -133,6 +141,7 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
 
       .panel {
         padding: 1rem;
+        box-shadow: var(--shadow-lg);
       }
 
       .toolbar {
@@ -151,22 +160,6 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         background: var(--surface-1);
         color: var(--text);
         padding: 0.7rem 0.85rem;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th,
-      td {
-        text-align: left;
-        padding: 0.75rem;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-      }
-
-      tbody tr:hover {
-        background: rgba(96, 165, 250, 0.08);
       }
 
       .actions-col {
@@ -193,6 +186,7 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         display: grid;
         gap: 0.85rem;
         align-self: start;
+        box-shadow: var(--shadow-xl);
       }
 
       .form-head {

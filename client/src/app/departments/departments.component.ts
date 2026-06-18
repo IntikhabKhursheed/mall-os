@@ -30,9 +30,15 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
             <span class="badge">{{ department.status || "active" }}</span>
           </div>
           <div class="muted">Manager: {{ department.manager || "-" }}</div>
-          <div class="card-actions">
-            <button type="button" class="secondary" (click)="startEdit(department)">Edit</button>
-            <button type="button" class="danger" (click)="removeDepartment(department)">Delete</button>
+          <div class="card-actions action-group">
+            <button type="button" class="secondary icon-action" (click)="startEdit(department)" aria-label="Edit department">
+              <i class="pi pi-pencil"></i>
+              <span class="sr-only">Edit</span>
+            </button>
+            <button type="button" class="danger icon-action" (click)="removeDepartment(department)" aria-label="Delete department">
+              <i class="pi pi-trash"></i>
+              <span class="sr-only">Delete</span>
+            </button>
           </div>
         </article>
       </div>
@@ -102,6 +108,7 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
       .dept-card {
         display: grid;
         gap: 0.8rem;
+        box-shadow: var(--shadow-lg);
       }
 
       .card-head {
@@ -144,6 +151,7 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
         display: grid;
         gap: 0.85rem;
         align-self: start;
+        box-shadow: var(--shadow-xl);
       }
 
       .state {
