@@ -1,71 +1,123 @@
+import { CommonModule, NgFor } from "@angular/common";
 import { Component } from "@angular/core";
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
+  imports: [CommonModule, NgFor],
   template: `
-    <section class="surface-panel hero-surface hero">
-      <div>
-        <div class="eyebrow">Operations Overview</div>
-        <h2>Welcome back to MallOS</h2>
-        <p class="muted">Track sales, staffing, and stock movement from one workspace.</p>
+    <section class="hero-insight surface-panel hero-surface">
+      <div class="hero-copy">
+        <div class="eyebrow">Today at a glance</div>
+        <h2>Welcome back, your mall is running smoothly.</h2>
+        <p class="muted">Priority signals, revenue momentum, and frontline activity are all visible from this workspace.</p>
       </div>
 
-      <div class="hero-actions">
-        <div class="hero-pill">
-          <i class="pi pi-search"></i>
-          <span>Search records</span>
+      <article class="hero-metric">
+        <div class="eyebrow">Primary KPI</div>
+        <div class="metric-value">$24.8K</div>
+        <p class="muted">Projected revenue across active departments</p>
+      </article>
+
+      <aside class="quick-actions">
+        <div class="eyebrow">Quick actions</div>
+        <div class="quick-pill"><i class="pi pi-search"></i><span>Search records</span></div>
+        <div class="quick-pill"><i class="pi pi-bell"></i><span>3 active alerts</span></div>
+        <div class="quick-pill"><i class="pi pi-bolt"></i><span>Open POS shortcut</span></div>
+      </aside>
+    </section>
+
+    <section class="kpi-focus">
+      <article class="surface-panel support-card primary-support">
+        <div class="eyebrow">Low stock risk</div>
+        <h3 class="metric-value">12</h3>
+        <p class="muted">Products approaching reorder level today.</p>
+      </article>
+
+      <article class="surface-panel support-card">
+        <div class="eyebrow">Active employees</div>
+        <h3 class="metric-value">48</h3>
+        <p class="muted">Coverage is balanced across current shifts.</p>
+      </article>
+
+      <article class="surface-panel insight-card">
+        <div class="eyebrow">Mini insight</div>
+        <h3>Food Court sales are up 14%</h3>
+        <p class="muted">Fastest movement during lunch-hour transactions.</p>
+      </article>
+    </section>
+
+    <section class="activity-stream surface-panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Live activity</div>
+          <h3>Recent operational events</h3>
         </div>
-        <div class="hero-pill">
-          <i class="pi pi-sparkles"></i>
-          <span>Insights ready</span>
-        </div>
+      </div>
+
+      <div class="stream-list">
+        <article class="stream-item" *ngFor="let item of activityFeed">
+          <div class="stream-icon"><i [class]="item.icon"></i></div>
+          <div class="stream-body">
+            <strong>{{ item.title }}</strong>
+            <p class="muted">{{ item.detail }}</p>
+          </div>
+          <span class="stream-time">{{ item.time }}</span>
+        </article>
       </div>
     </section>
 
-    <section class="grid-cards">
-      <article class="surface-panel metric-card">
-        <div class="eyebrow">Today's Revenue</div>
-        <h3 class="metric-value">$0</h3>
-        <p class="muted">Awaiting live transaction totals.</p>
+    <section class="analytics-split">
+      <article class="surface-panel analytics-card">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Analytics</div>
+            <h3>Performance snapshot</h3>
+          </div>
+        </div>
+        <div class="chart-placeholder">
+          <div class="chart-bar" *ngFor="let height of chartBars" [style.height.%]="height"></div>
+        </div>
       </article>
-      <article class="surface-panel metric-card">
-        <div class="eyebrow">Total Sales</div>
-        <h3 class="metric-value">0</h3>
-        <p class="muted">Sales data will appear here once synced.</p>
-      </article>
-      <article class="surface-panel metric-card">
-        <div class="eyebrow">Low Stock Alerts</div>
-        <h3 class="metric-value">0</h3>
-        <p class="muted">Restock signals stay visible for operations.</p>
-      </article>
-      <article class="surface-panel metric-card">
-        <div class="eyebrow">Active Employees</div>
-        <h3 class="metric-value">0</h3>
-        <p class="muted">Staff activity updates as records are added.</p>
+
+      <article class="surface-panel analytics-card">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Operational health</div>
+            <h3>Department signals</h3>
+          </div>
+        </div>
+
+        <div class="signal-list">
+          <div class="signal-row" *ngFor="let signal of departmentSignals">
+            <div>
+              <strong>{{ signal.label }}</strong>
+              <p class="muted">{{ signal.detail }}</p>
+            </div>
+            <span class="badge" [ngClass]="signal.status">{{ signal.status }}</span>
+          </div>
+        </div>
       </article>
     </section>
 
-    <section class="dashboard-grid">
-      <article class="surface-panel canvas-card">
-        <div class="section-head">
-          <div>
-            <h3>Performance Snapshot</h3>
-            <p class="muted">Charts can plug into this panel without layout changes.</p>
-          </div>
+    <section class="record-section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Records</div>
+          <h3>Recent sales summaries</h3>
         </div>
-        <div class="empty-state">No chart data available yet.</div>
-      </article>
+      </div>
 
-      <article class="surface-panel canvas-card">
-        <div class="section-head">
-          <div>
-            <h3>Recent Activity</h3>
-            <p class="muted">Latest employee, product, and sales updates.</p>
+      <div class="record-grid">
+        <article class="surface-panel record-card" *ngFor="let record of salesCards">
+          <div class="record-avatar">{{ record.initials }}</div>
+          <div class="record-copy">
+            <strong>{{ record.title }}</strong>
+            <p class="muted">{{ record.meta }}</p>
           </div>
-        </div>
-        <div class="empty-state">No recent activity to display.</div>
-      </article>
+          <button type="button" class="secondary record-action">View</button>
+        </article>
+      </div>
     </section>
   `,
   styles: [
@@ -75,74 +127,221 @@ import { Component } from "@angular/core";
         gap: 1rem;
       }
 
-      .hero {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 1rem;
-      }
-
-      .hero h2,
-      .hero p {
-        margin: 0;
-      }
-
-      .hero p {
-        margin-top: 0.45rem;
-        max-width: 42rem;
-      }
-
-      .hero-actions {
-        display: inline-flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-
-      .hero-pill {
-        min-height: 42px;
-        padding: 0.75rem 1rem;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
-        box-shadow: var(--shadow-sm);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.65rem;
-        color: var(--text-secondary);
-      }
-
-      .dashboard-grid {
+      .hero-insight {
         display: grid;
-        grid-template-columns: 1.25fr 0.95fr;
+        grid-template-columns: 1.35fr 0.95fr 0.85fr;
         gap: 1rem;
+        align-items: stretch;
       }
 
-      .canvas-card {
-        padding: 1.25rem;
-        min-height: 280px;
-        display: grid;
-        gap: 1rem;
-      }
-
+      .hero-copy h2,
+      .hero-copy p,
       .section-head h3,
       .section-head p {
         margin: 0;
       }
 
+      .hero-copy p,
       .section-head p {
-        margin-top: 0.35rem;
+        margin-top: 0.45rem;
       }
 
-      @media (max-width: 900px) {
-        .hero {
-          flex-direction: column;
-        }
+      .hero-metric,
+      .quick-actions,
+      .activity-stream,
+      .analytics-card,
+      .record-card {
+        padding: 1.25rem;
+      }
 
-        .dashboard-grid {
+      .hero-metric,
+      .quick-actions {
+        border-radius: var(--radius-lg);
+        background: color-mix(in srgb, var(--bg-panel) 90%, transparent);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+      }
+
+      .quick-actions {
+        display: grid;
+        gap: 0.75rem;
+        align-content: start;
+      }
+
+      .quick-pill {
+        min-height: 44px;
+        padding: 0.8rem 0.95rem;
+        border-radius: 14px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        color: var(--text-secondary);
+      }
+
+      .kpi-focus {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 0.9fr;
+        gap: 1rem;
+      }
+
+      .support-card,
+      .insight-card {
+        padding: 1.25rem;
+        min-height: 180px;
+        display: grid;
+        gap: 0.65rem;
+        align-content: start;
+      }
+
+      .primary-support {
+        background:
+          radial-gradient(circle at top right, rgba(20, 184, 166, 0.1), transparent 30%),
+          linear-gradient(180deg, var(--bg-panel), color-mix(in srgb, var(--bg-panel-muted) 60%, transparent));
+      }
+
+      .activity-stream {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .stream-list {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .stream-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.85rem;
+        align-items: start;
+        padding: 0.95rem 0;
+        border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      }
+
+      .stream-item:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .stream-icon,
+      .record-avatar {
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 12px;
+        background: rgba(20, 184, 166, 0.12);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+      }
+
+      .stream-body p {
+        margin: 0.25rem 0 0;
+      }
+
+      .stream-time {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      .analytics-split {
+        display: grid;
+        grid-template-columns: 1.2fr 0.95fr;
+        gap: 1rem;
+      }
+
+      .analytics-card {
+        display: grid;
+        gap: 1rem;
+        min-height: 280px;
+      }
+
+      .chart-placeholder {
+        min-height: 200px;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(180deg, var(--bg-panel-muted), transparent);
+        display: flex;
+        align-items: end;
+        gap: 0.65rem;
+        padding: 1rem;
+      }
+
+      .chart-bar {
+        flex: 1;
+        border-radius: 999px 999px 10px 10px;
+        background: linear-gradient(180deg, rgba(20, 184, 166, 0.48), rgba(20, 184, 166, 0.95));
+      }
+
+      .signal-list {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .signal-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: start;
+        padding: 0.95rem;
+        border-radius: var(--radius-md);
+        background: var(--bg-panel-muted);
+      }
+
+      .signal-row p {
+        margin: 0.25rem 0 0;
+      }
+
+      .record-section {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .record-grid {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .record-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.85rem;
+        align-items: center;
+      }
+
+      .record-copy p {
+        margin: 0.25rem 0 0;
+      }
+
+      @media (max-width: 1100px) {
+        .hero-insight,
+        .kpi-focus,
+        .analytics-split {
           grid-template-columns: 1fr;
         }
       }
     `
   ]
 })
-export class AdminDashboardComponent {}
+export class AdminDashboardComponent {
+  readonly activityFeed = [
+    { icon: "pi pi-shopping-bag", title: "New sale processed", detail: "Fashion department completed order #1294.", time: "2m ago" },
+    { icon: "pi pi-exclamation-circle", title: "Low stock alert", detail: "Wireless Earbuds dropped below reorder level.", time: "8m ago" },
+    { icon: "pi pi-user-plus", title: "Employee check-in", detail: "Cashier shift started at Food Court counter.", time: "15m ago" }
+  ];
+
+  readonly chartBars = [38, 64, 54, 72, 58, 83, 62];
+
+  readonly departmentSignals = [
+    { label: "Fashion", detail: "Healthy sell-through and stable staffing.", status: "healthy" },
+    { label: "Food Court", detail: "Peak demand this afternoon.", status: "low_stock" },
+    { label: "Electronics", detail: "Charger inventory needs review.", status: "out_of_stock" }
+  ];
+
+  readonly salesCards = [
+    { initials: "FD", title: "Food Court Batch", meta: "34 transactions • Avg ticket $18" },
+    { initials: "FS", title: "Fashion Flash Sale", meta: "12 transactions • Avg ticket $52" },
+    { initials: "EL", title: "Electronics Counter", meta: "8 transactions • Avg ticket $89" }
+  ];
+}

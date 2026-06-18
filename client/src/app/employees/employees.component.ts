@@ -33,41 +33,33 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         <div *ngIf="loading" class="state">Loading employees...</div>
         <div *ngIf="!loading && employees.length === 0" class="state">No employees found.</div>
 
-        <table *ngIf="!loading && employees.length > 0" class="data-grid">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Role</th>
-              <th>Department</th>
-              <th>Status</th>
-              <th class="actions-col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let employee of employees">
-              <td>{{ employee.fullName }}</td>
-              <td>{{ employee.email }}</td>
-              <td>{{ employee.phone || "-" }}</td>
-              <td>{{ employee.role || "-" }}</td>
-              <td>{{ employee.department || "-" }}</td>
-              <td><span class="badge" [class.active]="employee.status === 'active'">{{ employee.status || "active" }}</span></td>
-              <td class="actions-col">
-                <div class="action-group">
-                  <button type="button" class="secondary icon-action" (click)="startEdit(employee)" aria-label="Edit employee">
-                    <i class="pi pi-pencil"></i>
-                    <span class="sr-only">Edit</span>
-                  </button>
-                  <button type="button" class="danger icon-action" (click)="removeEmployee(employee)" aria-label="Delete employee">
-                    <i class="pi pi-trash"></i>
-                    <span class="sr-only">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div *ngIf="!loading && employees.length > 0" class="record-list">
+          <article class="record-card employee-card" *ngFor="let employee of employees">
+            <div class="record-avatar">{{ initials(employee.fullName) }}</div>
+            <div class="record-main">
+              <div class="record-title-row">
+                <strong>{{ employee.fullName }}</strong>
+                <span class="badge" [class.active]="employee.status === 'active'">{{ employee.status || "active" }}</span>
+              </div>
+              <div class="record-meta">{{ employee.email }}</div>
+              <div class="record-tags">
+                <span>{{ employee.phone || "No phone" }}</span>
+                <span>{{ employee.role || "No role" }}</span>
+                <span>{{ employee.department || "No department" }}</span>
+              </div>
+            </div>
+            <div class="action-group">
+              <button type="button" class="secondary icon-action" (click)="startEdit(employee)" aria-label="Edit employee">
+                <i class="pi pi-pencil"></i>
+                <span class="sr-only">Edit</span>
+              </button>
+              <button type="button" class="danger icon-action" (click)="removeEmployee(employee)" aria-label="Delete employee">
+                <i class="pi pi-trash"></i>
+                <span class="sr-only">Delete</span>
+              </button>
+            </div>
+          </article>
+        </div>
 
         <div class="pagination">
           <button type="button" class="secondary" [disabled]="page === 1" (click)="changePage(page - 1)">Prev</button>
@@ -162,10 +154,6 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         padding: 0.7rem 0.85rem;
       }
 
-      .actions-col {
-        white-space: nowrap;
-      }
-
       .badge {
         display: inline-flex;
         align-items: center;
@@ -187,6 +175,65 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         gap: 0.85rem;
         align-self: start;
         box-shadow: var(--shadow-xl);
+      }
+
+      .record-list {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .employee-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.85rem;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        background: color-mix(in srgb, var(--bg-panel-muted) 64%, transparent);
+        border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      }
+
+      .record-avatar {
+        width: 2.7rem;
+        height: 2.7rem;
+        border-radius: 14px;
+        background: rgba(20, 184, 166, 0.12);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .record-main {
+        display: grid;
+        gap: 0.35rem;
+        min-width: 0;
+      }
+
+      .record-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .record-meta {
+        color: var(--text-secondary);
+      }
+
+      .record-tags {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .record-tags span {
+        padding: 0.28rem 0.55rem;
+        border-radius: 999px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
       }
 
       .form-head {
@@ -259,6 +306,16 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         .content-grid,
         .toolbar {
           grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .employee-card {
+          grid-template-columns: 1fr;
+        }
+
+        .action-group {
+          justify-content: flex-start;
         }
       }
     `
@@ -415,5 +472,14 @@ export class EmployeesComponent implements OnInit {
       department: "",
       status: "active"
     });
+  }
+
+  initials(name: string): string {
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
   }
 }

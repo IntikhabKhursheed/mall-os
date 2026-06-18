@@ -33,41 +33,33 @@ import { Department } from "../core/models/department.model";
         <div *ngIf="loading" class="state">Loading products...</div>
         <div *ngIf="!loading && products.length === 0" class="state">No products found.</div>
 
-        <table *ngIf="!loading && products.length > 0" class="data-grid">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Department</th>
-              <th>Selling</th>
-              <th>Cost</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th class="actions-col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let product of products">
-              <td>{{ product.name }}</td>
-              <td>{{ product.department || "-" }}</td>
-              <td>{{ product.sellingPrice | currency : "USD" : "symbol" : "1.0-0" }}</td>
-              <td>{{ product.costPrice | currency : "USD" : "symbol" : "1.0-0" }}</td>
-              <td>{{ product.stockQuantity }}</td>
-              <td><span class="badge" [ngClass]="product.status || 'healthy'">{{ product.status || "healthy" }}</span></td>
-              <td class="actions-col">
-                <div class="action-group">
-                  <button type="button" class="secondary icon-action" (click)="startEdit(product)" aria-label="Edit product">
-                    <i class="pi pi-pencil"></i>
-                    <span class="sr-only">Edit</span>
-                  </button>
-                  <button type="button" class="danger icon-action" (click)="removeProduct(product)" aria-label="Delete product">
-                    <i class="pi pi-trash"></i>
-                    <span class="sr-only">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div *ngIf="!loading && products.length > 0" class="record-list">
+          <article class="record-card product-card" *ngFor="let product of products">
+            <div class="record-avatar">{{ product.name.slice(0, 2).toUpperCase() }}</div>
+            <div class="record-main">
+              <div class="record-title-row">
+                <strong>{{ product.name }}</strong>
+                <span class="badge" [ngClass]="product.status || 'healthy'">{{ product.status || "healthy" }}</span>
+              </div>
+              <div class="record-meta">{{ product.department || "Unassigned department" }}</div>
+              <div class="record-tags">
+                <span>Sell {{ product.sellingPrice | currency : "USD" : "symbol" : "1.0-0" }}</span>
+                <span>Cost {{ product.costPrice | currency : "USD" : "symbol" : "1.0-0" }}</span>
+                <span>Stock {{ product.stockQuantity }}</span>
+              </div>
+            </div>
+            <div class="action-group">
+              <button type="button" class="secondary icon-action" (click)="startEdit(product)" aria-label="Edit product">
+                <i class="pi pi-pencil"></i>
+                <span class="sr-only">Edit</span>
+              </button>
+              <button type="button" class="danger icon-action" (click)="removeProduct(product)" aria-label="Delete product">
+                <i class="pi pi-trash"></i>
+                <span class="sr-only">Delete</span>
+              </button>
+            </div>
+          </article>
+        </div>
 
         <div class="pagination">
           <button type="button" class="secondary" [disabled]="page === 1" (click)="changePage(page - 1)">Prev</button>
@@ -173,10 +165,6 @@ import { Department } from "../core/models/department.model";
         box-shadow: var(--shadow-lg);
       }
 
-      .actions-col {
-        white-space: nowrap;
-      }
-
       .badge {
         display: inline-flex;
         padding: 0.35rem 0.65rem;
@@ -204,6 +192,65 @@ import { Department } from "../core/models/department.model";
         gap: 0.85rem;
         align-self: start;
         box-shadow: var(--shadow-xl);
+      }
+
+      .record-list {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .product-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.85rem;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        background: color-mix(in srgb, var(--bg-panel-muted) 64%, transparent);
+        border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      }
+
+      .record-avatar {
+        width: 2.7rem;
+        height: 2.7rem;
+        border-radius: 14px;
+        background: rgba(20, 184, 166, 0.12);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .record-main {
+        display: grid;
+        gap: 0.35rem;
+        min-width: 0;
+      }
+
+      .record-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .record-meta {
+        color: var(--text-secondary);
+      }
+
+      .record-tags {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .record-tags span {
+        padding: 0.28rem 0.55rem;
+        border-radius: 999px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
       }
 
       .form-head {
@@ -286,6 +333,16 @@ import { Department } from "../core/models/department.model";
         .content-grid,
         .toolbar {
           grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .product-card {
+          grid-template-columns: 1fr;
+        }
+
+        .action-group {
+          justify-content: flex-start;
         }
       }
     `
