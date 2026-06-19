@@ -57,6 +57,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
           <div class="topbar-copy">
             <div class="muted breadcrumb">{{ activeGroup }}</div>
             <h1>{{ currentModuleLabel }}</h1>
+            <p class="muted topbar-subtitle">{{ currentModuleSubtitle }}</p>
           </div>
 
           <div class="topbar-actions">
@@ -204,14 +205,26 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .nav-items a.active {
-        background: linear-gradient(135deg, #14b8a6, #0f9e8c);
+        background: linear-gradient(135deg, rgba(20, 184, 166, 0.98), rgba(15, 158, 140, 0.98));
         color: #ffffff;
-        box-shadow: 0 12px 24px rgba(20, 184, 166, 0.22);
+        box-shadow: 0 16px 32px rgba(20, 184, 166, 0.26);
+        border-color: rgba(255, 255, 255, 0.08);
+        transform: translateY(-1px);
       }
 
       .nav-items a.active .item-icon {
         background: rgba(255, 255, 255, 0.16) !important;
         color: #ffffff !important;
+      }
+
+      .nav-items a.active::after {
+        content: "";
+        margin-left: auto;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
       }
 
       .sidebar-footer {
@@ -263,7 +276,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         background: var(--bg-app);
         display: grid;
         grid-template-rows: auto 1fr;
-        gap: 1rem;
+        gap: 0.75rem;
         min-height: 0;
       }
 
@@ -271,15 +284,26 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         position: sticky;
         top: 0;
         z-index: 40;
-        margin: 24px 24px 0;
-        padding: 1rem 1.25rem;
+        margin: 16px 16px 0;
+        padding: 0.9rem 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .topbar-copy {
+        display: grid;
+        gap: 0.25rem;
       }
 
       .topbar h1 {
-        margin: 0.2rem 0 0;
+        margin: 0;
+      }
+
+      .topbar-subtitle {
+        margin: 0;
+        max-width: 64ch;
       }
 
       .topbar-actions {
@@ -314,11 +338,11 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .content-scroll {
         min-height: 0;
         overflow-y: auto;
-        padding: 0 24px 24px;
+        padding: 0 16px 16px;
       }
 
       .content {
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
       }
 
       @media (max-width: 980px) {
@@ -399,6 +423,34 @@ export class DashboardLayoutComponent {
 
   get currentModuleLabel(): string {
     return this.navItems.find((item) => this.router.url.startsWith(item.link))?.label ?? "Dashboard";
+  }
+
+  get currentModuleSubtitle(): string {
+    if (this.router.url.startsWith("/dashboard/admin")) {
+      return "Monitor revenue, inventory, and frontline activity from a single overview.";
+    }
+
+    if (this.router.url.startsWith("/dashboard/manager")) {
+      return "Track department sales, shift coverage, and stock health across the store.";
+    }
+
+    if (this.router.url.startsWith("/dashboard/cashier")) {
+      return "Keep an eye on recent transactions, live totals, and quick POS access.";
+    }
+
+    if (this.router.url.startsWith("/employees")) {
+      return "Keep staff profiles, roles, and department assignments aligned.";
+    }
+
+    if (this.router.url.startsWith("/departments")) {
+      return "Organize mall areas, owners, and operating status in one place.";
+    }
+
+    if (this.router.url.startsWith("/products")) {
+      return "Manage stock, pricing, and product placement across departments.";
+    }
+
+    return "Structured workspace for day-to-day operations.";
   }
 
   visibleByGroup(group: NavGroup) {
