@@ -10,70 +10,56 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NgFor],
   template: `
-    <div class="dashboard-shell" [class.sidebar-mini]="sidebarCollapsed">
+    <div class="dashboard-shell">
       <aside class="sidebar surface-panel">
-        <div class="sidebar-head">
-          <button type="button" class="brand-shell" (click)="toggleSidebar()">
-            <div class="brand-mark">M</div>
-            <div class="brand-copy" *ngIf="!sidebarCollapsed">
-              <div class="brand-title">MallOS</div>
-              <div class="muted brand-subtitle">Mall management suite</div>
-            </div>
-            <i class="pi pi-bars menu-icon" *ngIf="!sidebarCollapsed"></i>
-          </button>
-        </div>
-
-        <nav class="nav">
-          <section class="nav-group" *ngFor="let group of groups">
-            <button
-              type="button"
-              class="nav-group-toggle"
-              [class.active-group]="isGroupExpanded(group)"
-              (click)="toggleGroup(group)"
-            >
-              <span class="nav-label" *ngIf="!sidebarCollapsed">{{ group }}</span>
-              <span class="nav-icon-rail" *ngIf="sidebarCollapsed">
-                <i [class]="groupIcon(group)"></i>
-              </span>
-              <i class="pi pi-angle-down" *ngIf="!sidebarCollapsed"></i>
-            </button>
-
-            <div class="nav-items" *ngIf="isGroupExpanded(group)">
-              <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
-                <span class="item-icon"><i [class]="item.icon"></i></span>
-                <span *ngIf="!sidebarCollapsed">{{ item.label }}</span>
-              </a>
-            </div>
-          </section>
-        </nav>
-
-        <div class="sidebar-footer">
-          <div class="profile-row" [class.centered]="sidebarCollapsed">
-            <div class="avatar">{{ userInitials }}</div>
-            <div class="profile-copy" *ngIf="!sidebarCollapsed">
-              <div class="profile-name">{{ currentUserName }}</div>
-              <div class="muted profile-role">{{ currentRole }}</div>
+        <div class="sidebar-inner">
+          <div class="sidebar-head">
+            <div class="brand-shell">
+              <div class="brand-mark">M</div>
+              <div class="brand-copy">
+                <div class="brand-title">MallOS</div>
+                <div class="muted brand-subtitle">Grand Central Mall</div>
+              </div>
             </div>
           </div>
-          <button type="button" class="secondary logout" (click)="logout()">
-            <i class="pi pi-sign-out"></i>
-            <span *ngIf="!sidebarCollapsed">Logout</span>
-          </button>
+
+          <nav class="nav">
+            <section class="nav-group" *ngFor="let group of groups">
+              <div class="nav-label">{{ group }}</div>
+              <div class="nav-items">
+                <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
+                  <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
+                    <i [class]="item.icon"></i>
+                  </span>
+                  <span>{{ item.label }}</span>
+                </a>
+              </div>
+            </section>
+          </nav>
+
+          <div class="sidebar-footer">
+            <div class="profile-row">
+              <div class="avatar">{{ userInitials }}</div>
+              <div class="profile-copy">
+                <div class="profile-name">{{ currentUserName }}</div>
+                <div class="role-badge">{{ currentRole }}</div>
+              </div>
+              <button type="button" class="ghost logout-icon" (click)="logout()" aria-label="Logout">
+                <i class="pi pi-sign-out"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
 
       <main class="workspace">
         <header class="surface-panel topbar">
           <div class="topbar-copy">
-            <div class="muted breadcrumb">{{ activeGroup }} / {{ currentModuleLabel }}</div>
+            <div class="muted breadcrumb">{{ activeGroup }}</div>
             <h1>{{ currentModuleLabel }}</h1>
           </div>
 
           <div class="topbar-actions">
-            <div class="search-pill">
-              <i class="pi pi-search"></i>
-              <span>Search workspace</span>
-            </div>
             <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
               <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
             </button>
@@ -81,11 +67,6 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
               <i class="pi pi-bell"></i>
               <span class="notification-dot"></span>
             </button>
-            <div class="user-pill ghost">
-              <div class="avatar small">{{ userInitials }}</div>
-              <span>{{ currentUserName }}</span>
-              <i class="pi pi-angle-down"></i>
-            </div>
           </div>
         </header>
 
@@ -99,68 +80,57 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
     `
       .dashboard-shell {
         min-height: 100vh;
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 1rem;
-        padding: 1rem;
-        transition: grid-template-columns 240ms ease;
-      }
-
-      .dashboard-shell.sidebar-mini {
-        grid-template-columns: 92px 1fr;
+        background: var(--bg-app);
       }
 
       .sidebar {
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 94%, white 6%), var(--bg-sidebar));
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        z-index: 50;
+        border-radius: 0;
+        border-left: 0;
+        overflow-y: auto;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 96%, white 4%), var(--bg-sidebar));
         box-shadow: var(--shadow-lg);
       }
 
-      .brand-shell,
-      .nav-group-toggle,
-      .profile-row,
-      .topbar-actions,
-      .user-pill,
-      .search-pill {
+      .sidebar::before {
+        height: 0;
+      }
+
+      .sidebar-inner {
+        min-height: 100%;
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
       }
 
       .sidebar-head {
-        padding-bottom: 0.75rem;
+        padding-bottom: 0.85rem;
         border-bottom: 1px solid var(--border);
       }
 
-      .brand-shell {
-        width: 100%;
+      .brand-shell,
+      .profile-row {
+        display: flex;
+        align-items: center;
         gap: 0.85rem;
-        padding: 0;
-        border: 0;
-        background: transparent;
-        color: inherit;
-        cursor: pointer;
       }
 
-      .brand-mark,
-      .avatar {
+      .brand-mark {
         width: 2.5rem;
         height: 2.5rem;
         border-radius: 0.9rem;
-        background: var(--accent);
+        background: linear-gradient(135deg, #14b8a6, #0f9e8c);
         color: #ffffff;
         display: grid;
         place-items: center;
         font-weight: 800;
         box-shadow: 0 14px 26px rgba(20, 184, 166, 0.18);
-        flex: 0 0 auto;
-      }
-
-      .brand-copy {
-        flex: 1;
-        text-align: left;
       }
 
       .brand-title,
@@ -169,48 +139,23 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         color: var(--heading);
       }
 
-      .menu-icon {
-        color: var(--muted);
-      }
-
       .nav {
         display: grid;
-        gap: 0.85rem;
+        gap: 1rem;
       }
 
       .nav-group {
         display: grid;
-        gap: 0.4rem;
-      }
-
-      .nav-group-toggle {
-        width: 100%;
-        justify-content: space-between;
-        gap: 0.75rem;
-        padding: 0.55rem 0.65rem;
-        border: 0;
-        border-radius: 12px;
-        background: transparent;
-        color: var(--muted);
-        cursor: pointer;
-      }
-
-      .nav-group-toggle.active-group {
-        background: var(--bg-panel-muted);
-        color: var(--heading);
+        gap: 0.45rem;
       }
 
       .nav-label {
-        font-size: 0.72rem;
+        padding: 0 0.75rem;
+        color: #4b5563;
+        font-size: 10px;
         font-weight: 700;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-      }
-
-      .nav-icon-rail {
-        width: 100%;
-        display: grid;
-        place-items: center;
       }
 
       .nav-items {
@@ -218,70 +163,94 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         gap: 0.35rem;
       }
 
-      .nav-items a,
-      .logout {
+      .nav-items a {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.75rem 0.85rem;
-        border-radius: 999px;
+        min-height: 44px;
+        padding: 0.7rem 0.85rem;
+        border-radius: 14px;
         border: 1px solid transparent;
-        background: transparent;
         color: var(--text-secondary);
-        text-align: left;
-        cursor: pointer;
-        transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease,
-          box-shadow 200ms ease;
+        transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
       }
 
       .item-icon {
         width: 2rem;
         height: 2rem;
         border-radius: 10px;
-        background: color-mix(in srgb, var(--bg-panel-muted) 84%, transparent);
         display: inline-grid;
         place-items: center;
         flex: 0 0 auto;
       }
 
-      .nav-items a.active,
-      .nav-items a:hover,
-      .logout:hover {
-        background: var(--bg-accent-soft);
-        border-color: rgba(20, 184, 166, 0.2);
-        color: var(--accent);
-        box-shadow: 0 0 0 1px rgba(20, 184, 166, 0.12), 0 10px 24px rgba(20, 184, 166, 0.12);
-        transform: translateY(-1px);
+      .nav-items a:hover {
+        background: var(--bg-panel-muted);
+        color: var(--heading);
       }
 
-      .nav-items a.active .item-icon,
-      .nav-items a:hover .item-icon {
-        background: rgba(20, 184, 166, 0.14);
+      .nav-items a.active {
+        background: linear-gradient(135deg, #14b8a6, #0f9e8c);
+        color: #ffffff;
+        box-shadow: 0 12px 24px rgba(20, 184, 166, 0.22);
+      }
+
+      .nav-items a.active .item-icon {
+        background: rgba(255, 255, 255, 0.16) !important;
+        color: #ffffff !important;
       }
 
       .sidebar-footer {
         margin-top: auto;
         padding-top: 1rem;
         border-top: 1px solid var(--border);
+      }
+
+      .avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+        color: #ffffff;
         display: grid;
-        gap: 0.85rem;
+        place-items: center;
+        font-weight: 800;
       }
 
-      .profile-row {
-        gap: 0.75rem;
+      .profile-copy {
+        flex: 1;
       }
 
-      .profile-row.centered {
-        justify-content: center;
+      .role-badge {
+        display: inline-flex;
+        margin-top: 0.35rem;
+        padding: 0.28rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(20, 184, 166, 0.12);
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: capitalize;
       }
 
-      .logout {
-        justify-content: center;
+      .logout-icon {
+        width: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        padding: 0;
+        border-radius: 10px;
+        display: inline-grid;
+        place-items: center;
       }
 
       .workspace {
+        margin-left: 240px;
+        height: 100vh;
+        overflow-y: auto;
         display: grid;
+        grid-template-rows: auto 1fr;
         gap: 1rem;
+        padding: 1rem 1rem 1rem 0;
       }
 
       .topbar {
@@ -289,33 +258,16 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        box-shadow: var(--shadow-md);
       }
 
-      .topbar-copy h1 {
+      .topbar h1 {
         margin: 0.2rem 0 0;
       }
 
       .topbar-actions {
+        display: flex;
         gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-
-      .search-pill,
-      .user-pill {
-        min-height: 42px;
-        padding: 0.35rem 0.85rem;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        background: var(--bg-panel);
-        color: var(--text-secondary);
-        box-shadow: var(--shadow-xs);
-        gap: 0.65rem;
-      }
-
-      .search-pill {
-        min-width: 190px;
+        align-items: center;
       }
 
       .icon-button {
@@ -341,30 +293,23 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         background: var(--danger);
       }
 
-      .avatar.small {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 999px;
-        font-size: 0.8rem;
-      }
-
       .content {
         padding-bottom: 1rem;
       }
 
-      @media (max-width: 900px) {
-        .dashboard-shell,
-        .dashboard-shell.sidebar-mini {
-          grid-template-columns: 1fr;
+      @media (max-width: 980px) {
+        .sidebar {
+          position: static;
+          width: auto;
+          height: auto;
+          border-radius: var(--radius-md);
         }
 
-        .topbar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .topbar-actions {
-          justify-content: space-between;
+        .workspace {
+          margin-left: 0;
+          height: auto;
+          overflow: visible;
+          padding-left: 1rem;
         }
       }
     `
@@ -374,26 +319,24 @@ export class DashboardLayoutComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly currentRoleValue = this.authService.getCurrentUser()?.role ?? "admin";
+  readonly groups: NavGroup[] = ["Overview", "Operations", "Analytics", "System"];
 
   currentUserName = this.authService.getCurrentUser()?.name ?? "Guest";
   theme: "light" | "dark" = "light";
-  sidebarCollapsed = false;
-  expandedGroup: NavGroup | null = null;
-  readonly groups: NavGroup[] = ["Overview", "Operations", "Analytics", "System"];
 
   navItems = [
-    { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar", roles: ["admin"], group: "Overview" as NavGroup },
-    { label: "Manager Dashboard", link: "/dashboard/manager", icon: "pi pi-briefcase", roles: ["admin", "manager"], group: "Overview" as NavGroup },
-    { label: "Cashier Dashboard", link: "/dashboard/cashier", icon: "pi pi-desktop", roles: ["admin", "cashier"], group: "Overview" as NavGroup },
-    { label: "Employees", link: "/employees", icon: "pi pi-users", roles: ["admin", "manager"], group: "Operations" as NavGroup },
-    { label: "Departments", link: "/departments", icon: "pi pi-building", roles: ["admin", "manager"], group: "Operations" as NavGroup },
-    { label: "Products", link: "/products", icon: "pi pi-tag", roles: ["admin", "manager"], group: "Operations" as NavGroup },
-    { label: "POS", link: "/pos", icon: "pi pi-shopping-cart", roles: ["admin", "cashier"], group: "Operations" as NavGroup },
-    { label: "Sales", link: "/sales", icon: "pi pi-chart-line", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
-    { label: "Reports", link: "/reports", icon: "pi pi-file", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
-    { label: "AI Insights", link: "/ai-insights", icon: "pi pi-star", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
-    { label: "Users", link: "/users", icon: "pi pi-id-card", roles: ["admin"], group: "System" as NavGroup },
-    { label: "Settings", link: "/settings", icon: "pi pi-cog", roles: ["admin", "manager", "cashier"], group: "System" as NavGroup }
+    { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar", iconBg: "#14b8a620", iconColor: "#14b8a6", roles: ["admin"], group: "Overview" as NavGroup },
+    { label: "Manager Dashboard", link: "/dashboard/manager", icon: "pi pi-briefcase", iconBg: "#8b5cf620", iconColor: "#8b5cf6", roles: ["admin", "manager"], group: "Overview" as NavGroup },
+    { label: "Cashier Dashboard", link: "/dashboard/cashier", icon: "pi pi-desktop", iconBg: "#3b82f620", iconColor: "#3b82f6", roles: ["admin", "cashier"], group: "Overview" as NavGroup },
+    { label: "Employees", link: "/employees", icon: "pi pi-users", iconBg: "#8b5cf620", iconColor: "#8b5cf6", roles: ["admin", "manager"], group: "Operations" as NavGroup },
+    { label: "Departments", link: "/departments", icon: "pi pi-building", iconBg: "#3b82f620", iconColor: "#3b82f6", roles: ["admin", "manager"], group: "Operations" as NavGroup },
+    { label: "Products", link: "/products", icon: "pi pi-tag", iconBg: "#f59e0b20", iconColor: "#f59e0b", roles: ["admin", "manager"], group: "Operations" as NavGroup },
+    { label: "POS", link: "/pos", icon: "pi pi-shopping-cart", iconBg: "#22c55e20", iconColor: "#22c55e", roles: ["admin", "cashier"], group: "Operations" as NavGroup },
+    { label: "Sales", link: "/sales", icon: "pi pi-chart-line", iconBg: "#eab30820", iconColor: "#eab308", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
+    { label: "Reports", link: "/reports", icon: "pi pi-file", iconBg: "#ec489920", iconColor: "#ec4899", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
+    { label: "AI Insights", link: "/ai-insights", icon: "pi pi-sparkles", iconBg: "#7c3aed20", iconColor: "#7c3aed", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
+    { label: "Users", link: "/users", icon: "pi pi-id-card", iconBg: "#6b728020", iconColor: "#6b7280", roles: ["admin"], group: "System" as NavGroup },
+    { label: "Settings", link: "/settings", icon: "pi pi-cog", iconBg: "#64748b20", iconColor: "#64748b", roles: ["admin", "manager", "cashier"], group: "System" as NavGroup }
   ];
 
   constructor() {
@@ -418,7 +361,7 @@ export class DashboardLayoutComponent {
   }
 
   get activeGroup(): NavGroup {
-    return this.groups.find((group) => this.groupHasActiveRoute(group)) ?? "Overview";
+    return this.groups.find((group) => this.visibleByGroup(group).some((item) => this.router.url.startsWith(item.link))) ?? "Overview";
   }
 
   get currentModuleLabel(): string {
@@ -429,34 +372,6 @@ export class DashboardLayoutComponent {
     return this.navItems.filter((item) => item.group === group && item.roles.includes(this.currentRoleValue));
   }
 
-  groupIcon(group: NavGroup): string {
-    return group === "Operations"
-      ? "pi pi-briefcase"
-      : group === "Analytics"
-        ? "pi pi-chart-line"
-        : group === "System"
-          ? "pi pi-cog"
-          : "pi pi-th-large";
-  }
-
-  isGroupExpanded(group: NavGroup): boolean {
-    if (this.sidebarCollapsed) {
-      return true;
-    }
-    return this.expandedGroup === group || this.groupHasActiveRoute(group);
-  }
-
-  toggleGroup(group: NavGroup): void {
-    if (this.sidebarCollapsed) {
-      return;
-    }
-    this.expandedGroup = this.expandedGroup === group ? null : group;
-  }
-
-  toggleSidebar(): void {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
-
   toggleTheme(): void {
     this.applyTheme(this.theme === "light" ? "dark" : "light");
   }
@@ -464,10 +379,6 @@ export class DashboardLayoutComponent {
   logout(): void {
     this.authService.logout();
     void this.router.navigateByUrl("/login");
-  }
-
-  private groupHasActiveRoute(group: NavGroup): boolean {
-    return this.visibleByGroup(group).some((item) => this.router.url.startsWith(item.link));
   }
 
   private applyTheme(theme: "light" | "dark"): void {

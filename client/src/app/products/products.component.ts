@@ -67,78 +67,86 @@ import { Department } from "../core/models/department.model";
           <button type="button" class="secondary" [disabled]="page >= totalPages" (click)="changePage(page + 1)">Next</button>
         </div>
       </div>
-
-      <form class="surface-panel panel form-panel" [formGroup]="form" (ngSubmit)="saveProduct()">
-        <div class="form-head">
-          <h3>{{ editingId ? "Edit Product" : "Add Product" }}</h3>
-          <p class="muted">Stock status is derived from quantity and reorder level.</p>
-        </div>
-
-        <label>
-          Name
-          <input formControlName="name" type="text" />
-        </label>
-
-        <label>
-          SKU
-          <input formControlName="sku" type="text" />
-        </label>
-
-        <label>
-          Barcode
-          <input formControlName="barcode" type="text" />
-        </label>
-
-        <label>
-          Category
-          <input formControlName="category" type="text" />
-        </label>
-
-        <label>
-          Department
-          <select formControlName="department">
-            <option value="">Select department</option>
-            <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
-          </select>
-        </label>
-
-        <label>
-          Selling Price
-          <input formControlName="sellingPrice" type="number" min="0" />
-        </label>
-
-        <label>
-          Cost Price
-          <input formControlName="costPrice" type="number" min="0" />
-        </label>
-
-        <label>
-          Stock Quantity
-          <input formControlName="stockQuantity" type="number" min="0" />
-        </label>
-
-        <label>
-          Reorder Level
-          <input formControlName="reorderLevel" type="number" min="0" />
-        </label>
-
-        <label>
-          Image URL
-          <input formControlName="image" type="text" />
-        </label>
-
-        <div class="hint">
-          Status will be recalculated on save: healthy, low_stock, or out_of_stock.
-        </div>
-
-        <div class="actions">
-          <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
-          <button type="button" class="secondary" (click)="resetForm()">Clear</button>
-        </div>
-
-        <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
-      </form>
     </section>
+
+    <div class="modal-backdrop" *ngIf="showAddModal" (click)="closeModal()">
+      <div class="modal-card surface-panel" (click)="$event.stopPropagation()">
+        <button type="button" class="ghost modal-close" (click)="closeModal()" aria-label="Close modal">
+          <i class="pi pi-times"></i>
+        </button>
+
+        <form class="form-panel" [formGroup]="form" (ngSubmit)="saveProduct()">
+          <div class="form-head">
+            <h3>{{ editingId ? "Edit Product" : "Add Product" }}</h3>
+            <p class="muted">Stock status is derived from quantity and reorder level.</p>
+          </div>
+
+          <label>
+            Name
+            <input formControlName="name" type="text" />
+          </label>
+
+          <label>
+            SKU
+            <input formControlName="sku" type="text" />
+          </label>
+
+          <label>
+            Barcode
+            <input formControlName="barcode" type="text" />
+          </label>
+
+          <label>
+            Category
+            <input formControlName="category" type="text" />
+          </label>
+
+          <label>
+            Department
+            <select formControlName="department">
+              <option value="">Select department</option>
+              <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
+            </select>
+          </label>
+
+          <label>
+            Selling Price
+            <input formControlName="sellingPrice" type="number" min="0" />
+          </label>
+
+          <label>
+            Cost Price
+            <input formControlName="costPrice" type="number" min="0" />
+          </label>
+
+          <label>
+            Stock Quantity
+            <input formControlName="stockQuantity" type="number" min="0" />
+          </label>
+
+          <label>
+            Reorder Level
+            <input formControlName="reorderLevel" type="number" min="0" />
+          </label>
+
+          <label>
+            Image URL
+            <input formControlName="image" type="text" />
+          </label>
+
+          <div class="hint">
+            Status will be recalculated on save: healthy, low_stock, or out_of_stock.
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
+            <button type="button" class="secondary" (click)="resetForm()">Clear</button>
+          </div>
+
+          <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+        </form>
+      </div>
+    </div>
   `,
   styles: [
     `
@@ -155,9 +163,7 @@ import { Department } from "../core/models/department.model";
       }
 
       .content-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.95fr);
-        gap: 1rem;
+        display: block;
       }
 
       .panel {
@@ -190,8 +196,38 @@ import { Department } from "../core/models/department.model";
       .form-panel {
         display: grid;
         gap: 0.85rem;
-        align-self: start;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-card {
+        position: relative;
+        width: min(100%, 42rem);
+        padding: 2rem;
+        border-radius: 1rem;
         box-shadow: var(--shadow-xl);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2.25rem;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+        padding: 0;
+        border-radius: 999px;
+        display: inline-grid;
+        place-items: center;
       }
 
       .record-list {
@@ -330,7 +366,6 @@ import { Department } from "../core/models/department.model";
       }
 
       @media (max-width: 1100px) {
-        .content-grid,
         .toolbar {
           grid-template-columns: 1fr;
         }
@@ -359,6 +394,7 @@ export class ProductsComponent implements OnInit {
   saving = false;
   errorMessage = "";
   editingId: string | null = null;
+  showAddModal = false;
   searchTerm = "";
   departmentFilter = "";
   page = 1;
@@ -430,6 +466,7 @@ export class ProductsComponent implements OnInit {
   startCreate(): void {
     this.editingId = null;
     this.errorMessage = "";
+    this.showAddModal = true;
     this.form.reset({
       name: "",
       sku: "",
@@ -447,6 +484,7 @@ export class ProductsComponent implements OnInit {
   startEdit(product: Product): void {
     this.editingId = product._id;
     this.errorMessage = "";
+    this.showAddModal = true;
     this.form.reset({
       name: product.name,
       sku: product.sku || "",
@@ -477,7 +515,7 @@ export class ProductsComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.saving = false;
-        this.resetForm();
+        this.closeModal();
         this.loadProducts();
       },
       error: (error) => {
@@ -514,5 +552,10 @@ export class ProductsComponent implements OnInit {
       reorderLevel: 0,
       image: ""
     });
+  }
+
+  closeModal(): void {
+    this.showAddModal = false;
+    this.resetForm();
   }
 }

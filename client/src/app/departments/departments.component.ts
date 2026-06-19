@@ -14,6 +14,7 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
         <h2>Departments</h2>
         <p class="muted">Maintain the mall structure and ownership for each business area.</p>
       </div>
+      <button class="primary" type="button" (click)="startCreate()">Add Department</button>
     </section>
 
     <section class="content-grid">
@@ -42,44 +43,52 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
           </div>
         </article>
       </div>
-
-      <form class="surface-panel panel form-panel" [formGroup]="form" (ngSubmit)="saveDepartment()">
-        <div class="form-head">
-          <h3>{{ editingId ? "Edit Department" : "Add Department" }}</h3>
-          <p class="muted">Departments can be reassigned from employee and product forms.</p>
-        </div>
-
-        <label>
-          Name
-          <input formControlName="name" type="text" />
-        </label>
-
-        <label>
-          Category
-          <input formControlName="category" type="text" />
-        </label>
-
-        <label>
-          Manager
-          <input formControlName="manager" type="text" />
-        </label>
-
-        <label>
-          Status
-          <select formControlName="status">
-            <option value="active">active</option>
-            <option value="inactive">inactive</option>
-          </select>
-        </label>
-
-        <div class="actions">
-          <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
-          <button type="button" class="secondary" (click)="resetForm()">Clear</button>
-        </div>
-
-        <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
-      </form>
     </section>
+
+    <div class="modal-backdrop" *ngIf="showAddModal" (click)="closeModal()">
+      <div class="modal-card surface-panel" (click)="$event.stopPropagation()">
+        <button type="button" class="ghost modal-close" (click)="closeModal()" aria-label="Close modal">
+          <i class="pi pi-times"></i>
+        </button>
+
+        <form class="form-panel" [formGroup]="form" (ngSubmit)="saveDepartment()">
+          <div class="form-head">
+            <h3>{{ editingId ? "Edit Department" : "Add Department" }}</h3>
+            <p class="muted">Departments can be reassigned from employee and product forms.</p>
+          </div>
+
+          <label>
+            Name
+            <input formControlName="name" type="text" />
+          </label>
+
+          <label>
+            Category
+            <input formControlName="category" type="text" />
+          </label>
+
+          <label>
+            Manager
+            <input formControlName="manager" type="text" />
+          </label>
+
+          <label>
+            Status
+            <select formControlName="status">
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
+            <button type="button" class="secondary" (click)="resetForm()">Clear</button>
+          </div>
+
+          <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+        </form>
+      </div>
+    </div>
   `,
   styles: [
     `
@@ -88,9 +97,7 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
       }
 
       .content-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
-        gap: 1rem;
+        display: block;
       }
 
       .cards-grid {
@@ -150,8 +157,38 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
       .form-panel {
         display: grid;
         gap: 0.85rem;
-        align-self: start;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-card {
+        position: relative;
+        width: min(100%, 42rem);
+        padding: 2rem;
+        border-radius: 1rem;
         box-shadow: var(--shadow-xl);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2.25rem;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+        padding: 0;
+        border-radius: 999px;
+        display: inline-grid;
+        place-items: center;
       }
 
       .state {
@@ -194,11 +231,6 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
         color: #fecaca;
       }
 
-      @media (max-width: 1100px) {
-        .content-grid {
-          grid-template-columns: 1fr;
-        }
-      }
     `
   ]
 })
@@ -211,6 +243,7 @@ export class DepartmentsComponent implements OnInit {
   saving = false;
   errorMessage = "";
   editingId: string | null = null;
+  showAddModal = false;
 
   form = this.fb.group({
     name: ["", [Validators.required]],
@@ -240,6 +273,7 @@ export class DepartmentsComponent implements OnInit {
   startEdit(department: Department): void {
     this.editingId = department._id;
     this.errorMessage = "";
+    this.showAddModal = true;
     this.form.reset({
       name: department.name,
       category: department.category || "",
@@ -264,7 +298,7 @@ export class DepartmentsComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.saving = false;
-        this.resetForm();
+        this.closeModal();
         this.loadDepartments();
       },
       error: (error) => {
@@ -295,5 +329,17 @@ export class DepartmentsComponent implements OnInit {
       manager: "",
       status: "active"
     });
+  }
+
+  startCreate(): void {
+    this.editingId = null;
+    this.errorMessage = "";
+    this.showAddModal = true;
+    this.resetForm();
+  }
+
+  closeModal(): void {
+    this.showAddModal = false;
+    this.resetForm();
   }
 }

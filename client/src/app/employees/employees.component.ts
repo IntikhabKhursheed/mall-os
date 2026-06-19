@@ -67,57 +67,65 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
           <button type="button" class="secondary" [disabled]="page >= totalPages" (click)="changePage(page + 1)">Next</button>
         </div>
       </div>
-
-      <form class="surface-panel panel form-panel" [formGroup]="form" (ngSubmit)="saveEmployee()">
-        <div class="form-head">
-          <h3>{{ editingId ? "Edit Employee" : "Add Employee" }}</h3>
-          <p class="muted">Validation is enabled before data is stored in MongoDB.</p>
-        </div>
-
-        <label>
-          Full Name
-          <input formControlName="fullName" type="text" />
-        </label>
-
-        <label>
-          Email
-          <input formControlName="email" type="email" />
-        </label>
-
-        <label>
-          Phone
-          <input formControlName="phone" type="text" />
-        </label>
-
-        <label>
-          Role
-          <input formControlName="role" type="text" />
-        </label>
-
-        <label>
-          Department
-          <select formControlName="department">
-            <option value="">Select department</option>
-            <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
-          </select>
-        </label>
-
-        <label>
-          Status
-          <select formControlName="status">
-            <option value="active">active</option>
-            <option value="inactive">inactive</option>
-          </select>
-        </label>
-
-        <div class="actions">
-          <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
-          <button type="button" class="secondary" (click)="resetForm()">Clear</button>
-        </div>
-
-        <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
-      </form>
     </section>
+
+    <div class="modal-backdrop" *ngIf="showAddModal" (click)="closeModal()">
+      <div class="modal-card surface-panel" (click)="$event.stopPropagation()">
+        <button type="button" class="ghost modal-close" (click)="closeModal()" aria-label="Close modal">
+          <i class="pi pi-times"></i>
+        </button>
+
+        <form class="form-panel" [formGroup]="form" (ngSubmit)="saveEmployee()">
+          <div class="form-head">
+            <h3>{{ editingId ? "Edit Employee" : "Add Employee" }}</h3>
+            <p class="muted">Validation is enabled before data is stored in MongoDB.</p>
+          </div>
+
+          <label>
+            Full Name
+            <input formControlName="fullName" type="text" />
+          </label>
+
+          <label>
+            Email
+            <input formControlName="email" type="email" />
+          </label>
+
+          <label>
+            Phone
+            <input formControlName="phone" type="text" />
+          </label>
+
+          <label>
+            Role
+            <input formControlName="role" type="text" />
+          </label>
+
+          <label>
+            Department
+            <select formControlName="department">
+              <option value="">Select department</option>
+              <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
+            </select>
+          </label>
+
+          <label>
+            Status
+            <select formControlName="status">
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
+            <button type="button" class="secondary" (click)="resetForm()">Clear</button>
+          </div>
+
+          <div *ngIf="errorMessage" class="error-box">{{ errorMessage }}</div>
+        </form>
+      </div>
+    </div>
   `,
   styles: [
     `
@@ -126,9 +134,7 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
       }
 
       .content-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.9fr);
-        gap: 1rem;
+        display: block;
       }
 
       .panel {
@@ -173,8 +179,38 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
       .form-panel {
         display: grid;
         gap: 0.85rem;
-        align-self: start;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-card {
+        position: relative;
+        width: min(100%, 42rem);
+        padding: 2rem;
+        border-radius: 1rem;
         box-shadow: var(--shadow-xl);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2.25rem;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+        padding: 0;
+        border-radius: 999px;
+        display: inline-grid;
+        place-items: center;
       }
 
       .record-list {
@@ -303,7 +339,6 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
       }
 
       @media (max-width: 1100px) {
-        .content-grid,
         .toolbar {
           grid-template-columns: 1fr;
         }
@@ -332,6 +367,7 @@ export class EmployeesComponent implements OnInit {
   saving = false;
   errorMessage = "";
   editingId: string | null = null;
+  showAddModal = false;
   searchTerm = "";
   departmentFilter = "";
   page = 1;
@@ -399,6 +435,7 @@ export class EmployeesComponent implements OnInit {
   startCreate(): void {
     this.editingId = null;
     this.errorMessage = "";
+    this.showAddModal = true;
     this.form.reset({
       fullName: "",
       email: "",
@@ -412,6 +449,7 @@ export class EmployeesComponent implements OnInit {
   startEdit(employee: Employee): void {
     this.editingId = employee._id;
     this.errorMessage = "";
+    this.showAddModal = true;
     this.form.reset({
       fullName: employee.fullName,
       email: employee.email,
@@ -439,7 +477,7 @@ export class EmployeesComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.saving = false;
-        this.resetForm();
+        this.closeModal();
         this.loadEmployees();
       },
       error: (error) => {
@@ -472,6 +510,11 @@ export class EmployeesComponent implements OnInit {
       department: "",
       status: "active"
     });
+  }
+
+  closeModal(): void {
+    this.showAddModal = false;
+    this.resetForm();
   }
 
   initials(name: string): string {
