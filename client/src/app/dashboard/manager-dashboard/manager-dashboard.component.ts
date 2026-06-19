@@ -9,7 +9,6 @@ import { Component } from "@angular/core";
     <section class="page-grid">
       <article class="surface-panel welcome-card">
         <div class="eyebrow">Manager Workspace</div>
-        <h2>Manager Workspace - Fashion</h2>
         <p class="muted">Monitor department revenue, shift activity, and inventory health from one place.</p>
       </article>
 
@@ -97,13 +96,8 @@ import { Component } from "@angular/core";
         padding: 1.25rem;
       }
 
-      .welcome-card h2,
       .welcome-card p {
         margin: 0;
-      }
-
-      .welcome-card p {
-        margin-top: 0.35rem;
       }
 
       .kpi-row {

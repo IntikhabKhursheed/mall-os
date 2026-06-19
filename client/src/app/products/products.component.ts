@@ -13,7 +13,6 @@ import { Department } from "../core/models/department.model";
   template: `
     <section class="page-head">
       <div>
-        <h2>Products</h2>
         <p class="muted">Track stock levels, pricing, and department assignment.</p>
       </div>
     </section>

@@ -13,7 +13,6 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
   template: `
     <section class="page-head">
       <div>
-        <h2>Employees</h2>
         <p class="muted">Manage staff accounts, roles, and department assignment.</p>
       </div>
     </section>

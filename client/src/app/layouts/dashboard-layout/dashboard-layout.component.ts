@@ -70,9 +70,11 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
           </div>
         </header>
 
-        <section class="content">
-          <router-outlet />
-        </section>
+        <div class="content-scroll">
+          <section class="content">
+            <router-outlet />
+          </section>
+        </div>
       </main>
     </div>
   `,
@@ -87,7 +89,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         position: fixed;
         top: 0;
         left: 0;
-        width: 240px;
+        width: 280px;
         height: 100vh;
         z-index: 50;
         border-radius: 0;
@@ -95,10 +97,16 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         overflow-y: auto;
         background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 96%, white 4%), var(--bg-sidebar));
         box-shadow: var(--shadow-lg);
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
 
       .sidebar::before {
         height: 0;
+      }
+
+      .sidebar::-webkit-scrollbar {
+        display: none;
       }
 
       .sidebar-inner {
@@ -110,7 +118,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .sidebar-head {
-        padding-bottom: 0.85rem;
+        padding: 1.25rem 1rem;
         border-bottom: 1px solid var(--border);
       }
 
@@ -146,11 +154,16 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
 
       .nav-group {
         display: grid;
-        gap: 0.45rem;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .nav-group:first-child {
+        margin-top: 0;
       }
 
       .nav-label {
-        padding: 0 0.75rem;
+        padding: 0 1rem;
         color: #4b5563;
         font-size: 10px;
         font-weight: 700;
@@ -161,6 +174,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .nav-items {
         display: grid;
         gap: 0.35rem;
+        margin-top: 0.5rem;
       }
 
       .nav-items a {
@@ -168,7 +182,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         align-items: center;
         gap: 0.75rem;
         min-height: 44px;
-        padding: 0.7rem 0.85rem;
+        padding: 0.625rem 1rem;
         border-radius: 14px;
         border: 1px solid transparent;
         color: var(--text-secondary);
@@ -244,16 +258,20 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .workspace {
-        margin-left: 240px;
+        margin-left: 280px;
         height: 100vh;
-        overflow-y: auto;
+        background: var(--bg-app);
         display: grid;
         grid-template-rows: auto 1fr;
         gap: 1rem;
-        padding: 1rem 1rem 1rem 0;
+        min-height: 0;
       }
 
       .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        margin: 24px 24px 0;
         padding: 1rem 1.25rem;
         display: flex;
         align-items: center;
@@ -293,6 +311,12 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         background: var(--danger);
       }
 
+      .content-scroll {
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 24px 24px;
+      }
+
       .content {
         padding-bottom: 1rem;
       }
@@ -308,8 +332,17 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         .workspace {
           margin-left: 0;
           height: auto;
+          gap: 0.75rem;
+        }
+
+        .topbar {
+          position: static;
+          margin: 1rem 1rem 0;
+        }
+
+        .content-scroll {
           overflow: visible;
-          padding-left: 1rem;
+          padding: 0 1rem 1rem;
         }
       }
     `

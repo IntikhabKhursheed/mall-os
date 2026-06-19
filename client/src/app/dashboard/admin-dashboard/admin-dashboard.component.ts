@@ -9,8 +9,7 @@ import { Component } from "@angular/core";
     <section class="hero-insight surface-panel hero-surface">
       <div class="hero-copy">
         <div class="eyebrow">Today at a glance</div>
-        <h2>Welcome back, your mall is running smoothly.</h2>
-        <p class="muted">Priority signals, revenue momentum, and frontline activity are all visible from this workspace.</p>
+        <p class="muted hero-intro">Priority signals, revenue momentum, and frontline activity are all visible from this workspace.</p>
       </div>
 
       <article class="hero-metric">
@@ -124,17 +123,16 @@ import { Component } from "@angular/core";
     `
       :host {
         display: grid;
-        gap: 1rem;
+        gap: 1.5rem;
       }
 
       .hero-insight {
         display: grid;
         grid-template-columns: 1.35fr 0.95fr 0.85fr;
-        gap: 1rem;
+        gap: 1.5rem;
         align-items: stretch;
       }
 
-      .hero-copy h2,
       .hero-copy p,
       .section-head h3,
       .section-head p {
@@ -146,12 +144,17 @@ import { Component } from "@angular/core";
         margin-top: 0.45rem;
       }
 
+      .hero-intro {
+        font-size: 1rem;
+        max-width: 52ch;
+      }
+
       .hero-metric,
       .quick-actions,
       .activity-stream,
       .analytics-card,
       .record-card {
-        padding: 1.25rem;
+        padding: 1.5rem;
       }
 
       .hero-metric,
@@ -164,7 +167,7 @@ import { Component } from "@angular/core";
 
       .quick-actions {
         display: grid;
-        gap: 0.75rem;
+        gap: 1rem;
         align-content: start;
       }
 
@@ -183,12 +186,12 @@ import { Component } from "@angular/core";
       .kpi-focus {
         display: grid;
         grid-template-columns: 1.2fr 1fr 0.9fr;
-        gap: 1rem;
+        gap: 1.5rem;
       }
 
       .support-card,
       .insight-card {
-        padding: 1.25rem;
+        padding: 1.5rem;
         min-height: 180px;
         display: grid;
         gap: 0.65rem;
@@ -203,12 +206,12 @@ import { Component } from "@angular/core";
 
       .activity-stream {
         display: grid;
-        gap: 1rem;
+        gap: 1.25rem;
       }
 
       .stream-list {
         display: grid;
-        gap: 0.85rem;
+        gap: 1rem;
       }
 
       .stream-item {
@@ -249,12 +252,12 @@ import { Component } from "@angular/core";
       .analytics-split {
         display: grid;
         grid-template-columns: 1.2fr 0.95fr;
-        gap: 1rem;
+        gap: 1.5rem;
       }
 
       .analytics-card {
         display: grid;
-        gap: 1rem;
+        gap: 1.25rem;
         min-height: 280px;
       }
 
@@ -276,7 +279,7 @@ import { Component } from "@angular/core";
 
       .signal-list {
         display: grid;
-        gap: 0.85rem;
+        gap: 1rem;
       }
 
       .signal-row {
@@ -295,12 +298,12 @@ import { Component } from "@angular/core";
 
       .record-section {
         display: grid;
-        gap: 1rem;
+        gap: 1.25rem;
       }
 
       .record-grid {
         display: grid;
-        gap: 0.85rem;
+        gap: 1rem;
       }
 
       .record-card {

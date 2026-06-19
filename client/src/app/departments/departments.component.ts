@@ -11,7 +11,6 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
   template: `
     <section class="page-head">
       <div>
-        <h2>Departments</h2>
         <p class="muted">Maintain the mall structure and ownership for each business area.</p>
       </div>
       <button class="primary" type="button" (click)="startCreate()">Add Department</button>
