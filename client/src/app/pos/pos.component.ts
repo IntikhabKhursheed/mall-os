@@ -9,7 +9,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
   template: `
     <app-page-header
       eyebrow="Operations"
-      title="POS Terminal"
+      title="Checkout workspace"
       subtitle="Use a structured checkout workspace for fast sales processing."
     >
       <div actions>
@@ -22,7 +22,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
       <article class="surface-panel terminal-panel catalog-panel">
         <div class="section-head">
           <div>
-            <div class="eyebrow">Product lookup</div>
+            <div class="eyebrow">Overview</div>
             <h3>Search and add items</h3>
           </div>
           <button type="button" class="ghost">Scan Barcode</button>
@@ -59,7 +59,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
       <aside class="surface-panel terminal-panel checkout-panel">
         <div class="section-head">
           <div>
-            <div class="eyebrow">Current sale</div>
+            <div class="eyebrow">Transactions</div>
             <h3>Checkout summary</h3>
           </div>
           <span class="badge badge-default">Dine-in</span>

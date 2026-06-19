@@ -1,7 +1,8 @@
 import { CommonModule, NgFor } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { PageHeaderComponent } from "../../shared/page-header/page-header.component";
+import { AuthService } from "../../core/services/auth.service";
 
 @Component({
   selector: "app-admin-dashboard",
@@ -10,12 +11,21 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
   template: `
     <app-page-header
       eyebrow="Admin dashboard"
-      title="Operations command center"
+      [title]="greetingTitle"
       subtitle="Monitor revenue, inventory, and frontline activity from one place."
     >
-      <div actions>
+      <div actions class="header-tools">
+        <div class="search-shell">
+          <i class="pi pi-search"></i>
+          <span>Search mall data...</span>
+          <kbd>⌘K</kbd>
+        </div>
+        <span class="status-pill">
+          <span class="status-dot"></span>
+          Opened
+          <i class="pi pi-chevron-down"></i>
+        </span>
         <button type="button" class="secondary" routerLink="/products">Products</button>
-        <button type="button" class="secondary" routerLink="/employees">Employees</button>
         <button type="button" class="primary" routerLink="/reports">Reports</button>
       </div>
     </app-page-header>
@@ -141,6 +151,57 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
       :host {
         display: grid;
         gap: 1.1rem;
+      }
+
+      .header-tools {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .search-shell {
+        min-height: 44px;
+        padding: 0 1rem;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--bg-panel);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--text-secondary);
+        box-shadow: var(--shadow-xs);
+      }
+
+      .search-shell kbd {
+        margin-left: auto;
+        padding: 0.18rem 0.45rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-panel-muted);
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .status-pill {
+        min-height: 44px;
+        padding: 0 0.9rem;
+        border-radius: 14px;
+        border: 1px solid color-mix(in srgb, var(--success) 22%, var(--border) 78%);
+        background: color-mix(in srgb, var(--success) 14%, var(--bg-panel) 86%);
+        color: #15803d;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-weight: 700;
+      }
+
+      .status-dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 999px;
+        background: var(--success);
       }
 
       .hero-insight {
@@ -369,6 +430,10 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
   ]
 })
 export class AdminDashboardComponent {
+  private readonly authService = inject(AuthService);
+
+  readonly greetingTitle = `Good morning, ${this.authService.getCurrentUser()?.name ?? "team"}`;
+
   readonly activityFeed = [
     { icon: "pi pi-shopping-bag", title: "New sale processed", detail: "Fashion department completed order #1294.", time: "2m ago" },
     { icon: "pi pi-exclamation-circle", title: "Low stock alert", detail: "Wireless Earbuds dropped below reorder level.", time: "8m ago" },

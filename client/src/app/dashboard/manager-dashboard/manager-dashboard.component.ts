@@ -10,7 +10,7 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
   template: `
     <app-page-header
       eyebrow="Manager workspace"
-      title="Department performance"
+      title="Department overview"
       subtitle="Track sales, shift activity, and inventory health from one place."
     >
       <div actions>

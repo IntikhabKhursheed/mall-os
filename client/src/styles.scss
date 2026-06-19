@@ -1,17 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 @import "primeicons/primeicons.css";
 
 :root {
   color-scheme: light;
-  --bg-app: #f9fafb;
-  --bg-page: radial-gradient(circle at top, rgba(20, 184, 166, 0.05), transparent 24%),
-    linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+  --bg-app: #f7f3ec;
+  --bg-page: radial-gradient(circle at top, rgba(20, 184, 166, 0.05), transparent 22%),
+    radial-gradient(circle at right top, rgba(250, 204, 21, 0.08), transparent 18%),
+    linear-gradient(180deg, #f8f4ee 0%, #f1ede7 100%);
   --bg-panel: #ffffff;
-  --bg-panel-muted: #f8fafc;
+  --bg-panel-muted: #faf7f2;
   --bg-sidebar: #ffffff;
   --bg-elevated: #ffffff;
   --bg-input: #ffffff;
-  --bg-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0));
+  --bg-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0));
   --bg-accent-soft: rgba(20, 184, 166, 0.1);
   --bg-danger-soft: rgba(239, 68, 68, 0.1);
   --bg-warning-soft: rgba(245, 158, 11, 0.14);
@@ -32,15 +33,15 @@
   --warning: #f59e0b;
   --success: #22c55e;
   --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 12px 30px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 18px 45px rgba(15, 23, 42, 0.14);
-  --shadow-xl: 0 28px 60px rgba(15, 23, 42, 0.18);
-  --radius-xs: 8px;
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  --shadow-sm: 0 8px 18px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 14px 32px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 48px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 30px 64px rgba(15, 23, 42, 0.16);
+  --radius-xs: 10px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
@@ -102,7 +103,7 @@ body {
   margin: 0;
   background: var(--bg-app);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Manrope, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 body {
@@ -168,7 +169,7 @@ textarea,
 .surface-panel {
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
@@ -178,7 +179,7 @@ textarea,
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 56px;
+  height: 48px;
   background: var(--bg-overlay);
   pointer-events: none;
 }
@@ -198,8 +199,8 @@ textarea,
   padding: var(--space-6);
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(circle at top right, rgba(20, 184, 166, 0.12), transparent 24%),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-panel) 88%, white 12%), var(--bg-panel));
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.1), transparent 24%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-panel) 92%, white 8%), var(--bg-panel));
   box-shadow: var(--shadow-lg);
 }
 
@@ -225,7 +226,7 @@ textarea,
 
 .metric-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
 }
 
 .interactive-card:hover,
@@ -339,7 +340,7 @@ button {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  padding-bottom: 0.2rem;
+  padding-bottom: 0.4rem;
 }
 
 .section-head h3,
@@ -624,7 +625,7 @@ button:disabled {
   display: grid;
   gap: var(--space-3);
   box-shadow: var(--shadow-md);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
 }
 
 table {

@@ -10,7 +10,7 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
   template: `
     <app-page-header
       eyebrow="Cashier workspace"
-      title="Checkout control center"
+      title="Checkout overview"
       subtitle="Keep an eye on recent transactions, live totals, and quick product lookup."
     >
       <div actions>

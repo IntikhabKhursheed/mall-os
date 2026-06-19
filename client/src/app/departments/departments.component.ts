@@ -12,7 +12,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
   template: `
     <app-page-header
       eyebrow="Operations"
-      title="Departments"
+      title="Department roster"
       subtitle="Maintain the mall structure and ownership for each business area."
     >
       <div actions>
@@ -24,12 +24,12 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
       <div class="cards-grid">
         <div *ngIf="loading" class="surface-panel state loading">
           <div class="state-icon"><i class="pi pi-spin pi-spinner"></i></div>
-          <h3 class="state-title">Loading departments</h3>
+          <h3 class="state-title">Loading roster</h3>
           <p class="state-copy">Updating the mall structure and ownership data.</p>
         </div>
         <div *ngIf="!loading && departments.length === 0" class="surface-panel state">
           <div class="state-icon"><i class="pi pi-inbox"></i></div>
-          <h3 class="state-title">No departments found</h3>
+          <h3 class="state-title">No records found</h3>
           <p class="state-copy">Add a department to start organizing the mall layout.</p>
         </div>
 

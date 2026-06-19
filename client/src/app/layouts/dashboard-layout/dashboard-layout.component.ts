@@ -11,90 +11,212 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NgFor],
   template: `
     <div class="dashboard-shell">
-      <aside class="sidebar surface-panel">
-        <div class="sidebar-inner">
-          <div class="sidebar-head">
-            <div class="brand-shell">
-              <div class="brand-mark">M</div>
-              <div class="brand-copy">
-                <div class="brand-title">MallOS</div>
-                <div class="muted brand-subtitle">Grand Central Mall</div>
-              </div>
-            </div>
+      <div class="app-frame surface-panel">
+        <header class="chrome-bar">
+          <div class="chrome-dots">
+            <span class="chrome-dot red"></span>
+            <span class="chrome-dot yellow"></span>
+            <span class="chrome-dot green"></span>
           </div>
 
-          <nav class="nav">
-            <section class="nav-group" *ngFor="let group of groups">
-              <div class="nav-label">{{ group }}</div>
-              <div class="nav-items">
-                <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
-                  <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
-                    <i [class]="item.icon"></i>
-                  </span>
-                  <span>{{ item.label }}</span>
-                </a>
-              </div>
-            </section>
-          </nav>
-
-          <div class="sidebar-footer">
-            <div class="profile-row">
-              <div class="avatar">{{ userInitials }}</div>
-              <div class="profile-copy">
-                <div class="profile-name">{{ currentUserName }}</div>
-                <div class="role-badge">{{ currentRole }}</div>
-              </div>
-              <button type="button" class="ghost logout-icon" (click)="logout()" aria-label="Logout">
-                <i class="pi pi-sign-out"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <main class="workspace">
-        <header class="surface-panel topbar">
-          <div class="topbar-copy">
-            <div class="muted breadcrumb">{{ activeGroup }}</div>
-            <h1>{{ currentModuleLabel }}</h1>
-            <p class="muted topbar-subtitle">{{ currentModuleSubtitle }}</p>
+          <div class="chrome-nav">
+            <button type="button" class="chrome-button" aria-label="Back"><i class="pi pi-angle-left"></i></button>
+            <button type="button" class="chrome-button" aria-label="Forward"><i class="pi pi-angle-right"></i></button>
           </div>
 
-          <div class="topbar-actions">
-            <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
-              <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
-            </button>
-            <button type="button" class="icon-button ghost notification-button" aria-label="Notifications">
-              <i class="pi pi-bell"></i>
-              <span class="notification-dot"></span>
-            </button>
+          <div class="chrome-url">
+            <i class="pi pi-lock"></i>
+            <span>dashboard.mallos.local</span>
           </div>
+
+          <button type="button" class="chrome-button refresh" aria-label="Refresh"><i class="pi pi-refresh"></i></button>
         </header>
 
-        <div class="content-scroll">
-          <section class="content">
-            <router-outlet />
-          </section>
+        <div class="workspace-shell">
+          <aside class="sidebar surface-panel">
+            <div class="sidebar-inner">
+              <div class="sidebar-head">
+                <div class="brand-shell">
+                  <div class="brand-mark">M</div>
+                  <div class="brand-copy">
+                    <div class="brand-title">MallOS</div>
+                    <div class="muted brand-subtitle">Grand Central Mall</div>
+                  </div>
+                </div>
+              </div>
+
+              <nav class="nav">
+                <section class="nav-group" *ngFor="let group of groups">
+                  <div class="nav-label">{{ group }}</div>
+                  <div class="nav-items">
+                    <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
+                      <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
+                        <i [class]="item.icon"></i>
+                      </span>
+                      <span>{{ item.label }}</span>
+                    </a>
+                  </div>
+                </section>
+              </nav>
+
+              <div class="sidebar-footer">
+                <div class="profile-row">
+                  <div class="avatar">{{ userInitials }}</div>
+                  <div class="profile-copy">
+                    <div class="profile-name">{{ currentUserName }}</div>
+                    <div class="role-badge">{{ currentRole }}</div>
+                  </div>
+                  <button type="button" class="ghost logout-icon" (click)="logout()" aria-label="Logout">
+                    <i class="pi pi-sign-out"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <main class="workspace">
+            <header class="surface-panel topbar">
+              <div class="topbar-copy">
+                <div class="muted breadcrumb">{{ activeGroup }}</div>
+              </div>
+
+              <div class="topbar-search">
+                <div class="search-shell">
+                  <i class="pi pi-search"></i>
+                  <span>Search...</span>
+                  <kbd>⌘K</kbd>
+                </div>
+                <span class="status-pill">
+                  <span class="status-dot"></span>
+                  Opened
+                  <i class="pi pi-chevron-down"></i>
+                </span>
+              </div>
+
+              <div class="topbar-actions">
+                <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
+                  <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
+                </button>
+                <button type="button" class="icon-button ghost notification-button" aria-label="Notifications">
+                  <i class="pi pi-bell"></i>
+                  <span class="notification-dot"></span>
+                </button>
+              </div>
+            </header>
+
+            <div class="content-scroll">
+              <section class="content">
+                <router-outlet />
+              </section>
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
     </div>
   `,
   styles: [
     `
       .dashboard-shell {
         min-height: 100vh;
+        padding: 18px;
         background: var(--bg-app);
+      }
+
+      .app-frame {
+        min-height: calc(100vh - 36px);
+        border-radius: 32px;
+        overflow: hidden;
+        background: color-mix(in srgb, var(--bg-panel) 94%, var(--bg-page) 6%);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .chrome-bar {
+        height: 64px;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: auto auto 1fr auto;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--bg-panel) 96%, var(--bg-page) 4%);
+      }
+
+      .chrome-dots {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .chrome-dot {
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 999px;
+      }
+
+      .chrome-dot.red {
+        background: #fb7185;
+      }
+
+      .chrome-dot.yellow {
+        background: #fbbf24;
+      }
+
+      .chrome-dot.green {
+        background: #4ade80;
+      }
+
+      .chrome-nav {
+        display: flex;
+        gap: 0.45rem;
+      }
+
+      .chrome-button {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--bg-panel);
+        color: var(--text-secondary);
+        display: inline-grid;
+        place-items: center;
+      }
+
+      .chrome-url {
+        min-height: 40px;
+        padding: 0.55rem 1rem;
+        border-radius: 999px;
+        background: var(--bg-panel-muted);
+        border: 1px solid var(--border);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        color: var(--text-secondary);
+        max-width: 760px;
+        justify-self: center;
+      }
+
+      .chrome-url span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .workspace-shell {
+        min-height: calc(100vh - 100px);
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
       }
 
       .sidebar {
         position: fixed;
-        top: 0;
+        top: 82px;
         left: 0;
-        width: 280px;
-        height: 100vh;
+        width: 300px;
+        height: calc(100vh - 100px);
         z-index: 50;
-        border-radius: 0;
-        border-left: 0;
+        margin-left: 18px;
+        border-radius: 28px;
         overflow-y: auto;
         background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 96%, white 4%), var(--bg-sidebar));
         box-shadow: var(--shadow-lg);
@@ -115,11 +237,11 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         display: flex;
         flex-direction: column;
         padding: 1rem;
-        gap: 1rem;
+        gap: 1.1rem;
       }
 
       .sidebar-head {
-        padding: 1.25rem 1rem;
+        padding: 0.9rem 1rem 1rem;
         border-bottom: 1px solid var(--border);
       }
 
@@ -134,7 +256,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         width: 2.5rem;
         height: 2.5rem;
         border-radius: 0.9rem;
-        background: linear-gradient(135deg, #14b8a6, #0f9e8c);
+        background: linear-gradient(135deg, #14b8a6, #f59e0b);
         color: #ffffff;
         display: grid;
         place-items: center;
@@ -156,7 +278,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .nav-group {
         display: grid;
         gap: 0.5rem;
-        margin-top: 1rem;
+        margin-top: 0.85rem;
       }
 
       .nav-group:first-child {
@@ -205,16 +327,16 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .nav-items a.active {
-        background: linear-gradient(135deg, rgba(20, 184, 166, 0.98), rgba(15, 158, 140, 0.98));
-        color: #ffffff;
-        box-shadow: 0 16px 32px rgba(20, 184, 166, 0.26);
+        background: linear-gradient(135deg, rgba(250, 204, 21, 0.98), rgba(245, 158, 11, 0.98));
+        color: #111827;
+        box-shadow: 0 16px 32px rgba(245, 158, 11, 0.22);
         border-color: rgba(255, 255, 255, 0.08);
         transform: translateY(-1px);
       }
 
       .nav-items a.active .item-icon {
-        background: rgba(255, 255, 255, 0.16) !important;
-        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.3) !important;
+        color: #111827 !important;
       }
 
       .nav-items a.active::after {
@@ -223,8 +345,8 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         width: 0.45rem;
         height: 0.45rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
+        background: rgba(17, 24, 39, 0.7);
+        box-shadow: 0 0 0 6px rgba(17, 24, 39, 0.08);
       }
 
       .sidebar-footer {
@@ -271,25 +393,30 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .workspace {
-        margin-left: 280px;
-        height: 100vh;
+        grid-column: 2;
+        min-width: 0;
+        height: calc(100vh - 100px);
         background: var(--bg-app);
         display: grid;
         grid-template-rows: auto 1fr;
         gap: 0.75rem;
         min-height: 0;
+        margin-right: 18px;
+        margin-top: 18px;
+        border-radius: 28px;
       }
 
       .topbar {
         position: sticky;
         top: 0;
         z-index: 40;
-        margin: 16px 16px 0;
-        padding: 0.9rem 1rem;
+        margin: 0;
+        padding: 0.95rem 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        border-radius: 24px;
       }
 
       .topbar-copy {
@@ -297,13 +424,56 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         gap: 0.25rem;
       }
 
-      .topbar h1 {
-        margin: 0;
+      .topbar-search {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        justify-content: center;
       }
 
-      .topbar-subtitle {
-        margin: 0;
-        max-width: 64ch;
+      .search-shell {
+        min-height: 44px;
+        width: min(100%, 320px);
+        padding: 0 1rem;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--bg-panel);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--text-secondary);
+        box-shadow: var(--shadow-xs);
+      }
+
+      .search-shell kbd {
+        margin-left: auto;
+        padding: 0.18rem 0.45rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-panel-muted);
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .status-pill {
+        min-height: 44px;
+        padding: 0 0.9rem;
+        border-radius: 14px;
+        border: 1px solid color-mix(in srgb, var(--success) 22%, var(--border) 78%);
+        background: color-mix(in srgb, var(--success) 14%, var(--bg-panel) 86%);
+        color: #15803d;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-weight: 700;
+      }
+
+      .status-dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 999px;
+        background: var(--success);
       }
 
       .topbar-actions {
@@ -338,23 +508,49 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .content-scroll {
         min-height: 0;
         overflow-y: auto;
-        padding: 0 16px 16px;
+        padding: 0 18px 18px;
       }
 
       .content {
-        padding-bottom: 0.5rem;
+        padding-bottom: 0.75rem;
       }
 
       @media (max-width: 980px) {
+        .dashboard-shell {
+          padding: 0;
+        }
+
+        .app-frame {
+          min-height: 100vh;
+          border-radius: 0;
+        }
+
+        .chrome-bar {
+          grid-template-columns: auto 1fr auto;
+          height: auto;
+          padding: 0.75rem 1rem;
+        }
+
+        .chrome-nav,
+        .chrome-url {
+          display: none;
+        }
+
+        .workspace-shell {
+          grid-template-columns: 1fr;
+        }
+
         .sidebar {
           position: static;
           width: auto;
           height: auto;
-          border-radius: var(--radius-md);
+          margin: 0 1rem;
+          border-radius: var(--radius-xl);
         }
 
         .workspace {
-          margin-left: 0;
+          grid-column: auto;
+          margin: 0;
           height: auto;
           gap: 0.75rem;
         }
@@ -362,6 +558,13 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         .topbar {
           position: static;
           margin: 1rem 1rem 0;
+          flex-wrap: wrap;
+        }
+
+        .topbar-search {
+          order: 3;
+          width: 100%;
+          justify-content: flex-start;
         }
 
         .content-scroll {
@@ -419,38 +622,6 @@ export class DashboardLayoutComponent {
 
   get activeGroup(): NavGroup {
     return this.groups.find((group) => this.visibleByGroup(group).some((item) => this.router.url.startsWith(item.link))) ?? "Overview";
-  }
-
-  get currentModuleLabel(): string {
-    return this.navItems.find((item) => this.router.url.startsWith(item.link))?.label ?? "Dashboard";
-  }
-
-  get currentModuleSubtitle(): string {
-    if (this.router.url.startsWith("/dashboard/admin")) {
-      return "Monitor revenue, inventory, and frontline activity from a single overview.";
-    }
-
-    if (this.router.url.startsWith("/dashboard/manager")) {
-      return "Track department sales, shift coverage, and stock health across the store.";
-    }
-
-    if (this.router.url.startsWith("/dashboard/cashier")) {
-      return "Keep an eye on recent transactions, live totals, and quick POS access.";
-    }
-
-    if (this.router.url.startsWith("/employees")) {
-      return "Keep staff profiles, roles, and department assignments aligned.";
-    }
-
-    if (this.router.url.startsWith("/departments")) {
-      return "Organize mall areas, owners, and operating status in one place.";
-    }
-
-    if (this.router.url.startsWith("/products")) {
-      return "Manage stock, pricing, and product placement across departments.";
-    }
-
-    return "Structured workspace for day-to-day operations.";
   }
 
   visibleByGroup(group: NavGroup) {

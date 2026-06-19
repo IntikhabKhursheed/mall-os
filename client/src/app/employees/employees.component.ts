@@ -14,7 +14,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
   template: `
     <app-page-header
       eyebrow="Operations"
-      title="Employees"
+      title="Team directory"
       subtitle="Manage staff accounts, roles, and department assignment without the page feeling empty."
     >
       <div actions>
@@ -35,12 +35,12 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
       <div class="surface-panel panel">
         <div *ngIf="loading" class="state loading">
           <div class="state-icon"><i class="pi pi-spin pi-spinner"></i></div>
-          <h3 class="state-title">Loading employees</h3>
+          <h3 class="state-title">Loading staff records</h3>
           <p class="state-copy">Syncing staff records, roles, and department assignments.</p>
         </div>
         <div *ngIf="!loading && employees.length === 0" class="state">
           <div class="state-icon"><i class="pi pi-inbox"></i></div>
-          <h3 class="state-title">No employees found</h3>
+          <h3 class="state-title">No staff found</h3>
           <p class="state-copy">Try clearing the filters or add a new staff profile.</p>
         </div>
 

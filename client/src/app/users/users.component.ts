@@ -8,11 +8,19 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
   template: `
     <app-page-header
       eyebrow="System"
-      title="Users"
+      title="Access control"
       subtitle="Manage system access and keep administrative accounts organized."
     />
 
-    <section class="surface-panel metric-card"><p class="muted">User administration will appear here.</p></section>
+    <section class="surface-panel metric-card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Summary</div>
+          <h3>Account permissions</h3>
+        </div>
+      </div>
+      <p class="muted">Account administration will appear here.</p>
+    </section>
   `
 })
 export class UsersComponent {}

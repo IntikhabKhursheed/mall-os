@@ -14,7 +14,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
   template: `
     <app-page-header
       eyebrow="Operations"
-      title="Products"
+      title="Product catalog"
       subtitle="Track stock levels, pricing, and department assignment in one structured view."
     >
       <div actions>
@@ -35,12 +35,12 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
       <div class="surface-panel panel">
         <div *ngIf="loading" class="state loading">
           <div class="state-icon"><i class="pi pi-spin pi-spinner"></i></div>
-          <h3 class="state-title">Loading products</h3>
+          <h3 class="state-title">Loading catalog</h3>
           <p class="state-copy">Pulling the latest inventory records and price data.</p>
         </div>
         <div *ngIf="!loading && products.length === 0" class="state">
           <div class="state-icon"><i class="pi pi-inbox"></i></div>
-          <h3 class="state-title">No products found</h3>
+          <h3 class="state-title">No items found</h3>
           <p class="state-copy">Try a different search term or clear the department filter.</p>
         </div>
 
