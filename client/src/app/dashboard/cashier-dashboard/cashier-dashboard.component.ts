@@ -1,17 +1,28 @@
 import { CommonModule, NgFor } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { Router } from "@angular/router";
+import { PageHeaderComponent } from "../../shared/page-header/page-header.component";
 
 @Component({
   selector: "app-cashier-dashboard",
   standalone: true,
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, NgFor, PageHeaderComponent],
   template: `
-    <section class="page-grid">
-      <button type="button" class="primary start-sale" (click)="goToPos()">Start New Sale</button>
+    <app-page-header
+      eyebrow="Cashier workspace"
+      title="Checkout control center"
+      subtitle="Keep an eye on recent transactions, live totals, and quick product lookup."
+    >
+      <div actions>
+        <button type="button" class="secondary" (click)="goToPos()">Open POS</button>
+        <button type="button" class="primary" (click)="goToPos()">Start New Sale</button>
+      </div>
+    </app-page-header>
 
+    <section class="page-grid">
       <section class="stats-row">
         <article class="surface-panel stat-card" *ngFor="let stat of stats">
+          <div class="metric-icon" [ngClass]="stat.iconTone"><i [class]="stat.icon"></i></div>
           <div class="eyebrow">{{ stat.label }}</div>
           <div class="metric-value compact">{{ stat.value }}</div>
           <p class="muted">{{ stat.detail }}</p>
@@ -75,13 +86,17 @@ import { Router } from "@angular/router";
   `,
   styles: [
     `
-      :host,
+      :host {
+        display: grid;
+        gap: 1.1rem;
+      }
+
       .page-grid,
       .stats-row,
       .content-split,
       .search-results {
         display: grid;
-        gap: 1rem;
+        gap: 0.95rem;
       }
 
       .start-sale {
@@ -96,7 +111,37 @@ import { Router } from "@angular/router";
       .stat-card,
       .transactions-card,
       .search-card {
-        padding: 1.25rem;
+        padding: 1.15rem;
+      }
+
+      .stat-card {
+        display: grid;
+        gap: 0.55rem;
+        align-content: start;
+      }
+
+      .metric-icon {
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .metric-icon.accent {
+        background: rgba(20, 184, 166, 0.14);
+        color: var(--accent);
+      }
+
+      .metric-icon.info {
+        background: rgba(59, 130, 246, 0.14);
+        color: #2563eb;
+      }
+
+      .metric-icon.success {
+        background: rgba(34, 197, 94, 0.14);
+        color: #16a34a;
       }
 
       .content-split {
@@ -142,9 +187,9 @@ export class CashierDashboardComponent {
   private readonly router = inject(Router);
 
   readonly stats = [
-    { label: "My Transactions Today", value: "126", detail: "Processed across current shift." },
-    { label: "Total Amount Processed", value: "PKR 412,000", detail: "Running cashier total." },
-    { label: "Average Transaction Value", value: "PKR 3,270", detail: "Healthy basket size." }
+    { label: "My Transactions Today", value: "126", detail: "Processed across current shift.", icon: "pi pi-receipt", iconTone: "accent" },
+    { label: "Total Amount Processed", value: "PKR 412,000", detail: "Running cashier total.", icon: "pi pi-wallet", iconTone: "info" },
+    { label: "Average Transaction Value", value: "PKR 3,270", detail: "Healthy basket size.", icon: "pi pi-chart-line", iconTone: "success" }
   ];
 
   readonly transactions = [

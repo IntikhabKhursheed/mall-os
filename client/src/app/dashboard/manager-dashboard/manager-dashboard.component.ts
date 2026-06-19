@@ -1,19 +1,29 @@
 import { CommonModule, NgFor } from "@angular/common";
 import { Component } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { PageHeaderComponent } from "../../shared/page-header/page-header.component";
 
 @Component({
   selector: "app-manager-dashboard",
   standalone: true,
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, NgFor, RouterLink, PageHeaderComponent],
   template: `
-    <section class="page-grid">
-      <article class="surface-panel welcome-card">
-        <div class="eyebrow">Manager Workspace</div>
-        <p class="muted">Monitor department revenue, shift activity, and inventory health from one place.</p>
-      </article>
+    <app-page-header
+      eyebrow="Manager workspace"
+      title="Department performance"
+      subtitle="Track sales, shift activity, and inventory health from one place."
+    >
+      <div actions>
+        <button type="button" class="secondary" routerLink="/products">Products</button>
+        <button type="button" class="secondary" routerLink="/sales">Sales</button>
+        <button type="button" class="primary" routerLink="/employees">Employees</button>
+      </div>
+    </app-page-header>
 
+    <section class="page-grid">
       <section class="kpi-row">
         <article class="surface-panel kpi-card" *ngFor="let metric of metrics">
+          <div class="metric-icon" [ngClass]="metric.iconTone"><i [class]="metric.icon"></i></div>
           <div class="eyebrow">{{ metric.label }}</div>
           <div class="metric-value compact">{{ metric.value }}</div>
           <p class="muted">{{ metric.detail }}</p>
@@ -78,14 +88,18 @@ import { Component } from "@angular/core";
   `,
   styles: [
     `
-      :host,
+      :host {
+        display: grid;
+        gap: 1.1rem;
+      }
+
       .page-grid,
       .kpi-row,
       .content-split,
       .team-list,
       .stock-list {
         display: grid;
-        gap: 1rem;
+        gap: 0.95rem;
       }
 
       .welcome-card,
@@ -93,7 +107,37 @@ import { Component } from "@angular/core";
       .chart-card,
       .team-card,
       .stock-card {
-        padding: 1.25rem;
+        padding: 1.15rem;
+      }
+
+      .kpi-card {
+        display: grid;
+        gap: 0.55rem;
+        align-content: start;
+      }
+
+      .metric-icon {
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .metric-icon.accent {
+        background: rgba(20, 184, 166, 0.14);
+        color: var(--accent);
+      }
+
+      .metric-icon.info {
+        background: rgba(59, 130, 246, 0.14);
+        color: #2563eb;
+      }
+
+      .metric-icon.success {
+        background: rgba(34, 197, 94, 0.14);
+        color: #16a34a;
       }
 
       .welcome-card p {
@@ -109,7 +153,7 @@ import { Component } from "@angular/core";
       }
 
       .chart-placeholder {
-        min-height: 180px;
+        min-height: 170px;
         border-radius: var(--radius-lg);
         background: linear-gradient(180deg, var(--bg-panel-muted), transparent);
         display: flex;
@@ -130,7 +174,7 @@ import { Component } from "@angular/core";
         justify-content: space-between;
         gap: 0.85rem;
         align-items: center;
-        padding: 0.9rem;
+        padding: 0.85rem;
         border-radius: var(--radius-md);
         background: var(--bg-panel-muted);
       }
@@ -167,9 +211,9 @@ import { Component } from "@angular/core";
 })
 export class ManagerDashboardComponent {
   readonly metrics = [
-    { label: "Department Revenue Today", value: "PKR 86,400", detail: "Strong afternoon sell-through." },
-    { label: "Items Sold", value: "214", detail: "Across apparel and accessories." },
-    { label: "Stock Health", value: "92%", detail: "Healthy product availability." }
+    { label: "Department Revenue Today", value: "PKR 86,400", detail: "Strong afternoon sell-through.", icon: "pi pi-wallet", iconTone: "accent" },
+    { label: "Items Sold", value: "214", detail: "Across apparel and accessories.", icon: "pi pi-shopping-bag", iconTone: "info" },
+    { label: "Stock Health", value: "92%", detail: "Healthy product availability.", icon: "pi pi-check-circle", iconTone: "success" }
   ];
 
   readonly bars = [48, 62, 58, 74, 69, 82, 77];

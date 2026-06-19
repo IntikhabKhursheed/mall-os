@@ -1,11 +1,25 @@
 import { CommonModule, NgFor } from "@angular/common";
 import { Component } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { PageHeaderComponent } from "../../shared/page-header/page-header.component";
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, NgFor, RouterLink, PageHeaderComponent],
   template: `
+    <app-page-header
+      eyebrow="Admin dashboard"
+      title="Operations command center"
+      subtitle="Monitor revenue, inventory, and frontline activity from one place."
+    >
+      <div actions>
+        <button type="button" class="secondary" routerLink="/products">Products</button>
+        <button type="button" class="secondary" routerLink="/employees">Employees</button>
+        <button type="button" class="primary" routerLink="/reports">Reports</button>
+      </div>
+    </app-page-header>
+
     <section class="hero-insight surface-panel hero-surface">
       <div class="hero-copy">
         <div class="eyebrow">Today at a glance</div>
@@ -28,18 +42,21 @@ import { Component } from "@angular/core";
 
     <section class="kpi-focus">
       <article class="surface-panel support-card primary-support">
+        <div class="metric-icon accent"><i class="pi pi-exclamation-triangle"></i></div>
         <div class="eyebrow">Low stock risk</div>
         <h3 class="metric-value">12</h3>
         <p class="muted">Products approaching reorder level today.</p>
       </article>
 
       <article class="surface-panel support-card">
+        <div class="metric-icon info"><i class="pi pi-users"></i></div>
         <div class="eyebrow">Active employees</div>
         <h3 class="metric-value">48</h3>
         <p class="muted">Coverage is balanced across current shifts.</p>
       </article>
 
       <article class="surface-panel insight-card">
+        <div class="metric-icon success"><i class="pi pi-trending-up"></i></div>
         <div class="eyebrow">Mini insight</div>
         <h3>Food Court sales are up 14%</h3>
         <p class="muted">Fastest movement during lunch-hour transactions.</p>
@@ -123,13 +140,13 @@ import { Component } from "@angular/core";
     `
       :host {
         display: grid;
-        gap: 1.5rem;
+        gap: 1.1rem;
       }
 
       .hero-insight {
         display: grid;
         grid-template-columns: 1.35fr 0.95fr 0.85fr;
-        gap: 1.5rem;
+        gap: 1.25rem;
         align-items: stretch;
       }
 
@@ -167,7 +184,7 @@ import { Component } from "@angular/core";
 
       .quick-actions {
         display: grid;
-        gap: 1rem;
+        gap: 0.85rem;
         align-content: start;
       }
 
@@ -186,16 +203,40 @@ import { Component } from "@angular/core";
       .kpi-focus {
         display: grid;
         grid-template-columns: 1.2fr 1fr 0.9fr;
-        gap: 1.5rem;
+        gap: 1.25rem;
       }
 
       .support-card,
       .insight-card {
-        padding: 1.5rem;
-        min-height: 180px;
+        padding: 1.35rem;
+        min-height: 168px;
         display: grid;
         gap: 0.65rem;
         align-content: start;
+      }
+
+      .metric-icon {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .metric-icon.accent {
+        background: rgba(20, 184, 166, 0.14);
+        color: var(--accent);
+      }
+
+      .metric-icon.info {
+        background: rgba(59, 130, 246, 0.14);
+        color: #2563eb;
+      }
+
+      .metric-icon.success {
+        background: rgba(34, 197, 94, 0.14);
+        color: #16a34a;
       }
 
       .primary-support {
@@ -206,7 +247,7 @@ import { Component } from "@angular/core";
 
       .activity-stream {
         display: grid;
-        gap: 1.25rem;
+        gap: 1rem;
       }
 
       .stream-list {
@@ -252,13 +293,13 @@ import { Component } from "@angular/core";
       .analytics-split {
         display: grid;
         grid-template-columns: 1.2fr 0.95fr;
-        gap: 1.5rem;
+        gap: 1.25rem;
       }
 
       .analytics-card {
         display: grid;
-        gap: 1.25rem;
-        min-height: 280px;
+        gap: 1rem;
+        min-height: 260px;
       }
 
       .chart-placeholder {
@@ -298,7 +339,7 @@ import { Component } from "@angular/core";
 
       .record-section {
         display: grid;
-        gap: 1.25rem;
+        gap: 1rem;
       }
 
       .record-grid {
