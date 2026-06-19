@@ -5,17 +5,23 @@ import { ProductService } from "../core/services/product.service";
 import { DepartmentService } from "../core/services/department.service";
 import { Product, ProductPayload } from "../core/models/product.model";
 import { Department } from "../core/models/department.model";
+import { PageHeaderComponent } from "../shared/page-header/page-header.component";
 
 @Component({
   selector: "app-products",
   standalone: true,
-  imports: [CommonModule, NgFor, NgIf, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, NgFor, NgIf, FormsModule, ReactiveFormsModule, PageHeaderComponent],
   template: `
-    <section class="page-head">
-      <div>
-        <p class="muted">Track stock levels, pricing, and department assignment.</p>
+    <app-page-header
+      eyebrow="Operations"
+      title="Products"
+      subtitle="Track stock levels, pricing, and department assignment in one structured view."
+    >
+      <div actions>
+        <button class="secondary" type="button" (click)="resetFilters()">Reset Filters</button>
+        <button class="primary" type="button" (click)="startCreate()">Add Product</button>
       </div>
-    </section>
+    </app-page-header>
 
     <section class="toolbar surface-panel">
       <input [(ngModel)]="searchTerm" (ngModelChange)="loadProducts()" type="search" placeholder="Search by name, SKU, or barcode" />
@@ -23,14 +29,20 @@ import { Department } from "../core/models/department.model";
         <option value="">All departments</option>
         <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
       </select>
-      <button class="secondary" type="button" (click)="resetFilters()">Reset</button>
-      <button class="primary" type="button" (click)="startCreate()">Add Product</button>
     </section>
 
     <section class="content-grid">
       <div class="surface-panel panel">
-        <div *ngIf="loading" class="state">Loading products...</div>
-        <div *ngIf="!loading && products.length === 0" class="state">No products found.</div>
+        <div *ngIf="loading" class="state loading">
+          <div class="state-icon"><i class="pi pi-spin pi-spinner"></i></div>
+          <h3 class="state-title">Loading products</h3>
+          <p class="state-copy">Pulling the latest inventory records and price data.</p>
+        </div>
+        <div *ngIf="!loading && products.length === 0" class="state">
+          <div class="state-icon"><i class="pi pi-inbox"></i></div>
+          <h3 class="state-title">No products found</h3>
+          <p class="state-copy">Try a different search term or clear the department filter.</p>
+        </div>
 
         <div *ngIf="!loading && products.length > 0" class="record-list">
           <article class="record-card product-card" *ngFor="let product of products">
@@ -80,58 +92,78 @@ import { Department } from "../core/models/department.model";
             <p class="muted">Stock status is derived from quantity and reorder level.</p>
           </div>
 
-          <label>
-            Name
-            <input formControlName="name" type="text" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Identity</legend>
+            <div class="form-grid cols-2">
+              <label>
+                Name
+                <input formControlName="name" type="text" />
+              </label>
 
-          <label>
-            SKU
-            <input formControlName="sku" type="text" />
-          </label>
+              <label>
+                Department
+                <select formControlName="department">
+                  <option value="">Select department</option>
+                  <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
+                </select>
+              </label>
 
-          <label>
-            Barcode
-            <input formControlName="barcode" type="text" />
-          </label>
+              <label>
+                SKU
+                <input formControlName="sku" type="text" />
+              </label>
 
-          <label>
-            Category
-            <input formControlName="category" type="text" />
-          </label>
+              <label>
+                Barcode
+                <input formControlName="barcode" type="text" />
+              </label>
 
-          <label>
-            Department
-            <select formControlName="department">
-              <option value="">Select department</option>
-              <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
-            </select>
-          </label>
+              <label class="span-2">
+                Category
+                <input formControlName="category" type="text" />
+              </label>
+            </div>
+          </fieldset>
 
-          <label>
-            Selling Price
-            <input formControlName="sellingPrice" type="number" min="0" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Commerce</legend>
+            <div class="form-grid cols-2">
+              <label>
+                Selling Price
+                <input formControlName="sellingPrice" type="number" min="0" />
+              </label>
 
-          <label>
-            Cost Price
-            <input formControlName="costPrice" type="number" min="0" />
-          </label>
+              <label>
+                Cost Price
+                <input formControlName="costPrice" type="number" min="0" />
+              </label>
+            </div>
+          </fieldset>
 
-          <label>
-            Stock Quantity
-            <input formControlName="stockQuantity" type="number" min="0" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Inventory</legend>
+            <div class="form-grid cols-2">
+              <label>
+                Stock Quantity
+                <input formControlName="stockQuantity" type="number" min="0" />
+              </label>
 
-          <label>
-            Reorder Level
-            <input formControlName="reorderLevel" type="number" min="0" />
-          </label>
+              <label>
+                Reorder Level
+                <input formControlName="reorderLevel" type="number" min="0" />
+              </label>
+            </div>
+          </fieldset>
 
-          <label>
-            Image URL
-            <input formControlName="image" type="text" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Media</legend>
+            <div class="form-grid">
+              <label>
+                Image URL
+                <input formControlName="image" type="text" />
+              </label>
+            </div>
+          </fieldset>
 
           <div class="hint">
             Status will be recalculated on save: healthy, low_stock, or out_of_stock.
@@ -149,16 +181,17 @@ import { Department } from "../core/models/department.model";
   `,
   styles: [
     `
-      .page-head {
-        padding-bottom: 1rem;
+      :host {
+        display: grid;
+        gap: 1rem;
       }
 
       .toolbar {
         display: grid;
-        grid-template-columns: 1fr 220px auto auto;
+        grid-template-columns: 1fr 220px;
         gap: 0.75rem;
         padding: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
       }
 
       .content-grid {
@@ -168,28 +201,6 @@ import { Department } from "../core/models/department.model";
       .panel {
         padding: 1rem;
         box-shadow: var(--shadow-lg);
-      }
-
-      .badge {
-        display: inline-flex;
-        padding: 0.35rem 0.65rem;
-        border-radius: 999px;
-        font-size: 0.82rem;
-      }
-
-      .badge.healthy {
-        background: rgba(74, 222, 128, 0.12);
-        color: #86efac;
-      }
-
-      .badge.low_stock {
-        background: rgba(251, 191, 36, 0.12);
-        color: #fde68a;
-      }
-
-      .badge.out_of_stock {
-        background: rgba(248, 113, 113, 0.12);
-        color: #fca5a5;
       }
 
       .form-panel {
@@ -292,6 +303,10 @@ import { Department } from "../core/models/department.model";
         padding-bottom: 0.25rem;
       }
 
+      .span-2 {
+        grid-column: span 2;
+      }
+
       label {
         display: grid;
         gap: 0.35rem;
@@ -373,6 +388,13 @@ import { Department } from "../core/models/department.model";
       @media (max-width: 720px) {
         .product-card {
           grid-template-columns: 1fr;
+        }
+
+        .form-grid.cols-2,
+        .form-grid.cols-3,
+        .span-2 {
+          grid-template-columns: 1fr;
+          grid-column: auto;
         }
 
         .action-group {

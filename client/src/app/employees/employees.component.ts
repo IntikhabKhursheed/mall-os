@@ -5,17 +5,23 @@ import { EmployeeService } from "../core/services/employee.service";
 import { DepartmentService } from "../core/services/department.service";
 import { Department } from "../core/models/department.model";
 import { Employee, EmployeePayload } from "../core/models/employee.model";
+import { PageHeaderComponent } from "../shared/page-header/page-header.component";
 
 @Component({
   selector: "app-employees",
   standalone: true,
-  imports: [CommonModule, NgFor, NgIf, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, NgFor, NgIf, FormsModule, ReactiveFormsModule, PageHeaderComponent],
   template: `
-    <section class="page-head">
-      <div>
-        <p class="muted">Manage staff accounts, roles, and department assignment.</p>
+    <app-page-header
+      eyebrow="Operations"
+      title="Employees"
+      subtitle="Manage staff accounts, roles, and department assignment without the page feeling empty."
+    >
+      <div actions>
+        <button class="secondary" type="button" (click)="resetFilters()">Reset Filters</button>
+        <button class="primary" type="button" (click)="startCreate()">Add Employee</button>
       </div>
-    </section>
+    </app-page-header>
 
     <section class="toolbar surface-panel">
       <input [(ngModel)]="searchTerm" (ngModelChange)="loadEmployees()" type="search" placeholder="Search by name or email" />
@@ -23,14 +29,20 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         <option value="">All departments</option>
         <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
       </select>
-      <button class="secondary" type="button" (click)="resetFilters()">Reset</button>
-      <button class="primary" type="button" (click)="startCreate()">Add Employee</button>
     </section>
 
     <section class="content-grid">
       <div class="surface-panel panel">
-        <div *ngIf="loading" class="state">Loading employees...</div>
-        <div *ngIf="!loading && employees.length === 0" class="state">No employees found.</div>
+        <div *ngIf="loading" class="state loading">
+          <div class="state-icon"><i class="pi pi-spin pi-spinner"></i></div>
+          <h3 class="state-title">Loading employees</h3>
+          <p class="state-copy">Syncing staff records, roles, and department assignments.</p>
+        </div>
+        <div *ngIf="!loading && employees.length === 0" class="state">
+          <div class="state-icon"><i class="pi pi-inbox"></i></div>
+          <h3 class="state-title">No employees found</h3>
+          <p class="state-copy">Try clearing the filters or add a new staff profile.</p>
+        </div>
 
         <div *ngIf="!loading && employees.length > 0" class="record-list">
           <article class="record-card employee-card" *ngFor="let employee of employees">
@@ -38,7 +50,7 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
             <div class="record-main">
               <div class="record-title-row">
                 <strong>{{ employee.fullName }}</strong>
-                <span class="badge" [class.active]="employee.status === 'active'">{{ employee.status || "active" }}</span>
+                <span class="badge" [ngClass]="employee.status || 'active'">{{ employee.status || "active" }}</span>
               </div>
               <div class="record-meta">{{ employee.email }}</div>
               <div class="record-tags">
@@ -80,41 +92,51 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
             <p class="muted">Validation is enabled before data is stored in MongoDB.</p>
           </div>
 
-          <label>
-            Full Name
-            <input formControlName="fullName" type="text" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Identity</legend>
+            <div class="form-grid cols-2">
+              <label class="span-2">
+                Full Name
+                <input formControlName="fullName" type="text" />
+              </label>
 
-          <label>
-            Email
-            <input formControlName="email" type="email" />
-          </label>
+              <label>
+                Email
+                <input formControlName="email" type="email" />
+              </label>
 
-          <label>
-            Phone
-            <input formControlName="phone" type="text" />
-          </label>
+              <label>
+                Phone
+                <input formControlName="phone" type="text" />
+              </label>
+            </div>
+          </fieldset>
 
-          <label>
-            Role
-            <input formControlName="role" type="text" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Role & Status</legend>
+            <div class="form-grid cols-2">
+              <label>
+                Role
+                <input formControlName="role" type="text" />
+              </label>
 
-          <label>
-            Department
-            <select formControlName="department">
-              <option value="">Select department</option>
-              <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
-            </select>
-          </label>
+              <label>
+                Status
+                <select formControlName="status">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                </select>
+              </label>
 
-          <label>
-            Status
-            <select formControlName="status">
-              <option value="active">active</option>
-              <option value="inactive">inactive</option>
-            </select>
-          </label>
+              <label class="span-2">
+                Department
+                <select formControlName="department">
+                  <option value="">Select department</option>
+                  <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
 
           <div class="actions">
             <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
@@ -128,8 +150,9 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
   `,
   styles: [
     `
-      .page-head {
-        padding-bottom: 1rem;
+      :host {
+        display: grid;
+        gap: 1rem;
       }
 
       .content-grid {
@@ -143,10 +166,10 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
 
       .toolbar {
         display: grid;
-        grid-template-columns: 1fr 220px auto auto;
+        grid-template-columns: 1fr 220px;
         gap: 0.75rem;
         padding: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
       }
 
       input,
@@ -157,22 +180,6 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         background: var(--surface-1);
         color: var(--text);
         padding: 0.7rem 0.85rem;
-      }
-
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 86px;
-        padding: 0.35rem 0.65rem;
-        border-radius: 999px;
-        background: rgba(248, 113, 113, 0.12);
-        color: #fca5a5;
-      }
-
-      .badge.active {
-        background: rgba(74, 222, 128, 0.12);
-        color: #86efac;
       }
 
       .form-panel {
@@ -275,6 +282,10 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
         padding-bottom: 0.25rem;
       }
 
+      .span-2 {
+        grid-column: span 2;
+      }
+
       label {
         display: grid;
         gap: 0.35rem;
@@ -346,6 +357,13 @@ import { Employee, EmployeePayload } from "../core/models/employee.model";
       @media (max-width: 720px) {
         .employee-card {
           grid-template-columns: 1fr;
+        }
+
+        .form-grid.cols-2,
+        .form-grid.cols-3,
+        .span-2 {
+          grid-template-columns: 1fr;
+          grid-column: auto;
         }
 
         .action-group {

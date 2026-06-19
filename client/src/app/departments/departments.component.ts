@@ -3,23 +3,35 @@ import { Component, OnInit, inject } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { DepartmentService } from "../core/services/department.service";
 import { Department, DepartmentPayload } from "../core/models/department.model";
+import { PageHeaderComponent } from "../shared/page-header/page-header.component";
 
 @Component({
   selector: "app-departments",
   standalone: true,
-  imports: [CommonModule, NgFor, NgIf, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, NgFor, NgIf, FormsModule, ReactiveFormsModule, PageHeaderComponent],
   template: `
-    <section class="page-head">
-      <div>
-        <p class="muted">Maintain the mall structure and ownership for each business area.</p>
+    <app-page-header
+      eyebrow="Operations"
+      title="Departments"
+      subtitle="Maintain the mall structure and ownership for each business area."
+    >
+      <div actions>
+        <button class="primary" type="button" (click)="startCreate()">Add Department</button>
       </div>
-      <button class="primary" type="button" (click)="startCreate()">Add Department</button>
-    </section>
+    </app-page-header>
 
     <section class="content-grid">
       <div class="cards-grid">
-        <div *ngIf="loading" class="surface-panel state">Loading departments...</div>
-        <div *ngIf="!loading && departments.length === 0" class="surface-panel state">No departments found.</div>
+        <div *ngIf="loading" class="surface-panel state loading">
+          <div class="state-icon"><i class="pi pi-spin pi-spinner"></i></div>
+          <h3 class="state-title">Loading departments</h3>
+          <p class="state-copy">Updating the mall structure and ownership data.</p>
+        </div>
+        <div *ngIf="!loading && departments.length === 0" class="surface-panel state">
+          <div class="state-icon"><i class="pi pi-inbox"></i></div>
+          <h3 class="state-title">No departments found</h3>
+          <p class="state-copy">Add a department to start organizing the mall layout.</p>
+        </div>
 
         <article class="surface-panel dept-card" *ngFor="let department of departments">
           <div class="card-head">
@@ -27,7 +39,7 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
               <h3>{{ department.name }}</h3>
               <p class="muted">{{ department.category || "Uncategorized" }}</p>
             </div>
-            <span class="badge">{{ department.status || "active" }}</span>
+            <span class="badge" [ngClass]="department.status || 'active'">{{ department.status || "active" }}</span>
           </div>
           <div class="muted">Manager: {{ department.manager || "-" }}</div>
           <div class="card-actions action-group">
@@ -56,28 +68,33 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
             <p class="muted">Departments can be reassigned from employee and product forms.</p>
           </div>
 
-          <label>
-            Name
-            <input formControlName="name" type="text" />
-          </label>
+          <fieldset class="form-section">
+            <legend>Department details</legend>
+            <div class="form-grid cols-2">
+              <label class="span-2">
+                Name
+                <input formControlName="name" type="text" />
+              </label>
 
-          <label>
-            Category
-            <input formControlName="category" type="text" />
-          </label>
+              <label>
+                Category
+                <input formControlName="category" type="text" />
+              </label>
 
-          <label>
-            Manager
-            <input formControlName="manager" type="text" />
-          </label>
+              <label>
+                Status
+                <select formControlName="status">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                </select>
+              </label>
 
-          <label>
-            Status
-            <select formControlName="status">
-              <option value="active">active</option>
-              <option value="inactive">inactive</option>
-            </select>
-          </label>
+              <label class="span-2">
+                Manager
+                <input formControlName="manager" type="text" />
+              </label>
+            </div>
+          </fieldset>
 
           <div class="actions">
             <button type="submit" class="primary" [disabled]="form.invalid || saving">{{ saving ? "Saving..." : "Save" }}</button>
@@ -91,8 +108,9 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
   `,
   styles: [
     `
-      .page-head {
-        padding-bottom: 1rem;
+      :host {
+        display: grid;
+        gap: 1rem;
       }
 
       .content-grid {
@@ -128,14 +146,6 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
       .actions {
         display: flex;
         gap: 0.75rem;
-      }
-
-      .badge {
-        display: inline-flex;
-        padding: 0.35rem 0.65rem;
-        border-radius: 999px;
-        background: rgba(96, 165, 250, 0.12);
-        color: #bfdbfe;
       }
 
       label {
@@ -194,6 +204,10 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
         color: var(--muted);
       }
 
+      .span-2 {
+        grid-column: span 2;
+      }
+
       .error-box {
         padding: 1rem;
         border-radius: 8px;
@@ -228,6 +242,12 @@ import { Department, DepartmentPayload } from "../core/models/department.model";
         border: 1px solid rgba(248, 113, 113, 0.25);
         background: rgba(248, 113, 113, 0.12);
         color: #fecaca;
+      }
+
+      @media (max-width: 720px) {
+        .span-2 {
+          grid-column: auto;
+        }
       }
 
     `
