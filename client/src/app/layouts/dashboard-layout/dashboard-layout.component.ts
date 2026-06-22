@@ -53,7 +53,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       </aside>
 
       <main class="workspace">
-        <header class="surface-panel topbar">
+        <header class="topbar">
           <div class="topbar-copy">
             <div class="muted breadcrumb">{{ activeGroup }}</div>
           </div>
@@ -94,16 +94,23 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
     `
       .dashboard-shell {
         min-height: 100vh;
-        display: grid;
-        grid-template-columns: 300px minmax(0, 1fr);
+        display: flex;
+        margin-top: 60px;
+        height: calc(100vh - 60px);
         background: var(--bg-app);
       }
 
       .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 220px;
         min-height: 100vh;
+        height: calc(100vh - 60px);
         overflow-y: auto;
-        background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 96%, white 4%), var(--bg-sidebar));
+        background: #ffffff;
         box-shadow: var(--shadow-lg);
+        z-index: 999;
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
@@ -274,25 +281,31 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
 
       .workspace {
         min-width: 0;
-        min-height: 100vh;
+        flex: 1;
+        margin-left: 220px;
+        padding-top: 60px;
+        height: calc(100vh - 60px);
         background: var(--bg-app);
-        display: grid;
-        grid-template-rows: auto 1fr;
-        gap: 0.75rem;
-        overflow: hidden;
+        overflow-y: auto;
       }
 
       .topbar {
-        position: sticky;
+        position: fixed;
         top: 0;
-        z-index: 40;
+        left: 0;
+        right: 0;
+        z-index: 1000;
         margin: 0;
-        padding: 0.95rem 1rem;
+        padding: 0 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        border-radius: 24px;
+        height: 60px;
+        border-radius: 0;
+        background-color: #ffffff;
+        border-bottom: 1px solid var(--border);
+        box-shadow: none;
       }
 
       .topbar-copy {
@@ -382,9 +395,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .content-scroll {
-        min-height: 0;
-        overflow-y: auto;
-        padding: 0 18px 18px;
+        padding: 24px;
       }
 
       .content {
@@ -392,22 +403,22 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       @media (max-width: 980px) {
-        .dashboard-shell {
-          grid-template-columns: 1fr;
-        }
-
         .sidebar {
-          min-height: auto;
-        }
-
-        .workspace {
-          min-height: auto;
-          gap: 0.75rem;
+          top: 60px;
+          width: 220px;
+          height: calc(100vh - 60px);
         }
 
         .topbar {
-          position: static;
-          flex-wrap: wrap;
+          left: 0;
+          right: 0;
+          border-radius: 0;
+        }
+
+        .workspace {
+          margin-left: 220px;
+          padding-top: 60px;
+          height: calc(100vh - 60px);
         }
 
         .topbar-search {
@@ -417,8 +428,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         }
 
         .content-scroll {
-          overflow: visible;
-          padding: 0 1rem 1rem;
+          padding: 24px;
         }
       }
     `
