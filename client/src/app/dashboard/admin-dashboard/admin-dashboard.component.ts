@@ -1,8 +1,9 @@
 import { CommonModule, NgFor } from "@angular/common";
-import { Component, inject } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { Component, OnInit, inject } from "@angular/core";
+import { Router, RouterLink } from "@angular/router";
 import { PageHeaderComponent } from "../../shared/page-header/page-header.component";
 import { AuthService } from "../../core/services/auth.service";
+import { DashboardSummary, MallDataService } from "../../core/services/mall-data.service";
 
 @Component({
   selector: "app-admin-dashboard",
@@ -18,13 +19,9 @@ import { AuthService } from "../../core/services/auth.service";
         <div class="search-shell">
           <i class="pi pi-search"></i>
           <span>Search mall data...</span>
-          <kbd>⌘K</kbd>
+          <kbd>Ctrl+K</kbd>
         </div>
-        <span class="status-pill">
-          <span class="status-dot"></span>
-          Opened
-          <i class="pi pi-chevron-down"></i>
-        </span>
+        <button type="button" class="secondary" routerLink="/pos">Open POS</button>
         <button type="button" class="secondary" routerLink="/products">Products</button>
         <button type="button" class="primary" routerLink="/reports">Reports</button>
       </div>
@@ -38,15 +35,15 @@ import { AuthService } from "../../core/services/auth.service";
 
       <article class="hero-metric">
         <div class="eyebrow">Primary KPI</div>
-        <div class="metric-value">$24.8K</div>
+        <div class="metric-value">{{ summary.revenueToday | currency : "USD" : "symbol" : "1.0-0" }}</div>
         <p class="muted">Projected revenue across active departments</p>
       </article>
 
       <aside class="quick-actions">
         <div class="eyebrow">Quick actions</div>
-        <div class="quick-pill"><i class="pi pi-search"></i><span>Search records</span></div>
-        <div class="quick-pill"><i class="pi pi-bell"></i><span>3 active alerts</span></div>
-        <div class="quick-pill"><i class="pi pi-bolt"></i><span>Open POS shortcut</span></div>
+        <button type="button" class="quick-pill" routerLink="/pos"><i class="pi pi-shopping-cart"></i><span>Open POS shortcut</span></button>
+        <button type="button" class="quick-pill" routerLink="/employees"><i class="pi pi-users"></i><span>Review employees</span></button>
+        <button type="button" class="quick-pill" routerLink="/products"><i class="pi pi-bolt"></i><span>Review stock</span></button>
       </aside>
     </section>
 
@@ -54,22 +51,22 @@ import { AuthService } from "../../core/services/auth.service";
       <article class="surface-panel support-card primary-support">
         <div class="metric-icon accent"><i class="pi pi-exclamation-triangle"></i></div>
         <div class="eyebrow">Low stock risk</div>
-        <h3 class="metric-value">12</h3>
+        <h3 class="metric-value">{{ summary.lowStockCount }}</h3>
         <p class="muted">Products approaching reorder level today.</p>
       </article>
 
       <article class="surface-panel support-card">
         <div class="metric-icon info"><i class="pi pi-users"></i></div>
         <div class="eyebrow">Active employees</div>
-        <h3 class="metric-value">48</h3>
+        <h3 class="metric-value">{{ summary.activeEmployees }}</h3>
         <p class="muted">Coverage is balanced across current shifts.</p>
       </article>
 
       <article class="surface-panel insight-card">
         <div class="metric-icon success"><i class="pi pi-trending-up"></i></div>
-        <div class="eyebrow">Mini insight</div>
-        <h3>Food Court sales are up 14%</h3>
-        <p class="muted">Fastest movement during lunch-hour transactions.</p>
+        <div class="eyebrow">Stock health</div>
+        <h3>{{ summary.stockHealth }}%</h3>
+        <p class="muted">{{ summary.alerts }} combined alerts are currently active.</p>
       </article>
     </section>
 
@@ -141,7 +138,7 @@ import { AuthService } from "../../core/services/auth.service";
             <strong>{{ record.title }}</strong>
             <p class="muted">{{ record.meta }}</p>
           </div>
-          <button type="button" class="secondary record-action">View</button>
+          <button type="button" class="secondary record-action" routerLink="/sales">View</button>
         </article>
       </div>
     </section>
@@ -182,26 +179,6 @@ import { AuthService } from "../../core/services/auth.service";
         background: var(--bg-panel-muted);
         color: var(--muted);
         font-size: 0.75rem;
-      }
-
-      .status-pill {
-        min-height: 44px;
-        padding: 0 0.9rem;
-        border-radius: 14px;
-        border: 1px solid color-mix(in srgb, var(--success) 22%, var(--border) 78%);
-        background: color-mix(in srgb, var(--success) 14%, var(--bg-panel) 86%);
-        color: #15803d;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        font-weight: 700;
-      }
-
-      .status-dot {
-        width: 0.6rem;
-        height: 0.6rem;
-        border-radius: 999px;
-        background: var(--success);
       }
 
       .hero-insight {
@@ -429,28 +406,28 @@ import { AuthService } from "../../core/services/auth.service";
     `
   ]
 })
-export class AdminDashboardComponent {
+export class AdminDashboardComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly mallData = inject(MallDataService);
 
   readonly greetingTitle = `Good morning, ${this.authService.getCurrentUser()?.name ?? "team"}`;
+  summary: DashboardSummary = { revenueToday: 0, salesToday: 0, lowStockCount: 0, activeEmployees: 0, stockHealth: 0, alerts: 0 };
 
-  readonly activityFeed = [
-    { icon: "pi pi-shopping-bag", title: "New sale processed", detail: "Fashion department completed order #1294.", time: "2m ago" },
-    { icon: "pi pi-exclamation-circle", title: "Low stock alert", detail: "Wireless Earbuds dropped below reorder level.", time: "8m ago" },
-    { icon: "pi pi-user-plus", title: "Employee check-in", detail: "Cashier shift started at Food Court counter.", time: "15m ago" }
-  ];
+  activityFeed: Array<{ icon: string; title: string; detail: string; time: string }> = [];
+  chartBars = [38, 64, 54, 72, 58, 83, 62];
+  departmentSignals: Array<{ label: string; detail: string; status: NonNullable<"healthy" | "low_stock" | "out_of_stock"> }> = [];
+  salesCards: Array<{ initials: string; title: string; meta: string }> = [];
 
-  readonly chartBars = [38, 64, 54, 72, 58, 83, 62];
-
-  readonly departmentSignals = [
-    { label: "Fashion", detail: "Healthy sell-through and stable staffing.", status: "healthy" },
-    { label: "Food Court", detail: "Peak demand this afternoon.", status: "low_stock" },
-    { label: "Electronics", detail: "Charger inventory needs review.", status: "out_of_stock" }
-  ];
-
-  readonly salesCards = [
-    { initials: "FD", title: "Food Court Batch", meta: "34 transactions • Avg ticket $18" },
-    { initials: "FS", title: "Fashion Flash Sale", meta: "12 transactions • Avg ticket $52" },
-    { initials: "EL", title: "Electronics Counter", meta: "8 transactions • Avg ticket $89" }
-  ];
+  ngOnInit(): void {
+    this.mallData.getSummary().subscribe((summary) => (this.summary = summary));
+    this.mallData.getActivityFeed().subscribe((feed) => (this.activityFeed = feed));
+    this.mallData.getDepartmentSignals().subscribe((signals) => (this.departmentSignals = signals));
+    this.mallData.getRecentSales().subscribe((sales) => {
+      this.salesCards = sales.slice(0, 3).map((sale) => ({
+        initials: sale.department.slice(0, 2).toUpperCase(),
+        title: `${sale.department} Batch`,
+        meta: `${sale.itemCount} items · ${sale.paymentMethod} · ${sale.total.toLocaleString("en-US", { style: "currency", currency: "USD" })}`
+      }));
+    });
+  }
 }

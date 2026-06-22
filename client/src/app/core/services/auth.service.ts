@@ -1,45 +1,31 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { User } from "../models/user.model";
-import { API_BASE_URL } from "./api.service";
-
-interface AuthResponse {
-  success: boolean;
-  message: string;
-  data: {
-    token: string;
-    user: User;
-  };
-}
-
-interface MeResponse {
-  success: boolean;
-  message: string;
-  data: {
-    user: User;
-  };
-}
+import { MallDataService } from "./mall-data.service";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
-  private readonly apiUrl = `${API_BASE_URL}/auth`;
   private readonly tokenKey = "mallos_token";
   private readonly userKey = "mallos_user";
-  private readonly currentUserSubject = new BehaviorSubject<User | null>(this.readUser());
-  readonly currentUser$ = this.currentUserSubject.asObservable();
+  private readonly currentUserSubject: BehaviorSubject<User | null>;
+  readonly currentUser$: Observable<User | null>;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly mallData: MallDataService) {
+    this.currentUserSubject = new BehaviorSubject<User | null>(this.readUser() ?? this.mallData.getCurrentSessionUser());
+    this.currentUser$ = this.currentUserSubject.asObservable();
+  }
 
   login(email: string, password: string): Observable<User> {
-    return this.http
-      .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
-      .pipe(tap((response) => this.storeSession(response.data)), map((response) => response.data.user));
+    return this.mallData.login(email, password).pipe(
+      tap((user) => this.storeSession(user)),
+      map((user) => user)
+    );
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
+    this.mallData.logout();
     this.currentUserSubject.next(null);
   }
 
@@ -51,22 +37,21 @@ export class AuthService {
     department?: string;
     status?: "active" | "inactive";
   }, persistSession = true): Observable<User> {
-    return this.http
-      .post<AuthResponse>(`${this.apiUrl}/register`, payload)
-      .pipe(
-        tap((response) => {
-          if (persistSession) {
-            this.storeSession(response.data);
-          }
-        }),
-        map((response) => response.data.user)
-      );
+    return this.mallData.register(payload).pipe(
+      tap((user) => {
+        if (persistSession) {
+          this.storeSession(user);
+        }
+      }),
+      map((user) => user)
+    );
   }
 
   me(): Observable<User> {
-    return this.http
-      .get<MeResponse>(`${this.apiUrl}/me`)
-      .pipe(map((response) => response.data.user));
+    return this.mallData.me().pipe(
+      tap((user) => this.currentUserSubject.next(user)),
+      map((user) => user)
+    );
   }
 
   getToken(): string | null {
@@ -81,10 +66,11 @@ export class AuthService {
     return Boolean(this.getToken());
   }
 
-  private storeSession(data: { token: string; user: User }): void {
-    localStorage.setItem(this.tokenKey, data.token);
-    localStorage.setItem(this.userKey, JSON.stringify(data.user));
-    this.currentUserSubject.next(data.user);
+  private storeSession(user: User): void {
+    const token = `mock-${user.role}-${Date.now()}`;
+    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.userKey, JSON.stringify(user));
+    this.currentUserSubject.next(user);
   }
 
   private readUser(): User | null {

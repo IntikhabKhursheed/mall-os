@@ -49,6 +49,7 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
               <div class="eyebrow">Team panel</div>
               <h3>Shift coverage</h3>
             </div>
+            <button type="button" class="secondary" routerLink="/employees">Review</button>
           </div>
 
           <div class="team-list">
@@ -80,7 +81,7 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
               <strong>{{ item.name }}</strong>
               <p class="muted">Stock {{ item.stock }} / Reorder {{ item.reorder }}</p>
             </div>
-            <button type="button" class="secondary">Review</button>
+            <button type="button" class="secondary" routerLink="/products">Review</button>
           </div>
         </div>
       </article>
@@ -138,10 +139,6 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
       .metric-icon.success {
         background: rgba(34, 197, 94, 0.14);
         color: #16a34a;
-      }
-
-      .welcome-card p {
-        margin: 0;
       }
 
       .kpi-row {

@@ -1,11 +1,16 @@
-import { CommonModule, NgFor } from "@angular/common";
-import { Component } from "@angular/core";
+import { CommonModule, NgFor, NgIf } from "@angular/common";
+import { Component, OnInit, inject } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { finalize } from "rxjs";
 import { PageHeaderComponent } from "../shared/page-header/page-header.component";
+import { MallDataService, CartLine, PosState } from "../core/services/mall-data.service";
+import { Product } from "../core/models/product.model";
 
 @Component({
   selector: "app-pos",
   standalone: true,
-  imports: [CommonModule, NgFor, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, NgFor, NgIf, PageHeaderComponent],
   template: `
     <app-page-header
       eyebrow="Operations"
@@ -13,8 +18,9 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
       subtitle="Use a structured checkout workspace for fast sales processing."
     >
       <div actions>
-        <button type="button" class="secondary">Suspend Sale</button>
-        <button type="button" class="primary">Complete Sale</button>
+        <button type="button" class="secondary" (click)="suspendCurrentSale()">Suspend Sale</button>
+        <button type="button" class="secondary" (click)="openAddProductModal()">Add Product</button>
+        <button type="button" class="primary" (click)="completeCurrentSale()">Complete Sale</button>
       </div>
     </app-page-header>
 
@@ -25,32 +31,33 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
             <div class="eyebrow">Overview</div>
             <h3>Search and add items</h3>
           </div>
-          <button type="button" class="ghost">Scan Barcode</button>
+          <button type="button" class="ghost" (click)="refreshCatalog()">Scan Barcode</button>
         </div>
 
         <div class="search-bar">
           <i class="pi pi-search"></i>
-          <span>Search by product, barcode, or department</span>
+          <input [(ngModel)]="searchTerm" (ngModelChange)="refreshCatalog()" type="search" placeholder="Search by product, barcode, or department" />
         </div>
 
         <div class="chip-row">
-          <button type="button" class="chip active">All</button>
-          <button type="button" class="chip">Fashion</button>
-          <button type="button" class="chip">Food Court</button>
-          <button type="button" class="chip">Electronics</button>
+          <button type="button" class="chip" [class.active]="departmentFilter === ''" (click)="setDepartmentFilter('')">All</button>
+          <button type="button" class="chip" [class.active]="departmentFilter === 'Fashion'" (click)="setDepartmentFilter('Fashion')">Fashion</button>
+          <button type="button" class="chip" [class.active]="departmentFilter === 'Food Court'" (click)="setDepartmentFilter('Food Court')">Food Court</button>
+          <button type="button" class="chip" [class.active]="departmentFilter === 'Electronics'" (click)="setDepartmentFilter('Electronics')">Electronics</button>
+          <button type="button" class="chip" [class.active]="departmentFilter === 'Beauty'" (click)="setDepartmentFilter('Beauty')">Beauty</button>
         </div>
 
         <div class="product-grid">
-          <button type="button" class="surface-panel product-tile interactive-card" *ngFor="let item of catalog">
+          <button type="button" class="surface-panel product-tile interactive-card" *ngFor="let item of catalog" (click)="addProductToCart(item)">
             <div class="tile-top">
-              <div class="tile-badge">{{ item.code }}</div>
-              <span class="badge" [ngClass]="item.status">{{ item.status }}</span>
+              <div class="tile-badge">{{ (item.sku || item._id) | slice : 0 : 4 }}</div>
+              <span class="badge" [ngClass]="item.status || stockStatus(item)">{{ item.status || stockStatus(item) }}</span>
             </div>
             <h4>{{ item.name }}</h4>
-            <p class="muted">{{ item.department }}</p>
+            <p class="muted">{{ item.department || "Unassigned" }}</p>
             <div class="tile-bottom">
-              <strong>{{ item.price }}</strong>
-              <span class="muted">{{ item.stock }} in stock</span>
+              <strong>{{ item.sellingPrice | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+              <span class="muted">{{ item.stockQuantity || 0 }} in stock</span>
             </div>
           </button>
         </div>
@@ -65,40 +72,99 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
           <span class="badge badge-default">Dine-in</span>
         </div>
 
+        <label class="field">
+          Customer
+          <input [(ngModel)]="customerName" (ngModelChange)="syncCustomerName()" type="text" placeholder="Walk-in customer" />
+        </label>
+
         <div class="checkout-card">
+          <div *ngIf="cart.length === 0" class="empty-cart">Your cart is empty. Add items from the catalog to begin checkout.</div>
           <div class="checkout-row" *ngFor="let line of cart">
             <div>
               <strong>{{ line.name }}</strong>
-              <p class="muted">{{ line.meta }}</p>
+              <p class="muted">{{ line.department }} · {{ line.barcode || "No barcode" }}</p>
             </div>
-            <div class="qty-pill">x{{ line.qty }}</div>
-            <strong>{{ line.total }}</strong>
+            <div class="qty-controls">
+              <button type="button" class="ghost qty-button" (click)="changeQty(line, -1)">-</button>
+              <div class="qty-pill">x{{ line.quantity }}</div>
+              <button type="button" class="ghost qty-button" (click)="changeQty(line, 1)">+</button>
+            </div>
+            <strong>{{ lineTotal(line) | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+            <button type="button" class="ghost qty-button" (click)="removeLine(line)" aria-label="Remove item">
+              <i class="pi pi-times"></i>
+            </button>
           </div>
         </div>
 
         <div class="totals-card">
           <div class="total-row">
             <span class="muted">Subtotal</span>
-            <strong>PKR 4,820</strong>
+            <strong>{{ subtotal | currency : "USD" : "symbol" : "1.0-0" }}</strong>
           </div>
           <div class="total-row">
             <span class="muted">Discount</span>
-            <strong>- PKR 220</strong>
+            <strong>- {{ discount | currency : "USD" : "symbol" : "1.0-0" }}</strong>
           </div>
           <div class="total-row grand-total">
             <span>Total due</span>
-            <strong>PKR 4,600</strong>
+            <strong>{{ grandTotal | currency : "USD" : "symbol" : "1.0-0" }}</strong>
           </div>
         </div>
 
         <div class="payment-grid">
-          <button type="button" class="secondary">Cash</button>
-          <button type="button" class="secondary">Card</button>
-          <button type="button" class="secondary">Wallet</button>
-          <button type="button" class="primary">Charge Customer</button>
+          <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'cash'" (click)="setPaymentMethod('cash')">Cash</button>
+          <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'card'" (click)="setPaymentMethod('card')">Card</button>
+          <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'wallet'" (click)="setPaymentMethod('wallet')">Wallet</button>
+          <button type="button" class="primary" (click)="chargeCustomer()">Charge Customer</button>
+        </div>
+
+        <div class="suspended-list" *ngIf="suspendedSales.length">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Suspended</div>
+              <h3>Saved sales</h3>
+            </div>
+          </div>
+
+          <button type="button" class="suspended-item" *ngFor="let sale of suspendedSales" (click)="resumeSale(sale.id)">
+            <div>
+              <strong>{{ sale.name }}</strong>
+              <p class="muted">{{ sale.items.length }} items · {{ sale.subtotal | currency : "USD" : "symbol" : "1.0-0" }}</p>
+            </div>
+            <span class="badge badge-default">Resume</span>
+          </button>
         </div>
       </aside>
     </section>
+
+    <div class="modal-backdrop" *ngIf="showAddModal" (click)="closeModal()">
+      <div class="modal-card surface-panel" (click)="$event.stopPropagation()">
+        <button type="button" class="ghost modal-close" (click)="closeModal()" aria-label="Close modal">
+          <i class="pi pi-times"></i>
+        </button>
+
+        <div class="form-panel">
+          <div class="form-head">
+            <h3>Add product to cart</h3>
+            <p class="muted">Search by name, barcode, or department and add the selected item directly to checkout.</p>
+          </div>
+
+          <input [(ngModel)]="modalSearch" (ngModelChange)="refreshModalResults()" type="search" placeholder="Search products" />
+
+          <div class="modal-results">
+            <button type="button" class="modal-result" *ngFor="let item of modalResults" (click)="addProductToCart(item)">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <p class="muted">{{ item.department }} · {{ item.barcode || "No barcode" }}</p>
+              </div>
+              <span class="badge" [ngClass]="item.status || stockStatus(item)">{{ item.status || stockStatus(item) }}</span>
+            </button>
+          </div>
+
+          <div *ngIf="modalResults.length === 0" class="empty-cart">No products matched the search.</div>
+        </div>
+      </div>
+    </div>
   `,
   styles: [
     `
@@ -132,6 +198,14 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         color: var(--text-secondary);
       }
 
+      .search-bar input {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        min-height: 0;
+      }
+
       .chip-row {
         display: flex;
         flex-wrap: wrap;
@@ -148,7 +222,8 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         box-shadow: var(--shadow-xs);
       }
 
-      .chip.active {
+      .chip.active,
+      .active-payment {
         background: color-mix(in srgb, var(--accent) 14%, var(--bg-panel) 86%);
         color: var(--accent);
         border-color: color-mix(in srgb, var(--accent) 24%, transparent);
@@ -206,7 +281,8 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         padding: 0.25rem 0;
       }
 
-      .checkout-row {
+      .checkout-row,
+      .suspended-item {
         padding: 0.85rem;
         border-radius: var(--radius-md);
         background: var(--bg-panel-muted);
@@ -214,6 +290,20 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
 
       .checkout-row p {
         margin: 0.2rem 0 0;
+      }
+
+      .qty-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .qty-button {
+        width: 34px;
+        min-width: 34px;
+        min-height: 34px;
+        padding: 0;
+        border-radius: 10px;
       }
 
       .totals-card {
@@ -240,6 +330,99 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         top: 1rem;
       }
 
+      .field {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .field input {
+        min-height: 42px;
+      }
+
+      .suspended-list {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .suspended-item {
+        width: 100%;
+        border: 1px solid transparent;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-card {
+        position: relative;
+        width: min(100%, 44rem);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2.25rem;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+        padding: 0;
+        border-radius: 999px;
+        display: inline-grid;
+        place-items: center;
+      }
+
+      .form-panel {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .modal-results {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .modal-result {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--bg-panel-muted);
+        border-radius: 14px;
+        padding: 0.9rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .modal-result p,
+      .empty-cart {
+        margin: 0.25rem 0 0;
+      }
+
+      .empty-cart {
+        color: var(--muted);
+      }
+
+      .badge {
+        white-space: nowrap;
+      }
+
       @media (max-width: 1100px) {
         .pos-shell {
           grid-template-columns: 1fr;
@@ -255,20 +438,154 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         .payment-grid {
           grid-template-columns: 1fr;
         }
+
+        .checkout-row {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
       }
     `
   ]
 })
-export class PosComponent {
-  readonly catalog = [
-    { code: "FD-18", name: "Burger Combo", department: "Food Court", price: "PKR 1,840", stock: 14, status: "healthy" },
-    { code: "FS-07", name: "Denim Jacket", department: "Fashion", price: "PKR 5,200", stock: 6, status: "low_stock" },
-    { code: "EL-22", name: "Wireless Earbuds", department: "Electronics", price: "PKR 9,900", stock: 2, status: "out_of_stock" },
-    { code: "AC-11", name: "Canvas Backpack", department: "Accessories", price: "PKR 3,250", stock: 11, status: "healthy" }
-  ];
+export class PosComponent implements OnInit {
+  private readonly mallData = inject(MallDataService);
+  private readonly router = inject(Router);
 
-  readonly cart = [
-    { name: "Burger Combo", meta: "Food Court · x1", qty: 1, total: "PKR 1,840" },
-    { name: "Classic Denim Jacket", meta: "Fashion · x1", qty: 1, total: "PKR 2,980" }
-  ];
+  catalog: Product[] = [];
+  cart: CartLine[] = [];
+  suspendedSales: PosState["suspendedSales"] = [];
+  paymentMethod: PosState["paymentMethod"] = "cash";
+  customerName = "Walk-in customer";
+  searchTerm = "";
+  departmentFilter = "";
+  modalSearch = "";
+  modalResults: Product[] = [];
+  showAddModal = false;
+  loading = false;
+
+  ngOnInit(): void {
+    this.refreshCatalog();
+    this.syncState();
+  }
+
+  get subtotal(): number {
+    return this.cart.reduce((sum, line) => sum + this.lineTotal(line), 0);
+  }
+
+  get discount(): number {
+    return Math.min(220, this.subtotal);
+  }
+
+  get grandTotal(): number {
+    return Math.max(0, this.subtotal - this.discount);
+  }
+
+  refreshCatalog(): void {
+    this.loading = true;
+    this.mallData.listPosProducts(this.searchTerm, this.departmentFilter).subscribe((items) => {
+      this.catalog = items;
+      this.loading = false;
+    });
+  }
+
+  setDepartmentFilter(filter: string): void {
+    this.departmentFilter = filter;
+    this.refreshCatalog();
+  }
+
+  addProductToCart(product: Product): void {
+    if ((product.stockQuantity ?? 0) <= 0) {
+      return;
+    }
+
+    this.mallData.addPosLine(product._id).pipe(finalize(() => this.syncState())).subscribe({
+      next: () => {
+        this.refreshCatalog();
+        this.closeModal();
+      }
+    });
+  }
+
+  changeQty(line: CartLine, delta: number): void {
+    this.mallData.updatePosLineQuantity(line.productId, line.quantity + delta).subscribe((state) => this.applyState(state));
+  }
+
+  removeLine(line: CartLine): void {
+    this.mallData.removePosLine(line.productId).subscribe((state) => this.applyState(state));
+  }
+
+  setPaymentMethod(method: PosState["paymentMethod"]): void {
+    this.mallData.setPaymentMethod(method).subscribe((state) => this.applyState(state));
+  }
+
+  syncCustomerName(): void {
+    this.mallData.setCustomerName(this.customerName).subscribe((state) => this.applyState(state));
+  }
+
+  suspendCurrentSale(): void {
+    this.mallData.suspendSale(this.customerName || "Suspended sale").subscribe((state) => this.applyState(state));
+  }
+
+  completeCurrentSale(): void {
+    this.mallData.completeSale({ paymentMethod: this.paymentMethod }).subscribe({
+      next: () => {
+        this.syncState();
+        void this.router.navigateByUrl("/sales");
+      }
+    });
+  }
+
+  chargeCustomer(): void {
+    this.completeCurrentSale();
+  }
+
+  resumeSale(id: string): void {
+    this.mallData.resumeSuspendedSale(id).subscribe((state) => this.applyState(state));
+  }
+
+  openAddProductModal(): void {
+    this.showAddModal = true;
+    this.modalSearch = "";
+    this.refreshModalResults();
+  }
+
+  refreshModalResults(): void {
+    this.mallData.listPosProducts(this.modalSearch, "").subscribe((items) => {
+      this.modalResults = items;
+    });
+  }
+
+  closeModal(): void {
+    this.showAddModal = false;
+  }
+
+  stockStatus(item: Product): string {
+    if ((item.stockQuantity ?? 0) <= 0) {
+      return "out_of_stock";
+    }
+    if ((item.stockQuantity ?? 0) <= (item.reorderLevel ?? 0)) {
+      return "low_stock";
+    }
+    return "healthy";
+  }
+
+  lineTotal(line: CartLine): number {
+    return line.quantity * line.unitPrice;
+  }
+
+  refreshCatalogAndState(): void {
+    this.refreshCatalog();
+    this.syncState();
+  }
+
+  private syncState(): void {
+    this.mallData.getPosState().subscribe((state) => this.applyState(state));
+  }
+
+  private applyState(state: PosState): void {
+    this.cart = state.cart;
+    this.paymentMethod = state.paymentMethod;
+    this.customerName = state.customerName;
+    this.suspendedSales = state.suspendedSales;
+  }
 }

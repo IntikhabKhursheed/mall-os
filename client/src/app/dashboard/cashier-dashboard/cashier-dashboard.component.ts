@@ -66,10 +66,10 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
             </div>
           </div>
 
-          <div class="search-shell">
+          <button type="button" class="search-shell" (click)="goToPos()">
             <i class="pi pi-search"></i>
             <span>Search by product name or barcode</span>
-          </div>
+          </button>
 
           <div class="search-results">
             <div class="result-row" *ngFor="let item of quickProducts">
@@ -97,11 +97,6 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
       .search-results {
         display: grid;
         gap: 0.95rem;
-      }
-
-      .start-sale {
-        min-height: 60px;
-        font-size: 1.05rem;
       }
 
       .stats-row {
@@ -158,6 +153,7 @@ import { PageHeaderComponent } from "../../shared/page-header/page-header.compon
         align-items: center;
         gap: 0.7rem;
         color: var(--text-secondary);
+        cursor: pointer;
       }
 
       .result-row {

@@ -1,16 +1,19 @@
-import { CommonModule, NgFor } from "@angular/common";
-import { Component, inject } from "@angular/core";
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { CommonModule, NgFor, NgIf } from "@angular/common";
+import { Component, HostListener, inject, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { filter } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
+import { MallDataService, NotificationItem } from "../../core/services/mall-data.service";
 
 type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
 
 @Component({
   selector: "app-dashboard-layout",
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NgFor],
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive, NgFor, NgIf],
   template: `
-    <div class="dashboard-shell">
+    <div class="dashboard-shell" [class.sidebar-open]="sidebarOpen">
       <aside class="sidebar">
         <div class="sidebar-inner">
           <div class="sidebar-head">
@@ -27,7 +30,12 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
             <section class="nav-group" *ngFor="let group of groups">
               <div class="nav-label">{{ group }}</div>
               <div class="nav-items">
-                <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
+                <a
+                  *ngFor="let item of visibleByGroup(group)"
+                  [routerLink]="item.link"
+                  routerLinkActive="active"
+                  (click)="handleNavClick()"
+                >
                   <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
                     <i [class]="item.icon"></i>
                   </span>
@@ -55,43 +63,97 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       <main class="workspace">
         <header class="topbar">
           <div class="topbar-copy">
-            <div class="muted breadcrumb">{{ activeGroup }}</div>
+            <div class="topbar-left">
+              <button type="button" class="icon-button ghost menu-toggle" (click)="toggleSidebar()" aria-label="Toggle navigation">
+                <i class="pi pi-bars"></i>
+              </button>
+              <div>
+                <div class="muted breadcrumb">{{ activeGroup }}</div>
+                <div class="topbar-title">{{ currentRouteLabel }}</div>
+              </div>
+            </div>
           </div>
 
           <div class="topbar-search">
             <div class="search-shell">
               <i class="pi pi-search"></i>
-              <span>Search...</span>
-              <kbd>Ctrl+K</kbd>
+              <input
+                [(ngModel)]="globalSearch"
+                (input)="updateSearchMatches()"
+                (keydown.enter)="openFirstMatch()"
+                type="search"
+                placeholder="Search dashboards, products, employees..."
+                aria-label="Search navigation"
+              />
+              <kbd>Enter</kbd>
             </div>
+
+            <div class="search-results" *ngIf="globalSearch.trim() && searchMatches.length">
+              <button type="button" class="search-result" *ngFor="let item of searchMatches" (click)="goTo(item.link)">
+                <i [class]="item.icon"></i>
+                <span>{{ item.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
             <span class="status-pill">
               <span class="status-dot"></span>
               Opened
               <i class="pi pi-chevron-down"></i>
             </span>
-          </div>
 
-          <div class="topbar-actions">
+            <button type="button" class="icon-button ghost notification-button" (click)="toggleNotifications($event)" aria-label="Notifications">
+              <i class="pi pi-bell"></i>
+              <span class="notification-dot" *ngIf="notifications.length"></span>
+            </button>
+
             <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
               <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
-            </button>
-            <button type="button" class="icon-button ghost notification-button" aria-label="Notifications">
-              <i class="pi pi-bell"></i>
-              <span class="notification-dot"></span>
             </button>
           </div>
         </header>
 
-        <div class="content-scroll">
+        <div class="dropdown-panel notifications-panel" *ngIf="showNotifications" (click)="$event.stopPropagation()">
+          <div class="dropdown-head">
+            <strong>Notifications</strong>
+            <button type="button" class="ghost clear-action" (click)="clearAllNotifications()">Clear all</button>
+          </div>
+
+          <div class="dropdown-list" *ngIf="notifications.length; else emptyNotifications">
+            <article class="notification-item" *ngFor="let note of notifications">
+              <div class="notification-tone" [ngClass]="note.tone"></div>
+              <div class="notification-copy">
+                <strong>{{ note.title }}</strong>
+                <p>{{ note.detail }}</p>
+                <span>{{ note.time }}</span>
+              </div>
+              <button type="button" class="ghost dismiss-button" (click)="dismissNotification(note.id)" aria-label="Dismiss notification">
+                <i class="pi pi-times"></i>
+              </button>
+            </article>
+          </div>
+          <ng-template #emptyNotifications>
+            <div class="empty-notice">No notifications left.</div>
+          </ng-template>
+        </div>
+
+        <div class="content-scroll" (click)="closePanels()">
           <section class="content">
             <router-outlet />
           </section>
         </div>
       </main>
+
+      <div class="mobile-backdrop" *ngIf="sidebarOpen && isMobile" (click)="sidebarOpen = false"></div>
     </div>
   `,
   styles: [
     `
+      :host {
+        display: block;
+      }
+
       .dashboard-shell {
         min-height: 100vh;
         display: flex;
@@ -112,6 +174,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         z-index: 1001;
         -ms-overflow-style: none;
         scrollbar-width: none;
+        transition: transform 220ms ease;
       }
 
       .sidebar::-webkit-scrollbar {
@@ -132,7 +195,8 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .brand-shell,
-      .profile-row {
+      .profile-row,
+      .topbar-left {
         display: flex;
         align-items: center;
         gap: 0.85rem;
@@ -151,9 +215,14 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .brand-title,
-      .profile-name {
+      .profile-name,
+      .topbar-title {
         font-weight: 700;
         color: var(--heading);
+      }
+
+      .topbar-title {
+        font-size: 0.95rem;
       }
 
       .nav {
@@ -268,12 +337,14 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         text-transform: capitalize;
       }
 
-      .logout-icon {
-        width: 38px;
-        min-width: 38px;
-        min-height: 38px;
+      .logout-icon,
+      .menu-toggle,
+      .icon-button {
+        width: 42px;
+        min-width: 42px;
+        min-height: 42px;
         padding: 0;
-        border-radius: 10px;
+        border-radius: 12px;
         display: inline-grid;
         place-items: center;
       }
@@ -303,7 +374,6 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         height: 68px;
         border-radius: 0;
         background-color: var(--bg-panel);
-        background: var(--bg-panel);
         border-bottom: 1px solid var(--border);
         box-shadow: none;
       }
@@ -319,11 +389,12 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         gap: 0.75rem;
         flex: 1;
         justify-content: center;
+        position: relative;
       }
 
       .search-shell {
         min-height: 44px;
-        width: min(100%, 320px);
+        width: min(100%, 360px);
         padding: 0 1rem;
         border-radius: 14px;
         border: 1px solid var(--border);
@@ -335,6 +406,19 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         box-shadow: var(--shadow-xs);
       }
 
+      .search-shell input {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        min-height: 42px;
+        padding: 0;
+      }
+
+      .search-shell input:focus {
+        box-shadow: none;
+        transform: none;
+      }
+
       .search-shell kbd {
         margin-left: auto;
         padding: 0.18rem 0.45rem;
@@ -343,6 +427,46 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         background: var(--bg-panel-muted);
         color: var(--muted);
         font-size: 0.75rem;
+      }
+
+      .search-results,
+      .dropdown-panel {
+        position: absolute;
+        z-index: 1100;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .search-results {
+        top: calc(100% + 8px);
+        width: min(360px, 100%);
+        overflow: hidden;
+      }
+
+      .search-result {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.75rem 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        justify-content: flex-start;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .search-result:hover {
+        background: var(--bg-panel-muted);
+      }
+
+      .topbar-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
       }
 
       .status-pill {
@@ -365,21 +489,6 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         background: var(--success);
       }
 
-      .topbar-actions {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-      }
-
-      .icon-button {
-        width: 42px;
-        min-height: 42px;
-        padding: 0;
-        border-radius: 12px;
-        display: inline-grid;
-        place-items: center;
-      }
-
       .notification-button {
         position: relative;
       }
@@ -394,6 +503,80 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         background: var(--danger);
       }
 
+      .notifications-panel {
+        top: 68px;
+        right: 1rem;
+        width: min(100%, 380px);
+        padding: 0.95rem;
+      }
+
+      .dropdown-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .dropdown-list {
+        display: grid;
+        gap: 0.75rem;
+        padding-top: 0.85rem;
+      }
+
+      .notification-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.75rem;
+        align-items: start;
+        padding: 0.8rem;
+        border-radius: 14px;
+        background: var(--bg-panel-muted);
+      }
+
+      .notification-tone {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 999px;
+        margin-top: 0.35rem;
+      }
+
+      .notification-tone.info {
+        background: #3b82f6;
+      }
+
+      .notification-tone.success {
+        background: #22c55e;
+      }
+
+      .notification-tone.warning {
+        background: #f59e0b;
+      }
+
+      .notification-tone.danger {
+        background: #ef4444;
+      }
+
+      .notification-copy p,
+      .notification-copy span {
+        margin: 0.2rem 0 0;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .dismiss-button,
+      .clear-action {
+        min-width: auto;
+        min-height: auto;
+        padding: 0.35rem 0.55rem;
+      }
+
+      .empty-notice {
+        padding: 1rem 0.2rem 0.25rem;
+        color: var(--muted);
+      }
+
       .content-scroll {
         padding: 24px;
       }
@@ -402,23 +585,28 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         padding-bottom: 0.75rem;
       }
 
+      .mobile-backdrop {
+        display: none;
+      }
+
       @media (max-width: 980px) {
         .sidebar {
-          top: 0;
-          width: 300px;
-          height: 100vh;
+          transform: translateX(-102%);
         }
 
-        .topbar {
-          left: 300px;
-          right: 0;
-          border-radius: 0;
+        .dashboard-shell.sidebar-open .sidebar {
+          transform: translateX(0);
         }
 
         .workspace {
-          margin-left: 300px;
+          margin-left: 0;
           padding-top: 68px;
           height: calc(100vh - 68px);
+        }
+
+        .topbar {
+          left: 0;
+          right: 0;
         }
 
         .topbar-search {
@@ -428,20 +616,58 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         }
 
         .content-scroll {
-          padding: 24px;
+          padding: 18px;
+        }
+
+        .mobile-backdrop {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background: rgba(2, 6, 23, 0.42);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .topbar {
+          gap: 0.65rem;
+          padding: 0 0.75rem;
+        }
+
+        .search-shell {
+          width: 100%;
+        }
+
+        .status-pill {
+          display: none;
+        }
+
+        .notifications-panel {
+          left: 0.75rem;
+          right: 0.75rem;
+          width: auto;
         }
       }
     `
   ]
 })
-export class DashboardLayoutComponent {
+export class DashboardLayoutComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly mallData = inject(MallDataService);
   private readonly router = inject(Router);
   private readonly currentRoleValue = this.authService.getCurrentUser()?.role ?? "admin";
+
   readonly groups: NavGroup[] = ["Overview", "Operations", "Analytics", "System"];
 
   currentUserName = this.authService.getCurrentUser()?.name ?? "Guest";
   theme: "light" | "dark" = "light";
+  sidebarOpen = true;
+  isMobile = window.innerWidth <= 980;
+  showNotifications = false;
+  globalSearch = "";
+  notifications: NotificationItem[] = [];
+  searchMatches: Array<{ label: string; link: string; icon: string }> = [];
+  currentRouteLabel = "Dashboard";
 
   navItems = [
     { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar", iconBg: "#14b8a620", iconColor: "#14b8a6", roles: ["admin"], group: "Overview" as NavGroup },
@@ -460,6 +686,31 @@ export class DashboardLayoutComponent {
 
   constructor() {
     this.applyTheme((localStorage.getItem("mallos_theme") as "light" | "dark" | null) ?? "light");
+  }
+
+  ngOnInit(): void {
+    this.loadNotifications();
+    this.updateSearchMatches();
+    this.syncRouteLabel(this.router.url);
+
+    this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event) => {
+      this.syncRouteLabel(event.urlAfterRedirects);
+      if (this.isMobile) {
+        this.sidebarOpen = false;
+      }
+      this.showNotifications = false;
+    });
+  }
+
+  @HostListener("window:resize")
+  onResize(): void {
+    this.isMobile = window.innerWidth <= 980;
+    this.sidebarOpen = !this.isMobile;
+  }
+
+  @HostListener("document:click")
+  closePanels(): void {
+    this.showNotifications = false;
   }
 
   get currentRole(): string {
@@ -487,8 +738,61 @@ export class DashboardLayoutComponent {
     return this.navItems.filter((item) => item.group === group && item.roles.includes(this.currentRoleValue));
   }
 
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  handleNavClick(): void {
+    if (this.isMobile) {
+      this.sidebarOpen = false;
+    }
+  }
+
   toggleTheme(): void {
     this.applyTheme(this.theme === "light" ? "dark" : "light");
+  }
+
+  toggleNotifications(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showNotifications = !this.showNotifications;
+  }
+
+  loadNotifications(): void {
+    this.mallData.getNotifications().subscribe((items) => (this.notifications = items));
+  }
+
+  dismissNotification(id: string): void {
+    this.mallData.dismissNotification(id).subscribe((items) => {
+      this.notifications = items;
+    });
+  }
+
+  clearAllNotifications(): void {
+    const ids = this.notifications.map((note) => note.id);
+    ids.forEach((id) => this.mallData.dismissNotification(id).subscribe());
+    this.notifications = [];
+  }
+
+  updateSearchMatches(): void {
+    const query = this.globalSearch.trim().toLowerCase();
+    this.searchMatches = !query
+      ? []
+      : this.navItems
+          .filter((item) => item.roles.includes(this.currentRoleValue) && item.label.toLowerCase().includes(query))
+          .slice(0, 5);
+  }
+
+  openFirstMatch(): void {
+    if (this.searchMatches.length) {
+      this.goTo(this.searchMatches[0].link);
+    }
+  }
+
+  goTo(link: string): void {
+    void this.router.navigateByUrl(link);
+    this.globalSearch = "";
+    this.searchMatches = [];
+    this.showNotifications = false;
   }
 
   logout(): void {
@@ -496,9 +800,15 @@ export class DashboardLayoutComponent {
     void this.router.navigateByUrl("/login");
   }
 
+  private syncRouteLabel(url: string): void {
+    const match = this.navItems.find((item) => url.startsWith(item.link));
+    this.currentRouteLabel = match?.label ?? "Dashboard";
+  }
+
   private applyTheme(theme: "light" | "dark"): void {
     this.theme = theme;
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("mallos_theme", theme);
+    this.mallData.updateSettings({ theme }).subscribe();
   }
 }
