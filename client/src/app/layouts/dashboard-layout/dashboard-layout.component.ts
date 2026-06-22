@@ -11,221 +11,101 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NgFor],
   template: `
     <div class="dashboard-shell">
-      <div class="app-frame surface-panel">
-        <header class="chrome-bar">
-          <div class="chrome-dots">
-            <span class="chrome-dot red"></span>
-            <span class="chrome-dot yellow"></span>
-            <span class="chrome-dot green"></span>
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <div class="sidebar-head">
+            <div class="brand-shell">
+              <div class="brand-mark">M</div>
+              <div class="brand-copy">
+                <div class="brand-title">MallOS</div>
+                <div class="muted brand-subtitle">Grand Central Mall</div>
+              </div>
+            </div>
           </div>
 
-          <div class="chrome-nav">
-            <button type="button" class="chrome-button" aria-label="Back"><i class="pi pi-angle-left"></i></button>
-            <button type="button" class="chrome-button" aria-label="Forward"><i class="pi pi-angle-right"></i></button>
+          <nav class="nav">
+            <section class="nav-group" *ngFor="let group of groups">
+              <div class="nav-label">{{ group }}</div>
+              <div class="nav-items">
+                <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
+                  <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
+                    <i [class]="item.icon"></i>
+                  </span>
+                  <span>{{ item.label }}</span>
+                </a>
+              </div>
+            </section>
+          </nav>
+
+          <div class="sidebar-footer">
+            <div class="profile-row">
+              <div class="avatar">{{ userInitials }}</div>
+              <div class="profile-copy">
+                <div class="profile-name">{{ currentUserName }}</div>
+                <div class="role-badge">{{ currentRole }}</div>
+              </div>
+              <button type="button" class="ghost logout-icon" (click)="logout()" aria-label="Logout">
+                <i class="pi pi-sign-out"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="surface-panel topbar">
+          <div class="topbar-copy">
+            <div class="muted breadcrumb">{{ activeGroup }}</div>
           </div>
 
-          <div class="chrome-url">
-            <i class="pi pi-lock"></i>
-            <span>dashboard.mallos.local</span>
+          <div class="topbar-search">
+            <div class="search-shell">
+              <i class="pi pi-search"></i>
+              <span>Search...</span>
+              <kbd>Ctrl+K</kbd>
+            </div>
+            <span class="status-pill">
+              <span class="status-dot"></span>
+              Opened
+              <i class="pi pi-chevron-down"></i>
+            </span>
           </div>
 
-          <button type="button" class="chrome-button refresh" aria-label="Refresh"><i class="pi pi-refresh"></i></button>
+          <div class="topbar-actions">
+            <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
+              <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
+            </button>
+            <button type="button" class="icon-button ghost notification-button" aria-label="Notifications">
+              <i class="pi pi-bell"></i>
+              <span class="notification-dot"></span>
+            </button>
+          </div>
         </header>
 
-        <div class="workspace-shell">
-          <aside class="sidebar surface-panel">
-            <div class="sidebar-inner">
-              <div class="sidebar-head">
-                <div class="brand-shell">
-                  <div class="brand-mark">M</div>
-                  <div class="brand-copy">
-                    <div class="brand-title">MallOS</div>
-                    <div class="muted brand-subtitle">Grand Central Mall</div>
-                  </div>
-                </div>
-              </div>
-
-              <nav class="nav">
-                <section class="nav-group" *ngFor="let group of groups">
-                  <div class="nav-label">{{ group }}</div>
-                  <div class="nav-items">
-                    <a *ngFor="let item of visibleByGroup(group)" [routerLink]="item.link" routerLinkActive="active">
-                      <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
-                        <i [class]="item.icon"></i>
-                      </span>
-                      <span>{{ item.label }}</span>
-                    </a>
-                  </div>
-                </section>
-              </nav>
-
-              <div class="sidebar-footer">
-                <div class="profile-row">
-                  <div class="avatar">{{ userInitials }}</div>
-                  <div class="profile-copy">
-                    <div class="profile-name">{{ currentUserName }}</div>
-                    <div class="role-badge">{{ currentRole }}</div>
-                  </div>
-                  <button type="button" class="ghost logout-icon" (click)="logout()" aria-label="Logout">
-                    <i class="pi pi-sign-out"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          <main class="workspace">
-            <header class="surface-panel topbar">
-              <div class="topbar-copy">
-                <div class="muted breadcrumb">{{ activeGroup }}</div>
-              </div>
-
-              <div class="topbar-search">
-                <div class="search-shell">
-                  <i class="pi pi-search"></i>
-                  <span>Search...</span>
-                  <kbd>⌘K</kbd>
-                </div>
-                <span class="status-pill">
-                  <span class="status-dot"></span>
-                  Opened
-                  <i class="pi pi-chevron-down"></i>
-                </span>
-              </div>
-
-              <div class="topbar-actions">
-                <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
-                  <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
-                </button>
-                <button type="button" class="icon-button ghost notification-button" aria-label="Notifications">
-                  <i class="pi pi-bell"></i>
-                  <span class="notification-dot"></span>
-                </button>
-              </div>
-            </header>
-
-            <div class="content-scroll">
-              <section class="content">
-                <router-outlet />
-              </section>
-            </div>
-          </main>
+        <div class="content-scroll">
+          <section class="content">
+            <router-outlet />
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   `,
   styles: [
     `
       .dashboard-shell {
         min-height: 100vh;
-        padding: 18px;
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
         background: var(--bg-app);
       }
 
-      .app-frame {
-        min-height: calc(100vh - 36px);
-        border-radius: 32px;
-        overflow: hidden;
-        background: color-mix(in srgb, var(--bg-panel) 94%, var(--bg-page) 6%);
-        box-shadow: var(--shadow-xl);
-      }
-
-      .chrome-bar {
-        height: 64px;
-        padding: 0 1rem;
-        display: grid;
-        grid-template-columns: auto auto 1fr auto;
-        align-items: center;
-        gap: 1rem;
-        border-bottom: 1px solid var(--border);
-        background: color-mix(in srgb, var(--bg-panel) 96%, var(--bg-page) 4%);
-      }
-
-      .chrome-dots {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .chrome-dot {
-        width: 0.9rem;
-        height: 0.9rem;
-        border-radius: 999px;
-      }
-
-      .chrome-dot.red {
-        background: #fb7185;
-      }
-
-      .chrome-dot.yellow {
-        background: #fbbf24;
-      }
-
-      .chrome-dot.green {
-        background: #4ade80;
-      }
-
-      .chrome-nav {
-        display: flex;
-        gap: 0.45rem;
-      }
-
-      .chrome-button {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: var(--bg-panel);
-        color: var(--text-secondary);
-        display: inline-grid;
-        place-items: center;
-      }
-
-      .chrome-url {
-        min-height: 40px;
-        padding: 0.55rem 1rem;
-        border-radius: 999px;
-        background: var(--bg-panel-muted);
-        border: 1px solid var(--border);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.55rem;
-        color: var(--text-secondary);
-        max-width: 760px;
-        justify-self: center;
-      }
-
-      .chrome-url span {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .workspace-shell {
-        min-height: calc(100vh - 100px);
-        display: grid;
-        grid-template-columns: 300px minmax(0, 1fr);
-      }
-
       .sidebar {
-        position: fixed;
-        top: 82px;
-        left: 0;
-        width: 300px;
-        height: calc(100vh - 100px);
-        z-index: 50;
-        margin-left: 18px;
-        border-radius: 28px;
+        min-height: 100vh;
         overflow-y: auto;
         background: linear-gradient(180deg, color-mix(in srgb, var(--bg-sidebar) 96%, white 4%), var(--bg-sidebar));
         box-shadow: var(--shadow-lg);
         -ms-overflow-style: none;
         scrollbar-width: none;
-      }
-
-      .sidebar::before {
-        height: 0;
       }
 
       .sidebar::-webkit-scrollbar {
@@ -393,17 +273,13 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       }
 
       .workspace {
-        grid-column: 2;
         min-width: 0;
-        height: calc(100vh - 100px);
+        min-height: 100vh;
         background: var(--bg-app);
         display: grid;
         grid-template-rows: auto 1fr;
         gap: 0.75rem;
-        min-height: 0;
-        margin-right: 18px;
-        margin-top: 18px;
-        border-radius: 28px;
+        overflow: hidden;
       }
 
       .topbar {
@@ -517,47 +393,20 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
 
       @media (max-width: 980px) {
         .dashboard-shell {
-          padding: 0;
-        }
-
-        .app-frame {
-          min-height: 100vh;
-          border-radius: 0;
-        }
-
-        .chrome-bar {
-          grid-template-columns: auto 1fr auto;
-          height: auto;
-          padding: 0.75rem 1rem;
-        }
-
-        .chrome-nav,
-        .chrome-url {
-          display: none;
-        }
-
-        .workspace-shell {
           grid-template-columns: 1fr;
         }
 
         .sidebar {
-          position: static;
-          width: auto;
-          height: auto;
-          margin: 0 1rem;
-          border-radius: var(--radius-xl);
+          min-height: auto;
         }
 
         .workspace {
-          grid-column: auto;
-          margin: 0;
-          height: auto;
+          min-height: auto;
           gap: 0.75rem;
         }
 
         .topbar {
           position: static;
-          margin: 1rem 1rem 0;
           flex-wrap: wrap;
         }
 
