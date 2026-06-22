@@ -107,7 +107,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         width: 300px;
         height: 100vh;
         overflow-y: auto;
-        background: #ffffff;
+        background: var(--bg-panel);
         box-shadow: var(--shadow-lg);
         z-index: 1001;
         -ms-overflow-style: none;
@@ -173,7 +173,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
 
       .nav-label {
         padding: 0 1rem;
-        color: #4b5563;
+        color: var(--muted);
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 0.12em;
@@ -302,7 +302,8 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         gap: 1rem;
         height: 68px;
         border-radius: 0;
-        background-color: #ffffff;
+        background-color: var(--bg-panel);
+        background: var(--bg-panel);
         border-bottom: 1px solid var(--border);
         box-shadow: none;
       }
