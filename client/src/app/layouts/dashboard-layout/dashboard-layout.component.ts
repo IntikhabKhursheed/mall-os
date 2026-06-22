@@ -95,22 +95,21 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .dashboard-shell {
         min-height: 100vh;
         display: flex;
-        margin-top: 60px;
-        height: calc(100vh - 60px);
+        margin-top: 68px;
+        height: calc(100vh - 68px);
         background: var(--bg-app);
       }
 
       .sidebar {
         position: fixed;
-        top: 60px;
+        top: 0;
         left: 0;
-        width: 220px;
-        min-height: 100vh;
-        height: calc(100vh - 60px);
+        width: 300px;
+        height: 100vh;
         overflow-y: auto;
         background: #ffffff;
         box-shadow: var(--shadow-lg);
-        z-index: 999;
+        z-index: 1001;
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
@@ -282,9 +281,9 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .workspace {
         min-width: 0;
         flex: 1;
-        margin-left: 220px;
-        padding-top: 60px;
-        height: calc(100vh - 60px);
+        margin-left: 300px;
+        padding-top: 68px;
+        height: calc(100vh - 68px);
         background: var(--bg-app);
         overflow-y: auto;
       }
@@ -292,7 +291,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
       .topbar {
         position: fixed;
         top: 0;
-        left: 0;
+        left: 300px;
         right: 0;
         z-index: 1000;
         margin: 0;
@@ -301,7 +300,7 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        height: 60px;
+        height: 68px;
         border-radius: 0;
         background-color: #ffffff;
         border-bottom: 1px solid var(--border);
@@ -404,21 +403,21 @@ type NavGroup = "Overview" | "Operations" | "Analytics" | "System";
 
       @media (max-width: 980px) {
         .sidebar {
-          top: 60px;
-          width: 220px;
-          height: calc(100vh - 60px);
+          top: 0;
+          width: 300px;
+          height: 100vh;
         }
 
         .topbar {
-          left: 0;
+          left: 300px;
           right: 0;
           border-radius: 0;
         }
 
         .workspace {
-          margin-left: 220px;
-          padding-top: 60px;
-          height: calc(100vh - 60px);
+          margin-left: 300px;
+          padding-top: 68px;
+          height: calc(100vh - 68px);
         }
 
         .topbar-search {
