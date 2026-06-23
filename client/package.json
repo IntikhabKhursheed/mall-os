@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "ng": "ng",
+    "predev": "node scripts/write-runtime-env.mjs",
     "dev": "ng serve --port 4200",
+    "prestart": "node scripts/write-runtime-env.mjs",
     "start": "ng serve --port 4200",
+    "prebuild": "node scripts/write-runtime-env.mjs",
     "build": "ng build"
   },
   "dependencies": {

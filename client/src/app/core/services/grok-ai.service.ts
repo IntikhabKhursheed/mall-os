@@ -55,7 +55,11 @@ export class GrokAIService {
   }
 
   getApiKey(): string {
-    return localStorage.getItem(this.apiKeyStorageKey) ?? "";
+    return localStorage.getItem(this.apiKeyStorageKey) ?? window.__MALLOS_ENV?.XAI_API_KEY ?? "";
+  }
+
+  hasRuntimeApiKey(): boolean {
+    return Boolean(window.__MALLOS_ENV?.XAI_API_KEY?.trim());
   }
 
   fetchInsights(payload: GrokInsightPayload = {}): Observable<GrokInsightResponse> {
