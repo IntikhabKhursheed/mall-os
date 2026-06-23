@@ -678,6 +678,15 @@ export class MallDataService {
     return this.respond([...this.state.notifications]);
   }
 
+  pushNotification(notification: Omit<NotificationItem, "id">): Observable<NotificationItem[]> {
+    this.state.notifications.unshift({
+      id: this.nextId("notification"),
+      ...notification
+    });
+    this.persist();
+    return this.getNotifications();
+  }
+
   dismissNotification(id: string): Observable<NotificationItem[]> {
     this.state.notifications = this.state.notifications.filter((item) => item.id !== id);
     this.persist();
