@@ -44,17 +44,17 @@ const users = [
 ];
 
 const departments = [
-  { name: "Fashion", category: "Retail", manager: "Manager User", status: "active" },
-  { name: "Food Court", category: "Food & Beverage", manager: "Food Court Manager", status: "active" },
-  { name: "Electronics", category: "Retail", manager: "Electronics Manager", status: "active" },
-  { name: "Beauty", category: "Retail", manager: "Beauty Manager", status: "active" },
-  { name: "Sports", category: "Retail", manager: "Sports Manager", status: "active" },
-  { name: "Home & Living", category: "Retail", manager: "Home Manager", status: "active" }
+  { name: "Fashion", managerId: "Manager User", status: "active" },
+  { name: "Food Court", managerId: "Food Court Manager", status: "active" },
+  { name: "Electronics", managerId: "Electronics Manager", status: "active" },
+  { name: "Beauty", managerId: "Beauty Manager", status: "active" },
+  { name: "Sports", managerId: "Sports Manager", status: "active" },
+  { name: "Home & Living", managerId: "Home Manager", status: "active" }
 ];
 
 const employees = [
   {
-    fullName: "Ayesha Khan",
+    name: "Ayesha Khan",
     email: "ayesha.khan@mallos.com",
     phone: "0300-1111111",
     role: "Sales Associate",
@@ -64,7 +64,7 @@ const employees = [
     lastActive: createDateDaysAgo(0, 14)
   },
   {
-    fullName: "Hassan Ali",
+    name: "Hassan Ali",
     email: "hassan.ali@mallos.com",
     phone: "0300-2222222",
     role: "Cashier",
@@ -74,7 +74,7 @@ const employees = [
     lastActive: createDateDaysAgo(0, 15)
   },
   {
-    fullName: "Sara Ahmed",
+    name: "Sara Ahmed",
     email: "sara.ahmed@mallos.com",
     phone: "0300-3333333",
     role: "Inventory Officer",
@@ -84,7 +84,7 @@ const employees = [
     lastActive: createDateDaysAgo(1, 16)
   },
   {
-    fullName: "Usman Raza",
+    name: "Usman Raza",
     email: "usman.raza@mallos.com",
     phone: "0300-4444444",
     role: "Beauty Advisor",
@@ -94,7 +94,7 @@ const employees = [
     lastActive: createDateDaysAgo(1, 17)
   },
   {
-    fullName: "Nida Tariq",
+    name: "Nida Tariq",
     email: "nida.tariq@mallos.com",
     phone: "0300-5555555",
     role: "Floor Supervisor",
@@ -104,7 +104,7 @@ const employees = [
     lastActive: createDateDaysAgo(2, 15)
   },
   {
-    fullName: "Bilal Hussain",
+    name: "Bilal Hussain",
     email: "bilal.hussain@mallos.com",
     phone: "0300-6666666",
     role: "Store Assistant",
@@ -120,274 +120,229 @@ const products = [
     name: "Classic Denim Jacket",
     sku: "FASH-001",
     barcode: "100000000001",
-    category: "Apparel",
     department: "Fashion",
-    sellingPrice: 8999,
-    costPrice: 5500,
-    stockQuantity: 24,
+    price: 8999,
+    stock: 24,
     reorderLevel: 8,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Cotton T-Shirt",
     sku: "FASH-002",
     barcode: "100000000002",
-    category: "Apparel",
     department: "Fashion",
-    sellingPrice: 1499,
-    costPrice: 700,
-    stockQuantity: 60,
+    price: 1499,
+    stock: 60,
     reorderLevel: 20,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Backpack",
     sku: "FASH-003",
     barcode: "100000000003",
-    category: "Accessories",
     department: "Fashion",
-    sellingPrice: 3499,
-    costPrice: 1900,
-    stockQuantity: 12,
+    price: 3499,
+    stock: 12,
     reorderLevel: 10,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Wireless Earbuds",
     sku: "ELEC-001",
     barcode: "200000000001",
-    category: "Audio",
     department: "Electronics",
-    sellingPrice: 6999,
-    costPrice: 4200,
-    stockQuantity: 18,
+    price: 6999,
+    stock: 18,
     reorderLevel: 7,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Smartphone Charger",
     sku: "ELEC-002",
     barcode: "200000000002",
-    category: "Accessories",
     department: "Electronics",
-    sellingPrice: 1299,
-    costPrice: 700,
-    stockQuantity: 50,
+    price: 1299,
+    stock: 50,
     reorderLevel: 15,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Smart Watch",
     sku: "ELEC-003",
     barcode: "200000000003",
-    category: "Wearables",
     department: "Electronics",
-    sellingPrice: 12999,
-    costPrice: 8600,
-    stockQuantity: 6,
+    price: 12999,
+    stock: 6,
     reorderLevel: 8,
     status: "low_stock",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Burger Combo",
     sku: "FOOD-001",
     barcode: "300000000001",
-    category: "Meals",
     department: "Food Court",
-    sellingPrice: 1499,
-    costPrice: 800,
-    stockQuantity: 45,
+    price: 1499,
+    stock: 45,
     reorderLevel: 12,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Pizza Combo Meal",
     sku: "FOOD-002",
     barcode: "300000000002",
-    category: "Meals",
     department: "Food Court",
-    sellingPrice: 2499,
-    costPrice: 1400,
-    stockQuantity: 28,
+    price: 2499,
+    stock: 28,
     reorderLevel: 10,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Coffee Maker",
     sku: "HOME-001",
     barcode: "400000000001",
-    category: "Appliances",
     department: "Home & Living",
-    sellingPrice: 8999,
-    costPrice: 6100,
-    stockQuantity: 9,
+    price: 8999,
+    stock: 9,
     reorderLevel: 6,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Home Decor Lamp",
     sku: "HOME-002",
     barcode: "400000000002",
-    category: "Decor",
     department: "Home & Living",
-    sellingPrice: 2799,
-    costPrice: 1600,
-    stockQuantity: 0,
+    price: 2799,
+    stock: 0,
     reorderLevel: 5,
     status: "out_of_stock",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Face Serum",
     sku: "BEAU-001",
     barcode: "500000000001",
-    category: "Skincare",
     department: "Beauty",
-    sellingPrice: 2199,
-    costPrice: 1200,
-    stockQuantity: 32,
+    price: 2199,
+    stock: 32,
     reorderLevel: 10,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Perfume Bottle",
     sku: "BEAU-002",
     barcode: "500000000002",
-    category: "Fragrance",
     department: "Beauty",
-    sellingPrice: 4999,
-    costPrice: 3000,
-    stockQuantity: 7,
+    price: 4999,
+    stock: 7,
     reorderLevel: 10,
     status: "low_stock",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Sports Shoes",
     sku: "SPORT-001",
     barcode: "600000000001",
-    category: "Footwear",
     department: "Sports",
-    sellingPrice: 9999,
-    costPrice: 6400,
-    stockQuantity: 20,
+    price: 9999,
+    stock: 20,
     reorderLevel: 8,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Yoga Mat",
     sku: "SPORT-002",
     barcode: "600000000002",
-    category: "Fitness",
     department: "Sports",
-    sellingPrice: 2499,
-    costPrice: 1500,
-    stockQuantity: 14,
+    price: 2499,
+    stock: 14,
     reorderLevel: 5,
     status: "healthy",
-    image: ""
+    imageUrl: ""
   },
   {
     name: "Running Shorts",
     sku: "SPORT-003",
     barcode: "600000000003",
-    category: "Apparel",
     department: "Sports",
-    sellingPrice: 1899,
-    costPrice: 1100,
-    stockQuantity: 4,
+    price: 1899,
+    stock: 4,
     reorderLevel: 8,
     status: "low_stock",
-    image: ""
+    imageUrl: ""
   }
 ];
 
 const sales = [
   {
     items: [
-      { name: "Cotton T-Shirt", quantity: 2, price: 1499 },
-      { name: "Backpack", quantity: 1, price: 3499 }
+      { name: "Cotton T-Shirt", quantity: 2, unitPrice: 1499, lineTotal: 2998 },
+      { name: "Backpack", quantity: 1, unitPrice: 3499, lineTotal: 3499 }
     ],
     subtotal: 6497,
     discount: 497,
     tax: 300,
-    totalAmount: 6300,
-    cashier: "Cashier User",
-    department: "Fashion",
+    grandTotal: 6300,
     paymentMethod: "cash",
-    status: "completed",
-    createdAt: createDateDaysAgo(0, 12)
+    timestamp: createDateDaysAgo(0, 12)
   },
   {
     items: [
-      { name: "Burger Combo", quantity: 3, price: 1499 },
-      { name: "Pizza Combo Meal", quantity: 1, price: 2499 }
+      { name: "Burger Combo", quantity: 3, unitPrice: 1499, lineTotal: 4497 },
+      { name: "Pizza Combo Meal", quantity: 1, unitPrice: 2499, lineTotal: 2499 }
     ],
     subtotal: 6996,
     discount: 0,
     tax: 350,
-    totalAmount: 7346,
-    cashier: "Cashier User",
-    department: "Food Court",
+    grandTotal: 7346,
     paymentMethod: "card",
-    status: "completed",
-    createdAt: createDateDaysAgo(1, 13)
+    timestamp: createDateDaysAgo(1, 13)
   },
   {
     items: [
-      { name: "Wireless Earbuds", quantity: 1, price: 6999 },
-      { name: "Smartphone Charger", quantity: 2, price: 1299 }
+      { name: "Wireless Earbuds", quantity: 1, unitPrice: 6999, lineTotal: 6999 },
+      { name: "Smartphone Charger", quantity: 2, unitPrice: 1299, lineTotal: 2598 }
     ],
     subtotal: 9597,
     discount: 597,
     tax: 450,
-    totalAmount: 9450,
-    cashier: "Cashier User",
-    department: "Electronics",
+    grandTotal: 9450,
     paymentMethod: "card",
-    status: "completed",
-    createdAt: createDateDaysAgo(2, 15)
+    timestamp: createDateDaysAgo(2, 15)
   },
   {
     items: [
-      { name: "Face Serum", quantity: 2, price: 2199 },
-      { name: "Perfume Bottle", quantity: 1, price: 4999 }
+      { name: "Face Serum", quantity: 2, unitPrice: 2199, lineTotal: 4398 },
+      { name: "Perfume Bottle", quantity: 1, unitPrice: 4999, lineTotal: 4999 }
     ],
     subtotal: 9397,
     discount: 397,
     tax: 500,
-    totalAmount: 9500,
-    cashier: "Cashier User",
-    department: "Beauty",
+    grandTotal: 9500,
     paymentMethod: "cash",
-    status: "completed",
-    createdAt: createDateDaysAgo(3, 11)
+    timestamp: createDateDaysAgo(3, 11)
   },
   {
     items: [
-      { name: "Sports Shoes", quantity: 1, price: 9999 },
-      { name: "Yoga Mat", quantity: 2, price: 2499 }
+      { name: "Sports Shoes", quantity: 1, unitPrice: 9999, lineTotal: 9999 },
+      { name: "Yoga Mat", quantity: 2, unitPrice: 2499, lineTotal: 4998 }
     ],
     subtotal: 14997,
     discount: 997,
     tax: 700,
-    totalAmount: 14700,
-    cashier: "Cashier User",
-    department: "Sports",
+    grandTotal: 14700,
     paymentMethod: "card",
-    status: "completed",
-    createdAt: createDateDaysAgo(4, 16)
+    timestamp: createDateDaysAgo(4, 16)
   }
 ];
 
@@ -438,14 +393,14 @@ const seed = async () => {
 
   console.log("Seeding transactions...");
   const transactionDocs = createdSales.map((sale, index) => {
-    const saleDate = sales[index].createdAt;
+    const saleDate = sales[index].timestamp;
     return {
       transactionId: `TXN-${String(index + 1).padStart(4, "0")}`,
       sale: sale._id,
       cashier: "Cashier User",
-      department: sale.department,
+      department: sale.items[0]?.department || "Mixed",
       itemsCount: sale.items.length,
-      totalAmount: sale.totalAmount,
+      totalAmount: sale.grandTotal,
       paymentMethod: sale.paymentMethod,
       status: "completed",
       createdAt: saleDate,

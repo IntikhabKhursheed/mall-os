@@ -1,6 +1,7 @@
 const errorMiddleware = (err, req, res, next) => {
   let statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
   let message = err.message || "Server error";
+  const errors = err.errors || undefined;
 
   if (err.name === "CastError") {
     statusCode = 400;
@@ -16,7 +17,8 @@ const errorMiddleware = (err, req, res, next) => {
 
   res.status(statusCode).json({
     success: false,
-    message
+    message,
+    ...(errors ? { errors } : {})
   });
 };
 

@@ -98,16 +98,19 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label class="span-2">
                 Full Name
                 <input formControlName="fullName" type="text" />
+                <small class="field-error" *ngIf="serverErrors['name']">{{ serverErrors['name'] }}</small>
               </label>
 
               <label>
                 Email
                 <input formControlName="email" type="email" />
+                <small class="field-error" *ngIf="serverErrors['email']">{{ serverErrors['email'] }}</small>
               </label>
 
               <label>
                 Phone
                 <input formControlName="phone" type="text" />
+                <small class="field-error" *ngIf="serverErrors['phone']">{{ serverErrors['phone'] }}</small>
               </label>
             </div>
           </fieldset>
@@ -118,6 +121,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label>
                 Role
                 <input formControlName="role" type="text" />
+                <small class="field-error" *ngIf="serverErrors['role']">{{ serverErrors['role'] }}</small>
               </label>
 
               <label>
@@ -126,6 +130,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
                   <option value="active">active</option>
                   <option value="inactive">inactive</option>
                 </select>
+                <small class="field-error" *ngIf="serverErrors['department']">{{ serverErrors['department'] }}</small>
               </label>
 
               <label class="span-2">
@@ -320,6 +325,12 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         color: #fecaca;
       }
 
+      .field-error {
+        color: #fecaca;
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
       .primary,
       .secondary,
       .danger {
@@ -383,6 +394,7 @@ export class EmployeesComponent implements OnInit {
   loading = false;
   saving = false;
   errorMessage = "";
+  serverErrors: Record<string, string> = {};
   editingId: string | null = null;
   showAddModal = false;
   searchTerm = "";
@@ -452,6 +464,7 @@ export class EmployeesComponent implements OnInit {
   startCreate(): void {
     this.editingId = null;
     this.errorMessage = "";
+    this.serverErrors = {};
     this.showAddModal = true;
     this.form.reset({
       fullName: "",
@@ -466,6 +479,7 @@ export class EmployeesComponent implements OnInit {
   startEdit(employee: Employee): void {
     this.editingId = employee._id;
     this.errorMessage = "";
+    this.serverErrors = {};
     this.showAddModal = true;
     this.form.reset({
       fullName: employee.fullName,
@@ -485,6 +499,7 @@ export class EmployeesComponent implements OnInit {
 
     this.saving = true;
     this.errorMessage = "";
+    this.serverErrors = {};
     const payload = this.form.getRawValue() as EmployeePayload;
 
     const request$ = this.editingId
@@ -500,6 +515,7 @@ export class EmployeesComponent implements OnInit {
       error: (error) => {
         this.saving = false;
         this.errorMessage = error?.error?.message || "Unable to save employee.";
+        this.serverErrors = error?.error?.errors || {};
       }
     });
   }
@@ -519,6 +535,7 @@ export class EmployeesComponent implements OnInit {
 
   resetForm(): void {
     this.editingId = null;
+    this.serverErrors = {};
     this.form.reset({
       fullName: "",
       email: "",

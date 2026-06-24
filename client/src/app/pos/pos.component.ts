@@ -2,10 +2,11 @@ import { CommonModule, NgFor, NgIf } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { finalize } from "rxjs";
 import { PageHeaderComponent } from "../shared/page-header/page-header.component";
-import { MallDataService, CartLine, PosState } from "../core/services/mall-data.service";
+import { CartLine, PosState } from "../core/services/mall-data.service";
 import { Product } from "../core/models/product.model";
+import { ProductService } from "../core/services/product.service";
+import { PosService } from "../core/services/pos.service";
 
 @Component({
   selector: "app-pos",
@@ -448,7 +449,8 @@ import { Product } from "../core/models/product.model";
   ]
 })
 export class PosComponent implements OnInit {
-  private readonly mallData = inject(MallDataService);
+  private readonly productService = inject(ProductService);
+  private readonly posService = inject(PosService);
   private readonly router = inject(Router);
 
   catalog: Product[] = [];
@@ -456,6 +458,7 @@ export class PosComponent implements OnInit {
   suspendedSales: PosState["suspendedSales"] = [];
   paymentMethod: PosState["paymentMethod"] = "cash";
   customerName = "Walk-in customer";
+  discountValue = 0;
   searchTerm = "";
   departmentFilter = "";
   modalSearch = "";
@@ -465,7 +468,6 @@ export class PosComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshCatalog();
-    this.syncState();
   }
 
   get subtotal(): number {
@@ -473,7 +475,7 @@ export class PosComponent implements OnInit {
   }
 
   get discount(): number {
-    return Math.min(220, this.subtotal);
+    return Math.min(this.discountValue, this.subtotal);
   }
 
   get grandTotal(): number {
@@ -482,10 +484,22 @@ export class PosComponent implements OnInit {
 
   refreshCatalog(): void {
     this.loading = true;
-    this.mallData.listPosProducts(this.searchTerm, this.departmentFilter).subscribe((items) => {
-      this.catalog = items;
-      this.loading = false;
-    });
+    this.productService
+      .list({
+        page: 1,
+        limit: 100,
+        search: this.searchTerm,
+        department: this.departmentFilter
+      })
+      .subscribe({
+        next: (response) => {
+          this.catalog = response.data.items;
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        }
+      });
   }
 
   setDepartmentFilter(filter: string): void {
@@ -498,41 +512,85 @@ export class PosComponent implements OnInit {
       return;
     }
 
-    this.mallData.addPosLine(product._id).pipe(finalize(() => this.syncState())).subscribe({
-      next: () => {
-        this.refreshCatalog();
-        this.closeModal();
-      }
-    });
+    const index = this.cart.findIndex((line) => line.productId === product._id);
+    if (index >= 0) {
+      this.cart[index].quantity += 1;
+    } else {
+      this.cart.unshift({
+        productId: product._id,
+        name: product.name,
+        department: product.department || "Unassigned",
+        barcode: product.barcode,
+        quantity: 1,
+        unitPrice: Number(product.sellingPrice ?? 0),
+        stockQuantity: Number(product.stockQuantity ?? 0),
+        status: product.status || this.stockStatus(product)
+      });
+    }
+
+    this.closeModal();
   }
 
   changeQty(line: CartLine, delta: number): void {
-    this.mallData.updatePosLineQuantity(line.productId, line.quantity + delta).subscribe((state) => this.applyState(state));
+    const index = this.cart.findIndex((item) => item.productId === line.productId);
+    if (index >= 0) {
+      const nextQuantity = this.cart[index].quantity + delta;
+      if (nextQuantity <= 0) {
+        this.cart.splice(index, 1);
+      } else {
+        this.cart[index].quantity = nextQuantity;
+      }
+    }
   }
 
   removeLine(line: CartLine): void {
-    this.mallData.removePosLine(line.productId).subscribe((state) => this.applyState(state));
+    this.cart = this.cart.filter((item) => item.productId !== line.productId);
   }
 
   setPaymentMethod(method: PosState["paymentMethod"]): void {
-    this.mallData.setPaymentMethod(method).subscribe((state) => this.applyState(state));
+    this.paymentMethod = method;
   }
 
   syncCustomerName(): void {
-    this.mallData.setCustomerName(this.customerName).subscribe((state) => this.applyState(state));
+    this.customerName = this.customerName || "Walk-in customer";
   }
 
   suspendCurrentSale(): void {
-    this.mallData.suspendSale(this.customerName || "Suspended sale").subscribe((state) => this.applyState(state));
+    if (!this.cart.length) {
+      return;
+    }
+
+    this.suspendedSales.unshift({
+      id: `susp-${Date.now()}`,
+      name: this.customerName || "Suspended sale",
+      items: this.cart.map((item) => ({ ...item })),
+      subtotal: this.subtotal,
+      createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    });
+    this.cart = [];
+    this.discountValue = 0;
   }
 
   completeCurrentSale(): void {
-    this.mallData.completeSale({ paymentMethod: this.paymentMethod }).subscribe({
-      next: () => {
-        this.syncState();
-        void this.router.navigateByUrl("/sales");
-      }
-    });
+    this.posService
+      .completeSale({
+        items: this.cart.map((line) => ({
+          productId: line.productId,
+          quantity: line.quantity
+        })),
+        discount: this.discount,
+        tax: 0,
+        paymentMethod: this.paymentMethod,
+        timestamp: new Date().toISOString()
+      })
+      .subscribe({
+        next: () => {
+          this.cart = [];
+          this.discountValue = 0;
+          this.refreshCatalog();
+          void this.router.navigateByUrl("/sales");
+        }
+      });
   }
 
   chargeCustomer(): void {
@@ -540,7 +598,11 @@ export class PosComponent implements OnInit {
   }
 
   resumeSale(id: string): void {
-    this.mallData.resumeSuspendedSale(id).subscribe((state) => this.applyState(state));
+    const index = this.suspendedSales.findIndex((item) => item.id === id);
+    if (index >= 0) {
+      this.cart = this.suspendedSales[index].items.map((item) => ({ ...item }));
+      this.suspendedSales.splice(index, 1);
+    }
   }
 
   openAddProductModal(): void {
@@ -550,16 +612,22 @@ export class PosComponent implements OnInit {
   }
 
   refreshModalResults(): void {
-    this.mallData.listPosProducts(this.modalSearch, "").subscribe((items) => {
-      this.modalResults = items;
-    });
+    this.productService
+      .list({
+        page: 1,
+        limit: 100,
+        search: this.modalSearch
+      })
+      .subscribe((response) => {
+        this.modalResults = response.data.items;
+      });
   }
 
   closeModal(): void {
     this.showAddModal = false;
   }
 
-  stockStatus(item: Product): string {
+  stockStatus(item: Product): Product["status"] {
     if ((item.stockQuantity ?? 0) <= 0) {
       return "out_of_stock";
     }
@@ -575,17 +643,5 @@ export class PosComponent implements OnInit {
 
   refreshCatalogAndState(): void {
     this.refreshCatalog();
-    this.syncState();
-  }
-
-  private syncState(): void {
-    this.mallData.getPosState().subscribe((state) => this.applyState(state));
-  }
-
-  private applyState(state: PosState): void {
-    this.cart = state.cart;
-    this.paymentMethod = state.paymentMethod;
-    this.customerName = state.customerName;
-    this.suspendedSales = state.suspendedSales;
   }
 }

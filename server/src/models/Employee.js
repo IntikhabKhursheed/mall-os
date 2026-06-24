@@ -2,16 +2,27 @@ const mongoose = require("mongoose");
 
 const employeeSchema = new mongoose.Schema(
   {
-    fullName: { type: String, required: true, trim: true },
-    email: { type: String, required: true, trim: true, lowercase: true },
-    phone: { type: String, default: "" },
-    role: { type: String, default: "" },
-    department: { type: String, default: "" },
-    status: { type: String, default: "active" },
-    clockInTime: { type: Date, default: null },
-    lastActive: { type: Date, default: null }
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true, lowercase: true, unique: true },
+    phone: { type: String, required: true, trim: true },
+    role: { type: String, required: true, trim: true },
+    department: { type: String, required: true, trim: true },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "on_shift"],
+      default: "active"
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: { createdAt: true, updatedAt: true },
+    toJSON: {
+      virtuals: true,
+      transform: (_, ret) => {
+        ret.fullName = ret.name;
+        return ret;
+      }
+    }
+  }
 );
 
 module.exports = mongoose.model("Employee", employeeSchema);

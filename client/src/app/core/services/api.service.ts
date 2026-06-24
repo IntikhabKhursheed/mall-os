@@ -1,6 +1,7 @@
 import { HttpParams } from "@angular/common/http";
+import { environment } from "../../../environments/environment";
 
-export const API_BASE_URL = "http://localhost:5000/api";
+export const API_BASE_URL = `${environment.apiBaseUrl}/api`;
 
 export const buildParams = (params: Record<string, string | number | boolean | undefined | null>): HttpParams => {
   let httpParams = new HttpParams();

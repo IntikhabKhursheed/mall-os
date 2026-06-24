@@ -98,6 +98,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label>
                 Name
                 <input formControlName="name" type="text" />
+                <small class="field-error" *ngIf="serverErrors['name']">{{ serverErrors['name'] }}</small>
               </label>
 
               <label>
@@ -106,16 +107,19 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
                   <option value="">Select department</option>
                   <option *ngFor="let department of departments" [value]="department.name">{{ department.name }}</option>
                 </select>
+                <small class="field-error" *ngIf="serverErrors['department']">{{ serverErrors['department'] }}</small>
               </label>
 
               <label>
                 SKU
                 <input formControlName="sku" type="text" />
+                <small class="field-error" *ngIf="serverErrors['sku']">{{ serverErrors['sku'] }}</small>
               </label>
 
               <label>
                 Barcode
                 <input formControlName="barcode" type="text" />
+                <small class="field-error" *ngIf="serverErrors['barcode']">{{ serverErrors['barcode'] }}</small>
               </label>
 
               <label class="span-2">
@@ -131,6 +135,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label>
                 Selling Price
                 <input formControlName="sellingPrice" type="number" min="0" />
+                <small class="field-error" *ngIf="serverErrors['price']">{{ serverErrors['price'] }}</small>
               </label>
 
               <label>
@@ -146,11 +151,13 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label>
                 Stock Quantity
                 <input formControlName="stockQuantity" type="number" min="0" />
+                <small class="field-error" *ngIf="serverErrors['stock']">{{ serverErrors['stock'] }}</small>
               </label>
 
               <label>
                 Reorder Level
                 <input formControlName="reorderLevel" type="number" min="0" />
+                <small class="field-error" *ngIf="serverErrors['reorderLevel']">{{ serverErrors['reorderLevel'] }}</small>
               </label>
             </div>
           </fieldset>
@@ -161,6 +168,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label>
                 Image URL
                 <input formControlName="image" type="text" />
+                <small class="field-error" *ngIf="serverErrors['imageUrl']">{{ serverErrors['imageUrl'] }}</small>
               </label>
             </div>
           </fieldset>
@@ -351,6 +359,12 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         color: #fecaca;
       }
 
+      .field-error {
+        color: #fecaca;
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
       .primary,
       .secondary,
       .danger {
@@ -414,6 +428,7 @@ export class ProductsComponent implements OnInit {
   loading = false;
   saving = false;
   errorMessage = "";
+  serverErrors: Record<string, string> = {};
   editingId: string | null = null;
   showAddModal = false;
   searchTerm = "";
@@ -487,6 +502,7 @@ export class ProductsComponent implements OnInit {
   startCreate(): void {
     this.editingId = null;
     this.errorMessage = "";
+    this.serverErrors = {};
     this.showAddModal = true;
     this.form.reset({
       name: "",
@@ -505,6 +521,7 @@ export class ProductsComponent implements OnInit {
   startEdit(product: Product): void {
     this.editingId = product._id;
     this.errorMessage = "";
+    this.serverErrors = {};
     this.showAddModal = true;
     this.form.reset({
       name: product.name,
@@ -528,6 +545,7 @@ export class ProductsComponent implements OnInit {
 
     this.saving = true;
     this.errorMessage = "";
+    this.serverErrors = {};
     const payload = this.form.getRawValue() as ProductPayload;
     const request$ = this.editingId
       ? this.productService.update(this.editingId, payload)
@@ -542,6 +560,7 @@ export class ProductsComponent implements OnInit {
       error: (error) => {
         this.saving = false;
         this.errorMessage = error?.error?.message || "Unable to save product.";
+        this.serverErrors = error?.error?.errors || {};
       }
     });
   }
@@ -561,6 +580,7 @@ export class ProductsComponent implements OnInit {
 
   resetForm(): void {
     this.editingId = null;
+    this.serverErrors = {};
     this.form.reset({
       name: "",
       sku: "",

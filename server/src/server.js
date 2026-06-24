@@ -6,10 +6,12 @@ const authRoutes = require("./routes/authRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const departmentRoutes = require("./routes/departmentRoutes");
 const productRoutes = require("./routes/productRoutes");
+const posRoutes = require("./routes/posRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 const allowedOrigins = new Set(
   [process.env.CLIENT_URL, "http://localhost:4200", "http://localhost:4201"].filter(Boolean)
 );
@@ -36,6 +38,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/pos", posRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });

@@ -74,6 +74,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label class="span-2">
                 Name
                 <input formControlName="name" type="text" />
+                <small class="field-error" *ngIf="serverErrors['name']">{{ serverErrors['name'] }}</small>
               </label>
 
               <label>
@@ -92,6 +93,7 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               <label class="span-2">
                 Manager
                 <input formControlName="manager" type="text" />
+                <small class="field-error" *ngIf="serverErrors['managerId']">{{ serverErrors['managerId'] }}</small>
               </label>
             </div>
           </fieldset>
@@ -216,6 +218,12 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
         color: #fecaca;
       }
 
+      .field-error {
+        color: #fecaca;
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
       .primary,
       .secondary,
       .danger {
@@ -261,6 +269,7 @@ export class DepartmentsComponent implements OnInit {
   loading = false;
   saving = false;
   errorMessage = "";
+  serverErrors: Record<string, string> = {};
   editingId: string | null = null;
   showAddModal = false;
 
@@ -292,6 +301,7 @@ export class DepartmentsComponent implements OnInit {
   startEdit(department: Department): void {
     this.editingId = department._id;
     this.errorMessage = "";
+    this.serverErrors = {};
     this.showAddModal = true;
     this.form.reset({
       name: department.name,
@@ -309,6 +319,7 @@ export class DepartmentsComponent implements OnInit {
 
     this.saving = true;
     this.errorMessage = "";
+    this.serverErrors = {};
     const payload = this.form.getRawValue() as DepartmentPayload;
     const request$ = this.editingId
       ? this.departmentService.update(this.editingId, payload)
@@ -323,6 +334,7 @@ export class DepartmentsComponent implements OnInit {
       error: (error) => {
         this.saving = false;
         this.errorMessage = error?.error?.message || "Unable to save department.";
+        this.serverErrors = error?.error?.errors || {};
       }
     });
   }
@@ -342,6 +354,7 @@ export class DepartmentsComponent implements OnInit {
 
   resetForm(): void {
     this.editingId = null;
+    this.serverErrors = {};
     this.form.reset({
       name: "",
       category: "",
@@ -353,6 +366,7 @@ export class DepartmentsComponent implements OnInit {
   startCreate(): void {
     this.editingId = null;
     this.errorMessage = "";
+    this.serverErrors = {};
     this.showAddModal = true;
     this.resetForm();
   }

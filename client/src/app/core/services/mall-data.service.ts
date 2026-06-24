@@ -845,6 +845,14 @@ export class MallDataService {
     return this.completeSale();
   }
 
+  clearPosCart(): Observable<PosState> {
+    this.state.pos.cart = [];
+    this.state.pos.discount = 0;
+    this.state.pos.customerName = "Walk-in customer";
+    this.persist();
+    return this.getPosState();
+  }
+
   private calculateSubtotal(lines: CartLine[]): number {
     return lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0);
   }

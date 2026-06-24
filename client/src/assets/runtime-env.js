@@ -1,3 +1,1 @@
-window.__MALLOS_ENV = {
-  "XAI_API_KEY": ""
-};
+window.__MALLOS_ENV = {};

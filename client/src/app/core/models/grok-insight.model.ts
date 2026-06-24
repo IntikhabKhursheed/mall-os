@@ -27,7 +27,7 @@ export interface GrokInsightPayload {
 }
 
 export interface GrokInsightResponse {
-  source: "mock" | "grok";
+  source: "mock" | "gemini";
   generatedAt: string;
   context: GrokContextSnapshot;
   insights: GrokInsight[];

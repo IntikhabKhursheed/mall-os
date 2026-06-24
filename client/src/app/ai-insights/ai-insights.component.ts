@@ -20,8 +20,6 @@ type InsightFilter = GrokInsightType | "all";
     >
       <div actions class="actions-bar">
         <button type="button" class="secondary" (click)="refresh()">Refresh</button>
-        <button type="button" class="secondary" (click)="saveApiKey()" [disabled]="!apiKeyDraft.trim()">Save Key</button>
-        <button type="button" class="secondary" (click)="clearApiKey()">Clear Key</button>
       </div>
     </app-page-header>
 
@@ -46,11 +44,6 @@ type InsightFilter = GrokInsightType | "all";
             <option value="recommendation">Recommendation</option>
           </select>
         </label>
-
-        <label class="search-field api-field">
-          <span class="field-label">Grok API key</span>
-          <input [(ngModel)]="apiKeyDraft" type="password" placeholder="Optional: store your xAI key locally" />
-        </label>
       </div>
     </section>
 
@@ -70,9 +63,7 @@ type InsightFilter = GrokInsightType | "all";
       </div>
 
       <div class="status-actions">
-        <span class="badge" [ngClass]="hasApiKey ? 'healthy' : 'low_stock'">
-          {{ hasApiKey ? "API connected" : "Mock mode" }}
-        </span>
+        <span class="badge" [ngClass]="sourceLabel.includes('Gemini') ? 'healthy' : 'low_stock'">{{ sourceLabel }}</span>
         <span class="badge badge-default">{{ visibleInsights.length }} insights</span>
       </div>
     </section>
@@ -317,14 +308,13 @@ export class AiInsightsComponent implements OnInit {
 
   searchTerm = "";
   typeFilter: InsightFilter = "all";
-  apiKeyDraft = "";
-  hasApiKey = false;
-  sourceLabel = "Loading Grok insights...";
+  sourceLabel = "Loading AI insights...";
   lastRefreshed = "";
   insights: GrokInsight[] = [];
   visibleInsights: GrokInsight[] = [];
   summaryLines: string[] = [];
   alertMessage = "";
+  loading = false;
   contextCards: Array<{ label: string; value: string; detail: string }> = [
     { label: "POS", value: "...", detail: "Loading cart and checkout context." },
     { label: "Reports", value: "...", detail: "Loading reporting context." },
@@ -333,17 +323,17 @@ export class AiInsightsComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.apiKeyDraft = this.grokAI.getApiKey();
-    this.hasApiKey = Boolean(this.apiKeyDraft.trim());
     this.refresh();
   }
 
   refresh(): void {
+    this.loading = true;
     this.grokAI.fetchInsights({ query: this.searchTerm, type: this.typeFilter }).subscribe({
       next: (result) => {
+        this.loading = false;
         this.insights = result.insights;
         this.visibleInsights = result.insights;
-        this.sourceLabel = result.source === "grok" ? "Live Grok API" : "Mock Grok insights";
+        this.sourceLabel = result.source === "gemini" ? "Live Gemini API" : "Mock insights";
         this.lastRefreshed = this.formatTimestamp(result.generatedAt);
         this.contextCards = [
           {
@@ -378,7 +368,7 @@ export class AiInsightsComponent implements OnInit {
           `Grok context includes POS, Reports, Sales, Employees, and Departments data.`
         ];
         this.alertMessage = "";
-        const criticalAnomaly = result.insights.find((item) => item.type === "anomaly" && item.severity === "high");
+        const criticalAnomaly = result.insights.find((item) => item.type === "anomaly" && /critical|urgent|out of stock/i.test(item.description));
         if (criticalAnomaly) {
           this.alertMessage = `Critical anomaly: ${criticalAnomaly.title}`;
           this.mallData
@@ -392,22 +382,10 @@ export class AiInsightsComponent implements OnInit {
         }
       },
       error: () => {
+        this.loading = false;
         this.alertMessage = "Unable to load insights right now.";
       }
     });
-  }
-
-  saveApiKey(): void {
-    this.grokAI.setApiKey(this.apiKeyDraft);
-    this.hasApiKey = Boolean(this.apiKeyDraft.trim());
-    this.refresh();
-  }
-
-  clearApiKey(): void {
-    this.apiKeyDraft = "";
-    this.grokAI.setApiKey("");
-    this.hasApiKey = false;
-    this.refresh();
   }
 
   formatTimestamp(timestamp: string): string {
