@@ -1,0 +1,69 @@
+
+    <app-page-header
+      eyebrow="Analytics"
+      title="Sales performance"
+      subtitle="Track sales trends, revenue breakdowns, and conversion movement across the mall."
+    >
+      <div actions>
+        <button type="button" class="secondary" (click)="refreshSales()">Refresh</button>
+        <button type="button" class="primary" routerLink="/pos">Open POS</button>
+      </div>
+    </app-page-header>
+
+    <section class="toolbar surface-panel">
+      <input [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" type="search" placeholder="Search order ID, cashier, department, or payment" />
+      <select [(ngModel)]="paymentFilter" (ngModelChange)="applyFilter()">
+        <option value="">All payment methods</option>
+        <option value="cash">Cash</option>
+        <option value="card">Card</option>
+        <option value="wallet">Wallet</option>
+      </select>
+    </section>
+
+    <section class="sales-grid">
+      <article class="surface-panel metric-card">
+        <div class="eyebrow">Revenue</div>
+        <div class="metric-value">{{ revenue | currency : "PKR" : "symbol" : "1.0-0" }}</div>
+        <p class="muted">Completed sales in the current mock session.</p>
+      </article>
+
+      <article class="surface-panel metric-card">
+        <div class="eyebrow">Transactions</div>
+        <div class="metric-value">{{ filteredSales.length }}</div>
+        <p class="muted">Filtered records based on your search.</p>
+      </article>
+
+      <article class="surface-panel metric-card">
+        <div class="eyebrow">Average ticket</div>
+        <div class="metric-value">{{ averageTicket | currency : "PKR" : "symbol" : "1.0-0" }}</div>
+        <p class="muted">Useful for comparing basket size across departments.</p>
+      </article>
+    </section>
+
+    <section class="surface-panel table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Order</th>
+            <th>Cashier</th>
+            <th>Department</th>
+            <th>Payment</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let sale of filteredSales">
+            <td>{{ sale.time }}</td>
+            <td>{{ sale.orderId }}</td>
+            <td>{{ sale.cashier }}</td>
+            <td><span class="badge badge-default">{{ sale.department }}</span></td>
+            <td><span class="badge" [ngClass]="sale.paymentMethod === 'cash' ? 'active' : sale.paymentMethod === 'card' ? 'info' : 'low_stock'">{{ sale.paymentMethod }}</span></td>
+            <td>{{ sale.total | currency : "PKR" : "symbol" : "1.0-0" }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="filteredSales.length === 0" class="empty-state">No sales match the current filter.</div>
+    </section>
+  

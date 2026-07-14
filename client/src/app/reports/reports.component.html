@@ -1,0 +1,52 @@
+
+    <app-page-header
+      eyebrow="Analytics"
+      title="Management reports"
+      subtitle="Review operational reports, performance summaries, and management exports."
+    >
+      <div actions>
+        <button type="button" class="secondary" (click)="setTab('overview')">Overview</button>
+        <button type="button" class="secondary" (click)="setTab('sales')">Sales</button>
+        <button type="button" class="secondary" (click)="setTab('inventory')">Inventory</button>
+        <button type="button" class="secondary" (click)="setTab('staff')">Staff</button>
+      </div>
+    </app-page-header>
+
+    <section class="toolbar surface-panel">
+      <input [(ngModel)]="searchTerm" (ngModelChange)="loadData()" type="search" placeholder="Search reports or summary text" />
+    </section>
+
+    <section class="tab-strip surface-panel">
+      <button type="button" class="tab" [class.active]="activeTab === 'overview'" (click)="setTab('overview')">Overview</button>
+      <button type="button" class="tab" [class.active]="activeTab === 'sales'" (click)="setTab('sales')">Sales</button>
+      <button type="button" class="tab" [class.active]="activeTab === 'inventory'" (click)="setTab('inventory')">Inventory</button>
+      <button type="button" class="tab" [class.active]="activeTab === 'staff'" (click)="setTab('staff')">Staff</button>
+    </section>
+
+    <section class="grid-cards">
+      <article class="surface-panel metric-card" *ngFor="let card of filteredCards">
+        <div class="eyebrow">{{ activeTab | titlecase }}</div>
+        <div class="report-head">
+          <h3>{{ card.title }}</h3>
+          <span class="badge" [ngClass]="card.tone">{{ card.badge }}</span>
+        </div>
+        <p class="muted">{{ card.detail }}</p>
+        <span class="muted">{{ card.meta }}</span>
+      </article>
+    </section>
+
+    <section class="surface-panel metric-card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Exports</div>
+          <h3>{{ activeTab | titlecase }} snapshot</h3>
+        </div>
+      </div>
+      <div class="export-list">
+        <div class="export-row" *ngFor="let line of summaryLines">
+          <strong>{{ line.label }}</strong>
+          <span class="muted">{{ line.value }}</span>
+        </div>
+      </div>
+    </section>
+  

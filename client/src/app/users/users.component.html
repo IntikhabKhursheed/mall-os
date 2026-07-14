@@ -1,0 +1,76 @@
+
+    <app-page-header
+      eyebrow="System"
+      title="Access control"
+      subtitle="Manage system access and keep administrative accounts organized."
+    >
+      <div actions>
+        <button type="button" class="secondary" (click)="resetFilters()">Reset</button>
+      </div>
+    </app-page-header>
+
+    <section class="toolbar surface-panel">
+      <input [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" type="search" placeholder="Search by name, email, role, or department" />
+      <select [(ngModel)]="roleFilter" (ngModelChange)="applyFilter()">
+        <option value="">All roles</option>
+        <option value="admin">Admin</option>
+        <option value="manager">Manager</option>
+        <option value="cashier">Cashier</option>
+      </select>
+    </section>
+
+    <section class="grid-cards">
+      <article class="surface-panel metric-card" *ngFor="let user of filteredUsers">
+        <div class="user-row">
+          <div class="avatar">{{ initials(user.name) }}</div>
+          <div>
+            <h3>{{ user.name }}</h3>
+            <p class="muted">{{ user.email }}</p>
+          </div>
+          <span class="badge" [ngClass]="user.status || 'active'">{{ user.role }}</span>
+        </div>
+        <p class="muted">Department: {{ user.department || "Unassigned" }}</p>
+        <div class="actions">
+          <button type="button" class="secondary" (click)="startEdit(user)">Edit</button>
+          <button type="button" class="secondary" (click)="promote(user)" [disabled]="user.role === 'admin'">Promote</button>
+          <button type="button" class="danger" (click)="toggleStatus(user)">{{ user.status === 'active' ? 'Deactivate' : 'Activate' }}</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="surface-panel metric-card form-card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Quick edit</div>
+          <h3>Update selected account</h3>
+        </div>
+      </div>
+
+      <form class="form-grid cols-2" [formGroup]="form" (ngSubmit)="saveUser()">
+        <label>
+          Name
+          <input formControlName="name" type="text" />
+        </label>
+        <label>
+          Email
+          <input formControlName="email" type="email" />
+        </label>
+        <label>
+          Role
+          <select formControlName="role">
+            <option value="admin">admin</option>
+            <option value="manager">manager</option>
+            <option value="cashier">cashier</option>
+          </select>
+        </label>
+        <label>
+          Department
+          <input formControlName="department" type="text" />
+        </label>
+        <div class="actions span-2">
+          <button type="submit" class="primary" [disabled]="form.invalid">Save Account</button>
+          <button type="button" class="secondary" (click)="resetForm()">Clear</button>
+        </div>
+      </form>
+    </section>
+  

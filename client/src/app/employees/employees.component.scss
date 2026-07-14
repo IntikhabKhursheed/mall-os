@@ -1,0 +1,228 @@
+
+      :host {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .content-grid {
+        display: block;
+      }
+
+      .panel {
+        padding: 1rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: 1fr 220px;
+        gap: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0;
+      }
+
+      input,
+      select {
+        min-height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--surface-1);
+        color: var(--text);
+        padding: 0.7rem 0.85rem;
+      }
+
+      .form-panel {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-card {
+        position: relative;
+        width: min(100%, 42rem);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2.25rem;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+        padding: 0;
+        border-radius: 999px;
+        display: inline-grid;
+        place-items: center;
+      }
+
+      .record-list {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .employee-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.85rem;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        background: color-mix(in srgb, var(--bg-panel-muted) 64%, transparent);
+        border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      }
+
+      .record-avatar {
+        width: 2.7rem;
+        height: 2.7rem;
+        border-radius: 14px;
+        background: rgba(20, 184, 166, 0.12);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .record-main {
+        display: grid;
+        gap: 0.35rem;
+        min-width: 0;
+      }
+
+      .record-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .record-meta {
+        color: var(--text-secondary);
+      }
+
+      .record-tags {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .record-tags span {
+        padding: 0.28rem 0.55rem;
+        border-radius: 999px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+      }
+
+      .form-head {
+        padding-bottom: 0.25rem;
+      }
+
+      .span-2 {
+        grid-column: span 2;
+      }
+
+      label {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .actions,
+      .pagination {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .pagination {
+        justify-content: space-between;
+        padding-top: 1rem;
+      }
+
+      .state,
+      .error-box {
+        padding: 1rem;
+        border-radius: 8px;
+      }
+
+      .state {
+        background: rgba(15, 23, 42, 0.5);
+        color: var(--muted);
+      }
+
+      .error-box {
+        background: rgba(127, 29, 29, 0.35);
+        border: 1px solid rgba(248, 113, 113, 0.35);
+        color: #fecaca;
+      }
+
+      .field-error {
+        color: #fecaca;
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
+      .primary,
+      .secondary,
+      .danger {
+        min-height: 40px;
+        padding: 0.65rem 0.9rem;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .primary {
+        background: var(--accent);
+        color: #08111f;
+        font-weight: 700;
+      }
+
+      .secondary {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--text);
+      }
+
+      .danger {
+        background: rgba(248, 113, 113, 0.12);
+        border-color: rgba(248, 113, 113, 0.25);
+        color: #fecaca;
+      }
+
+      @media (max-width: 1100px) {
+        .toolbar {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .employee-card {
+          grid-template-columns: 1fr;
+        }
+
+        .form-grid.cols-2,
+        .form-grid.cols-3,
+        .span-2 {
+          grid-template-columns: 1fr;
+          grid-column: auto;
+        }
+
+        .action-group {
+          justify-content: flex-start;
+        }
+      }
+    

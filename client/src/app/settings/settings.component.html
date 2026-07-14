@@ -1,0 +1,49 @@
+
+    <app-page-header
+      eyebrow="System"
+      title="Workspace settings"
+      subtitle="Adjust workspace preferences, branding, and operational defaults."
+    >
+      <div actions>
+        <button type="button" class="secondary" (click)="reload()">Reload</button>
+      </div>
+    </app-page-header>
+
+    <section class="surface-panel metric-card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Overview</div>
+          <h3>Configuration options</h3>
+        </div>
+      </div>
+
+      <form class="settings-grid" [formGroup]="form" (ngSubmit)="saveSettings()">
+        <label>
+          Store name
+          <input formControlName="storeName" type="text" />
+        </label>
+        <label>
+          Currency
+          <input formControlName="currency" type="text" />
+        </label>
+        <label>
+          Tax rate
+          <input formControlName="taxRate" type="number" min="0" step="0.01" />
+        </label>
+        <label class="toggle-row">
+          <input formControlName="notificationsEnabled" type="checkbox" />
+          Notifications enabled
+        </label>
+        <label class="toggle-row">
+          <input formControlName="autoRefresh" type="checkbox" />
+          Auto refresh dashboards
+        </label>
+        <div class="actions">
+          <button type="submit" class="primary" [disabled]="form.invalid">Save Settings</button>
+          <button type="button" class="secondary" (click)="resetDefaults()">Reset Defaults</button>
+        </div>
+      </form>
+
+      <div *ngIf="saved" class="saved-box">Settings saved and reflected across the mock dashboard state.</div>
+    </section>
+  

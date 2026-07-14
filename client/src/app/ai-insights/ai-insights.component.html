@@ -1,0 +1,94 @@
+
+    <app-page-header
+      eyebrow="Grok AI"
+      title="AI insights"
+      subtitle="Grok scans MallOS activity and turns POS, sales, employee, department, and reporting data into actionable guidance."
+    >
+      <div actions class="actions-bar">
+        <button type="button" class="secondary" (click)="refresh()">Refresh</button>
+      </div>
+    </app-page-header>
+
+    <section class="surface-panel toolbar-panel">
+      <div class="toolbar-grid">
+        <label class="search-field">
+          <span class="field-label">Search</span>
+          <input
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="refresh()"
+            type="search"
+            placeholder="Search by keyword, department, or action"
+          />
+        </label>
+
+        <label class="search-field">
+          <span class="field-label">Type</span>
+          <select [(ngModel)]="typeFilter" (ngModelChange)="refresh()">
+            <option value="all">All types</option>
+            <option value="trend">Trend</option>
+            <option value="anomaly">Anomaly</option>
+            <option value="recommendation">Recommendation</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="context-grid">
+      <article class="surface-panel context-card" *ngFor="let item of contextCards">
+        <div class="eyebrow">{{ item.label }}</div>
+        <strong>{{ item.value }}</strong>
+        <p class="muted">{{ item.detail }}</p>
+      </article>
+    </section>
+
+    <section class="surface-panel status-panel">
+      <div>
+        <div class="eyebrow">Connection</div>
+        <h3>{{ sourceLabel }}</h3>
+        <p class="muted">Last refreshed: {{ lastRefreshed || "Never" }}</p>
+      </div>
+
+      <div class="status-actions">
+        <span class="badge" [ngClass]="sourceLabel.includes('Gemini') ? 'healthy' : 'low_stock'">{{ sourceLabel }}</span>
+        <span class="badge badge-default">{{ visibleInsights.length }} insights</span>
+      </div>
+    </section>
+
+    <section class="insights-grid">
+      <article class="insight-card" *ngFor="let insight of visibleInsights">
+        <div class="insight-head">
+          <div>
+            <div class="eyebrow">{{ insight.type }}</div>
+            <h3>{{ insight.title }}</h3>
+          </div>
+          <span class="insight-badge" [ngClass]="insight.type">{{ insight.type }}</span>
+        </div>
+
+        <p>{{ insight.description }}</p>
+
+        <div class="insight-footer">
+          <div class="context-tags">
+            <span *ngFor="let tag of insight.context || []">{{ tag }}</span>
+          </div>
+          <span class="muted">{{ formatTimestamp(insight.timestamp) }}</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="surface-panel summary-panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">AI summary</div>
+          <h3>Recommended next steps</h3>
+        </div>
+      </div>
+
+      <ul class="summary-list">
+        <li *ngFor="let line of summaryLines">{{ line }}</li>
+      </ul>
+
+      <div *ngIf="alertMessage" class="alert-box">
+        {{ alertMessage }}
+      </div>
+    </section>
+  
