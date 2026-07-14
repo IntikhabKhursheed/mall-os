@@ -1,0 +1,77 @@
+
+    <app-page-header
+      eyebrow="Cashier workspace"
+      title="Checkout overview"
+      subtitle="Keep an eye on recent transactions, live totals, and quick product lookup."
+    >
+      <div actions>
+        <button type="button" class="secondary" (click)="goToPos()">Open POS</button>
+        <button type="button" class="primary" (click)="goToPos()">Start New Sale</button>
+      </div>
+    </app-page-header>
+
+    <section class="page-grid">
+      <section class="stats-row">
+        <article class="surface-panel stat-card" *ngFor="let stat of stats">
+          <div class="metric-icon" [ngClass]="stat.iconTone"><i [class]="stat.icon"></i></div>
+          <div class="eyebrow">{{ stat.label }}</div>
+          <div class="metric-value compact">{{ stat.value }}</div>
+          <p class="muted">{{ stat.detail }}</p>
+        </article>
+      </section>
+
+      <section class="content-split">
+        <article class="surface-panel transactions-card">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Recent transactions</div>
+              <h3>My latest processed sales</h3>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Order ID</th>
+                <th>Department</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of transactions">
+                <td>{{ transaction.time }}</td>
+                <td>{{ transaction.orderId }}</td>
+                <td><span class="badge badge-default">{{ transaction.department }}</span></td>
+                <td>{{ transaction.amount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="surface-panel search-card">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Quick product search</div>
+              <h3>Fast lookup</h3>
+            </div>
+          </div>
+
+          <button type="button" class="search-shell" (click)="goToPos()">
+            <i class="pi pi-search"></i>
+            <span>Search by product name or barcode</span>
+          </button>
+
+          <div class="search-results">
+            <div class="result-row" *ngFor="let item of quickProducts">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <p class="muted">{{ item.barcode }}</p>
+              </div>
+              <span class="badge" [ngClass]="item.status">{{ item.status }}</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </section>
+  

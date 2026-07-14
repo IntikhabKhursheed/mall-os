@@ -5,7 +5,8 @@ import { AuthService } from "../core/services/auth.service";
 @Component({
   selector: "app-dashboard-redirect",
   standalone: true,
-  template: ``
+  templateUrl: './dashboard-redirect.component.html',
+  styleUrl: './dashboard-redirect.component.scss'
 })
 export class DashboardRedirectComponent {
   private readonly authService = inject(AuthService);

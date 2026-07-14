@@ -1,0 +1,80 @@
+
+    <app-page-header
+      eyebrow="Manager workspace"
+      title="Department overview"
+      subtitle="Track sales, shift activity, and inventory health from one place."
+    >
+      <div actions>
+        <button type="button" class="secondary" routerLink="/products">Products</button>
+        <button type="button" class="secondary" routerLink="/sales">Sales</button>
+        <button type="button" class="primary" routerLink="/employees">Employees</button>
+      </div>
+    </app-page-header>
+
+    <section class="page-grid">
+      <section class="kpi-row">
+        <article class="surface-panel kpi-card" *ngFor="let metric of metrics">
+          <div class="metric-icon" [ngClass]="metric.iconTone"><i [class]="metric.icon"></i></div>
+          <div class="eyebrow">{{ metric.label }}</div>
+          <div class="metric-value compact">{{ metric.value }}</div>
+          <p class="muted">{{ metric.detail }}</p>
+        </article>
+      </section>
+
+      <section class="content-split">
+        <article class="surface-panel chart-card">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Sales last 7 days</div>
+              <h3>Department sales trend</h3>
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <div class="chart-bar" *ngFor="let height of bars" [style.height.%]="height"></div>
+          </div>
+        </article>
+
+        <article class="surface-panel team-card">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Team panel</div>
+              <h3>Shift coverage</h3>
+            </div>
+            <button type="button" class="secondary" routerLink="/employees">Review</button>
+          </div>
+
+          <div class="team-list">
+            <div class="team-row" *ngFor="let member of team">
+              <div class="avatar">{{ member.initials }}</div>
+              <div class="team-copy">
+                <strong>{{ member.name }}</strong>
+                <p class="muted">{{ member.role }}</p>
+              </div>
+              <span class="badge" [class.active]="member.onShift" [class.inactive]="!member.onShift">
+                {{ member.onShift ? "On Shift" : "Off Shift" }}
+              </span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <article class="surface-panel stock-card">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Low stock panel</div>
+            <h3>Products below reorder level</h3>
+          </div>
+        </div>
+
+        <div class="stock-list">
+          <div class="stock-row" *ngFor="let item of lowStock">
+            <div>
+              <strong>{{ item.name }}</strong>
+              <p class="muted">Stock {{ item.stock }} / Reorder {{ item.reorder }}</p>
+            </div>
+            <button type="button" class="secondary" routerLink="/products">Review</button>
+          </div>
+        </div>
+      </article>
+    </section>
+  

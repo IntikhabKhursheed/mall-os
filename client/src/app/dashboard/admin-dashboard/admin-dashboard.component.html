@@ -1,0 +1,134 @@
+
+    <app-page-header
+      eyebrow="Admin dashboard"
+      [title]="greetingTitle"
+      subtitle="Monitor revenue, inventory, and frontline activity from one place."
+    >
+      <div actions class="header-tools">
+        <div class="search-shell">
+          <i class="pi pi-search"></i>
+          <span>Search mall data...</span>
+          <kbd>Ctrl+K</kbd>
+        </div>
+        <button type="button" class="secondary" routerLink="/pos">Open POS</button>
+        <button type="button" class="secondary" routerLink="/products">Products</button>
+        <button type="button" class="primary" routerLink="/reports">Reports</button>
+      </div>
+    </app-page-header>
+
+    <section class="hero-insight surface-panel hero-surface">
+      <div class="hero-copy">
+        <div class="eyebrow">Today at a glance</div>
+        <p class="muted hero-intro">Fast retail signals for cash sales, digital wallets, and tax collected in your shop.</p>
+      </div>
+
+      <article class="hero-metric">
+        <div class="eyebrow">Primary KPI</div>
+        <div class="metric-value">{{ summary.revenueToday | currency : "PKR" : "symbol" : "1.0-0" }}</div>
+        <p class="muted">Projected revenue across active departments</p>
+      </article>
+
+      <aside class="quick-actions">
+        <div class="eyebrow">Quick actions</div>
+        <button type="button" class="quick-pill" routerLink="/pos"><i class="pi pi-shopping-cart"></i><span>Open POS shortcut</span></button>
+        <button type="button" class="quick-pill" routerLink="/employees"><i class="pi pi-users"></i><span>Review employees</span></button>
+        <button type="button" class="quick-pill" routerLink="/products"><i class="pi pi-bolt"></i><span>Review stock</span></button>
+      </aside>
+    </section>
+
+    <section class="kpi-focus">
+      <article class="surface-panel support-card primary-support">
+        <div class="metric-icon accent"><i class="pi pi-wallet"></i></div>
+        <div class="eyebrow">Cash sales</div>
+        <h3 class="metric-value">{{ summary.revenueToday | currency : "PKR" : "symbol" : "1.0-0" }}</h3>
+        <p class="muted">Cash movement captured from live checkout activity.</p>
+      </article>
+
+      <article class="surface-panel support-card">
+        <div class="metric-icon info"><i class="pi pi-mobile"></i></div>
+        <div class="eyebrow">Mobile wallet sales</div>
+        <h3 class="metric-value">{{ summary.salesToday }}</h3>
+        <p class="muted">EasyPaisa and JazzCash orders completed today.</p>
+      </article>
+
+      <article class="surface-panel insight-card">
+        <div class="metric-icon success"><i class="pi pi-chart-line"></i></div>
+        <div class="eyebrow">FBR tax collected</div>
+        <h3>{{ (summary.revenueToday * 0.13) | currency : "PKR" : "symbol" : "1.0-0" }}</h3>
+        <p class="muted">Estimated tax collected across current sales.</p>
+      </article>
+    </section>
+
+    <section class="activity-stream surface-panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Live activity</div>
+          <h3>Recent operational events</h3>
+        </div>
+      </div>
+
+      <div class="stream-list">
+        <article class="stream-item" *ngFor="let item of activityFeed">
+          <div class="stream-icon"><i [class]="item.icon"></i></div>
+          <div class="stream-body">
+            <strong>{{ item.title }}</strong>
+            <p class="muted">{{ item.detail }}</p>
+          </div>
+          <span class="stream-time">{{ item.time }}</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="analytics-split">
+      <article class="surface-panel analytics-card">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Analytics</div>
+            <h3>Performance snapshot</h3>
+          </div>
+        </div>
+        <div class="chart-placeholder">
+          <div class="chart-bar" *ngFor="let height of chartBars" [style.height.%]="height"></div>
+        </div>
+      </article>
+
+      <article class="surface-panel analytics-card">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Operational health</div>
+            <h3>Department signals</h3>
+          </div>
+        </div>
+
+        <div class="signal-list">
+          <div class="signal-row" *ngFor="let signal of departmentSignals">
+            <div>
+              <strong>{{ signal.label }}</strong>
+              <p class="muted">{{ signal.detail }}</p>
+            </div>
+            <span class="badge" [ngClass]="signal.status">{{ signal.status }}</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="record-section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Records</div>
+          <h3>Recent sales summaries</h3>
+        </div>
+      </div>
+
+      <div class="record-grid">
+        <article class="surface-panel record-card" *ngFor="let record of salesCards">
+          <div class="record-avatar">{{ record.initials }}</div>
+          <div class="record-copy">
+            <strong>{{ record.title }}</strong>
+            <p class="muted">{{ record.meta }}</p>
+          </div>
+          <button type="button" class="secondary record-action" routerLink="/sales">View</button>
+        </article>
+      </div>
+    </section>
+  
