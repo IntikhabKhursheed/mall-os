@@ -224,7 +224,7 @@ export class ManagerDashboardComponent implements OnInit {
       this.metrics = [
         {
           label: "Revenue today",
-          value: summary.revenueToday.toLocaleString("en-US", { style: "currency", currency: "USD" }),
+          value: summary.revenueToday.toLocaleString("en-US", { style: "currency", currency: "PKR" }),
           detail: "Tracked from live POS transactions.",
           icon: "pi pi-wallet",
           iconTone: "accent"

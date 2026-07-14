@@ -229,7 +229,7 @@ export class GrokAIService {
   }
 
   private formatCurrency(value: number): string {
-    return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    return value.toLocaleString("en-US", { style: "currency", currency: "PKR" });
   }
 
   private nowLabel(): string {

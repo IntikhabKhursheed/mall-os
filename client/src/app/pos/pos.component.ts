@@ -1,5 +1,5 @@
 import { CommonModule, NgFor, NgIf } from "@angular/common";
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit, inject, HostListener } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { PageHeaderComponent } from "../shared/page-header/page-header.component";
@@ -57,7 +57,7 @@ import { PosService } from "../core/services/pos.service";
             <h4>{{ item.name }}</h4>
             <p class="muted">{{ item.department || "Unassigned" }}</p>
             <div class="tile-bottom">
-              <strong>{{ item.sellingPrice | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+              <strong>{{ item.sellingPrice | currency : "PKR" : "symbol" : "1.0-0" }}</strong>
               <span class="muted">{{ item.stockQuantity || 0 }} in stock</span>
             </div>
           </button>
@@ -90,7 +90,7 @@ import { PosService } from "../core/services/pos.service";
               <div class="qty-pill">x{{ line.quantity }}</div>
               <button type="button" class="ghost qty-button" (click)="changeQty(line, 1)">+</button>
             </div>
-            <strong>{{ lineTotal(line) | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+            <strong>{{ lineTotal(line) | currency : "PKR" : "symbol" : "1.0-0" }}</strong>
             <button type="button" class="ghost qty-button" (click)="removeLine(line)" aria-label="Remove item">
               <i class="pi pi-times"></i>
             </button>
@@ -100,23 +100,26 @@ import { PosService } from "../core/services/pos.service";
         <div class="totals-card">
           <div class="total-row">
             <span class="muted">Subtotal</span>
-            <strong>{{ subtotal | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+            <strong>{{ subtotal | currency : "PKR" : "symbol" : "1.0-0" }}</strong>
           </div>
           <div class="total-row">
             <span class="muted">Discount</span>
-            <strong>- {{ discount | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+            <strong>- {{ discount | currency : "PKR" : "symbol" : "1.0-0" }}</strong>
           </div>
           <div class="total-row grand-total">
             <span>Total due</span>
-            <strong>{{ grandTotal | currency : "USD" : "symbol" : "1.0-0" }}</strong>
+            <strong>{{ grandTotal | currency : "PKR" : "symbol" : "1.0-0" }}</strong>
           </div>
         </div>
 
         <div class="payment-grid">
           <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'cash'" (click)="setPaymentMethod('cash')">Cash</button>
+          <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'easypaisa'" (click)="setPaymentMethod('easypaisa')">EasyPaisa</button>
+          <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'jazzcash'" (click)="setPaymentMethod('jazzcash')">JazzCash</button>
+          <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'raast'" (click)="setPaymentMethod('raast')">Raast</button>
           <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'card'" (click)="setPaymentMethod('card')">Card</button>
           <button type="button" class="secondary" [class.active-payment]="paymentMethod === 'wallet'" (click)="setPaymentMethod('wallet')">Wallet</button>
-          <button type="button" class="primary" (click)="chargeCustomer()">Charge Customer</button>
+          <button type="button" class="primary" (click)="chargeCustomer()">Complete Sale</button>
         </div>
 
         <div class="suspended-list" *ngIf="suspendedSales.length">
@@ -130,7 +133,7 @@ import { PosService } from "../core/services/pos.service";
           <button type="button" class="suspended-item" *ngFor="let sale of suspendedSales" (click)="resumeSale(sale.id)">
             <div>
               <strong>{{ sale.name }}</strong>
-              <p class="muted">{{ sale.items.length }} items · {{ sale.subtotal | currency : "USD" : "symbol" : "1.0-0" }}</p>
+              <p class="muted">{{ sale.items.length }} items · {{ sale.subtotal | currency : "PKR" : "symbol" : "1.0-0" }}</p>
             </div>
             <span class="badge badge-default">Resume</span>
           </button>
@@ -468,6 +471,15 @@ export class PosComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshCatalog();
+  }
+
+  @HostListener("window:keydown", ["$event"])
+  handleShortcut(event: KeyboardEvent): void {
+    if (event.key === "F2") {
+      event.preventDefault();
+      this.setPaymentMethod("cash");
+      this.completeCurrentSale();
+    }
   }
 
   get subtotal(): number {

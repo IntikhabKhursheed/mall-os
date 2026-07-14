@@ -13,7 +13,7 @@ export interface PosSalePayload {
   items: PosSaleLine[];
   discount?: number;
   tax?: number;
-  paymentMethod: "cash" | "card" | "wallet";
+  paymentMethod: "cash" | "card" | "easypaisa" | "jazzcash" | "raast" | "wallet";
   timestamp?: string;
 }
 

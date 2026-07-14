@@ -112,7 +112,7 @@ export class SettingsComponent implements OnInit {
   saved = false;
   form = this.fb.group({
     storeName: ["", [Validators.required]],
-    currency: ["USD", [Validators.required]],
+    currency: ["PKR", [Validators.required]],
     taxRate: [0.13, [Validators.required, Validators.min(0)]],
     notificationsEnabled: [true],
     autoRefresh: [true]
@@ -144,7 +144,7 @@ export class SettingsComponent implements OnInit {
   resetDefaults(): void {
     this.form.reset({
       storeName: "Grand Central Mall",
-      currency: "USD",
+      currency: "PKR",
       taxRate: 0.13,
       notificationsEnabled: true,
       autoRefresh: true

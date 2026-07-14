@@ -23,7 +23,7 @@ const saleSchema = new mongoose.Schema(
     grandTotal: { type: Number, required: true, min: 0, default: 0 },
     paymentMethod: {
       type: String,
-      enum: ["cash", "card", "wallet"],
+      enum: ["cash", "card", "easypaisa", "jazzcash", "raast", "wallet"],
       required: true
     },
     timestamp: { type: Date, default: Date.now }

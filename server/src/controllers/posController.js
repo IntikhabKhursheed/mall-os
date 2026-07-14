@@ -19,8 +19,11 @@ const validateSalePayload = (body = {}) => {
     errors.items = "At least one item is required";
   }
 
-  if (!["cash", "card", "wallet"].includes(body.paymentMethod)) {
-    errors.paymentMethod = "paymentMethod must be cash, card, or wallet";
+  const allowedPaymentMethods = ["cash", "card", "easypaisa", "jazzcash", "raast", "wallet"];
+  const paymentMethod = body.paymentMethod ? String(body.paymentMethod).toLowerCase() : "";
+
+  if (!allowedPaymentMethods.includes(paymentMethod)) {
+    errors.paymentMethod = "paymentMethod must be cash, card, Easypaisa/JazzCash, Raast, or wallet";
   }
 
   return errors;
@@ -31,7 +34,7 @@ const createSale = async (req, res) => {
     items: normalizeItems(req.body.items),
     discount: Number(req.body.discount || 0),
     tax: Number(req.body.tax || 0),
-    paymentMethod: req.body.paymentMethod,
+    paymentMethod: req.body.paymentMethod ? String(req.body.paymentMethod).toLowerCase() : "cash",
     timestamp: req.body.timestamp ? new Date(req.body.timestamp) : new Date()
   };
 
@@ -184,5 +187,6 @@ const createSale = async (req, res) => {
 };
 
 module.exports = {
-  createSale
+  createSale,
+  validateSalePayload
 };

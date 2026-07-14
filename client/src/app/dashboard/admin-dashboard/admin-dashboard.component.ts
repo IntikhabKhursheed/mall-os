@@ -30,12 +30,12 @@ import { DashboardSummary, MallDataService } from "../../core/services/mall-data
     <section class="hero-insight surface-panel hero-surface">
       <div class="hero-copy">
         <div class="eyebrow">Today at a glance</div>
-        <p class="muted hero-intro">Priority signals, revenue momentum, and frontline activity are all visible from this workspace.</p>
+        <p class="muted hero-intro">Fast retail signals for cash sales, digital wallets, and tax collected in your shop.</p>
       </div>
 
       <article class="hero-metric">
         <div class="eyebrow">Primary KPI</div>
-        <div class="metric-value">{{ summary.revenueToday | currency : "USD" : "symbol" : "1.0-0" }}</div>
+        <div class="metric-value">{{ summary.revenueToday | currency : "PKR" : "symbol" : "1.0-0" }}</div>
         <p class="muted">Projected revenue across active departments</p>
       </article>
 
@@ -49,24 +49,24 @@ import { DashboardSummary, MallDataService } from "../../core/services/mall-data
 
     <section class="kpi-focus">
       <article class="surface-panel support-card primary-support">
-        <div class="metric-icon accent"><i class="pi pi-exclamation-triangle"></i></div>
-        <div class="eyebrow">Low stock risk</div>
-        <h3 class="metric-value">{{ summary.lowStockCount }}</h3>
-        <p class="muted">Products approaching reorder level today.</p>
+        <div class="metric-icon accent"><i class="pi pi-wallet"></i></div>
+        <div class="eyebrow">Cash sales</div>
+        <h3 class="metric-value">{{ summary.revenueToday | currency : "PKR" : "symbol" : "1.0-0" }}</h3>
+        <p class="muted">Cash movement captured from live checkout activity.</p>
       </article>
 
       <article class="surface-panel support-card">
-        <div class="metric-icon info"><i class="pi pi-users"></i></div>
-        <div class="eyebrow">Active employees</div>
-        <h3 class="metric-value">{{ summary.activeEmployees }}</h3>
-        <p class="muted">Coverage is balanced across current shifts.</p>
+        <div class="metric-icon info"><i class="pi pi-mobile"></i></div>
+        <div class="eyebrow">Mobile wallet sales</div>
+        <h3 class="metric-value">{{ summary.salesToday }}</h3>
+        <p class="muted">EasyPaisa and JazzCash orders completed today.</p>
       </article>
 
       <article class="surface-panel insight-card">
-        <div class="metric-icon success"><i class="pi pi-trending-up"></i></div>
-        <div class="eyebrow">Stock health</div>
-        <h3>{{ summary.stockHealth }}%</h3>
-        <p class="muted">{{ summary.alerts }} combined alerts are currently active.</p>
+        <div class="metric-icon success"><i class="pi pi-chart-line"></i></div>
+        <div class="eyebrow">FBR tax collected</div>
+        <h3>{{ (summary.revenueToday * 0.13) | currency : "PKR" : "symbol" : "1.0-0" }}</h3>
+        <p class="muted">Estimated tax collected across current sales.</p>
       </article>
     </section>
 
@@ -426,7 +426,7 @@ export class AdminDashboardComponent implements OnInit {
       this.salesCards = sales.slice(0, 3).map((sale) => ({
         initials: sale.department.slice(0, 2).toUpperCase(),
         title: `${sale.department} Batch`,
-        meta: `${sale.itemCount} items · ${sale.paymentMethod} · ${sale.total.toLocaleString("en-US", { style: "currency", currency: "USD" })}`
+        meta: `${sale.itemCount} items · ${sale.paymentMethod} · ${sale.total.toLocaleString("en-US", { style: "currency", currency: "PKR" })}`
       }));
     });
   }

@@ -58,9 +58,11 @@ export interface DashboardSummary {
   alerts: number;
 }
 
+export type PaymentMethod = "cash" | "card" | "easypaisa" | "jazzcash" | "raast" | "wallet";
+
 export interface PosState {
   cart: CartLine[];
-  paymentMethod: "cash" | "card" | "wallet";
+  paymentMethod: PaymentMethod;
   customerName: string;
   discount: number;
   suspendedSales: SuspendedSale[];
@@ -120,7 +122,7 @@ const SESSION_KEY = "mallos_session_user_v1";
 
 const defaultSettings: AppSettings = {
   storeName: "Grand Central Mall",
-  currency: "USD",
+  currency: "PKR",
   taxRate: 0.13,
   theme: "light",
   notificationsEnabled: true,

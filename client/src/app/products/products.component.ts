@@ -54,8 +54,8 @@ import { PageHeaderComponent } from "../shared/page-header/page-header.component
               </div>
               <div class="record-meta">{{ product.department || "Unassigned department" }}</div>
               <div class="record-tags">
-                <span>Sell {{ product.sellingPrice | currency : "USD" : "symbol" : "1.0-0" }}</span>
-                <span>Cost {{ product.costPrice | currency : "USD" : "symbol" : "1.0-0" }}</span>
+                <span>Sell {{ product.sellingPrice | currency : "PKR" : "symbol" : "1.0-0" }}</span>
+                <span>Cost {{ product.costPrice | currency : "PKR" : "symbol" : "1.0-0" }}</span>
                 <span>Stock {{ product.stockQuantity }}</span>
               </div>
             </div>

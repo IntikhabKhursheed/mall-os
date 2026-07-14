@@ -34,7 +34,7 @@ import { MallDataService, SaleRecord } from "../core/services/mall-data.service"
     <section class="sales-grid">
       <article class="surface-panel metric-card">
         <div class="eyebrow">Revenue</div>
-        <div class="metric-value">{{ revenue | currency : "USD" : "symbol" : "1.0-0" }}</div>
+        <div class="metric-value">{{ revenue | currency : "PKR" : "symbol" : "1.0-0" }}</div>
         <p class="muted">Completed sales in the current mock session.</p>
       </article>
 
@@ -46,7 +46,7 @@ import { MallDataService, SaleRecord } from "../core/services/mall-data.service"
 
       <article class="surface-panel metric-card">
         <div class="eyebrow">Average ticket</div>
-        <div class="metric-value">{{ averageTicket | currency : "USD" : "symbol" : "1.0-0" }}</div>
+        <div class="metric-value">{{ averageTicket | currency : "PKR" : "symbol" : "1.0-0" }}</div>
         <p class="muted">Useful for comparing basket size across departments.</p>
       </article>
     </section>
@@ -70,7 +70,7 @@ import { MallDataService, SaleRecord } from "../core/services/mall-data.service"
             <td>{{ sale.cashier }}</td>
             <td><span class="badge badge-default">{{ sale.department }}</span></td>
             <td><span class="badge" [ngClass]="sale.paymentMethod === 'cash' ? 'active' : sale.paymentMethod === 'card' ? 'info' : 'low_stock'">{{ sale.paymentMethod }}</span></td>
-            <td>{{ sale.total | currency : "USD" : "symbol" : "1.0-0" }}</td>
+            <td>{{ sale.total | currency : "PKR" : "symbol" : "1.0-0" }}</td>
           </tr>
         </tbody>
       </table>

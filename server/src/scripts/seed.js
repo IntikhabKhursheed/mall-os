@@ -305,7 +305,7 @@ const sales = [
     discount: 0,
     tax: 350,
     grandTotal: 7346,
-    paymentMethod: "card",
+    paymentMethod: "easypaisa",
     timestamp: createDateDaysAgo(1, 13)
   },
   {
@@ -317,7 +317,7 @@ const sales = [
     discount: 597,
     tax: 450,
     grandTotal: 9450,
-    paymentMethod: "card",
+    paymentMethod: "raast",
     timestamp: createDateDaysAgo(2, 15)
   },
   {
