@@ -1,10 +1,12 @@
 import { Injectable } from "@angular/core";
-import { delay, Observable, of } from "rxjs";
+import { catchError, delay, map, Observable, of } from "rxjs";
 import { ApiResponse, PagedData } from "../models/api-response.model";
 import { Department, DepartmentPayload } from "../models/department.model";
 import { Employee, EmployeePayload } from "../models/employee.model";
 import { Product, ProductPayload } from "../models/product.model";
 import { User } from "../models/user.model";
+import { AnalyticsService } from "./analytics.service";
+import { ProductService } from "./product.service";
 
 export interface NotificationItem {
   id: string;
@@ -333,7 +335,14 @@ const seedState = (): MallState => {
 @Injectable({ providedIn: "root" })
 export class MallDataService {
   private readonly stateKey = STORAGE_KEY;
-  private readonly state = this.loadState();
+  private readonly state: MallState;
+
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly productService: ProductService
+  ) {
+    this.state = this.loadState();
+  }
 
   private persist(): void {
     localStorage.setItem(this.stateKey, JSON.stringify(this.state));
@@ -358,6 +367,69 @@ export class MallDataService {
 
   private respond<T>(value: T, latency = 140): Observable<T> {
     return of(value).pipe(delay(latency));
+  }
+
+  private getLocalDashboardSummary(): DashboardSummary {
+    const lowStockCount = this.state.products.filter((item) => this.productStatus(item) !== "healthy").length;
+    const activeEmployees = this.state.employees.filter((item) => (item.status ?? "active") === "active").length;
+    const healthyStock = this.state.products.length
+      ? Math.round((this.state.products.filter((item) => this.productStatus(item) === "healthy").length / this.state.products.length) * 100)
+      : 0;
+    const revenueToday = this.state.sales.filter((sale) => sale.status === "completed").reduce((sum, sale) => sum + sale.total, 0);
+    return {
+      revenueToday,
+      salesToday: this.state.sales.filter((sale) => sale.status === "completed").length,
+      lowStockCount,
+      activeEmployees,
+      stockHealth: healthyStock,
+      alerts: this.state.notifications.length + lowStockCount
+    };
+  }
+
+  private getLocalActivityFeed(): Array<{ icon: string; title: string; detail: string; time: string }> {
+    return [
+      { icon: "pi pi-shopping-bag", title: "New sale processed", detail: "Fashion department completed order #1294.", time: "2m ago" },
+      { icon: "pi pi-exclamation-circle", title: "Low stock alert", detail: "Wireless Earbuds dropped below reorder level.", time: "8m ago" },
+      { icon: "pi pi-user-plus", title: "Employee check-in", detail: "Cashier shift started at Food Court counter.", time: "15m ago" }
+    ];
+  }
+
+  private getLocalDepartmentSignals(): Array<{ label: string; detail: string; status: NonNullable<Product["status"]> }> {
+    const grouped = this.state.products.reduce<Record<string, Product[]>>((acc, product) => {
+      const key = product.department || "Unassigned";
+      (acc[key] ??= []).push(product);
+      return acc;
+    }, {});
+
+    return Object.entries(grouped)
+      .slice(0, 4)
+      .map(([label, items]) => {
+        const low = items.filter((item) => this.productStatus(item) !== "healthy").length;
+        const detail = low > 0 ? `${low} items need review.` : "Healthy sell-through and stock levels.";
+        const status: NonNullable<Product["status"]> = low > Math.ceil(items.length / 2) ? "out_of_stock" : low > 0 ? "low_stock" : "healthy";
+        return { label, detail, status };
+      });
+  }
+
+  private getLocalRecentSales(): SaleRecord[] {
+    return [...this.state.sales].slice().sort((a, b) => b.time.localeCompare(a.time));
+  }
+
+  private formatRelativeTime(timestamp: string): string {
+    const date = new Date(timestamp);
+    const diffMinutes = Math.max(1, Math.round((Date.now() - date.getTime()) / 60000));
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}m ago`;
+    }
+
+    const diffHours = Math.round(diffMinutes / 60);
+    if (diffHours < 24) {
+      return `${diffHours}h ago`;
+    }
+
+    const diffDays = Math.round(diffHours / 24);
+    return `${diffDays}d ago`;
   }
 
   private page<T>(items: T[], params: ListQuery): PagedData<T> {
@@ -583,49 +655,68 @@ export class MallDataService {
 
   // Dashboard
   getSummary(): Observable<DashboardSummary> {
-    const lowStockCount = this.state.products.filter((item) => this.productStatus(item) !== "healthy").length;
-    const activeEmployees = this.state.employees.filter((item) => (item.status ?? "active") === "active").length;
-    const healthyStock = this.state.products.length
-      ? Math.round((this.state.products.filter((item) => this.productStatus(item) === "healthy").length / this.state.products.length) * 100)
-      : 0;
-    const revenueToday = this.state.sales.filter((sale) => sale.status === "completed").reduce((sum, sale) => sum + sale.total, 0);
-    return this.respond({
-      revenueToday,
-      salesToday: this.state.sales.filter((sale) => sale.status === "completed").length,
-      lowStockCount,
-      activeEmployees,
-      stockHealth: healthyStock,
-      alerts: this.state.notifications.length + lowStockCount
-    });
+    return this.analyticsService.getDashboardSummary().pipe(
+      catchError(() => this.respond(this.getLocalDashboardSummary()))
+    );
   }
 
   getActivityFeed(): Observable<Array<{ icon: string; title: string; detail: string; time: string }>> {
-    return this.respond([
-      { icon: "pi pi-shopping-bag", title: "New sale processed", detail: "Fashion department completed order #1294.", time: "2m ago" },
-      { icon: "pi pi-exclamation-circle", title: "Low stock alert", detail: "Wireless Earbuds dropped below reorder level.", time: "8m ago" },
-      { icon: "pi pi-user-plus", title: "Employee check-in", detail: "Cashier shift started at Food Court counter.", time: "15m ago" }
-    ]);
+    return this.analyticsService.getNotifications().pipe(
+      map(({ warnings, events }) =>
+        [...warnings, ...events]
+          .slice(0, 5)
+          .map((item) => ({
+            icon: item.type === "warning" ? "pi pi-exclamation-circle" : item.type === "danger" ? "pi pi-exclamation-triangle" : item.type === "success" ? "pi pi-check-circle" : "pi pi-info-circle",
+            title: item.title,
+            detail: item.description,
+            time: this.formatRelativeTime(item.timestamp)
+          }))
+      ),
+      catchError(() => this.respond(this.getLocalActivityFeed()))
+    );
   }
 
   getDepartmentSignals(): Observable<Array<{ label: string; detail: string; status: NonNullable<Product["status"]> }>> {
-    const grouped = this.state.products.reduce<Record<string, Product[]>>((acc, product) => {
-      const key = product.department || "Unassigned";
-      (acc[key] ??= []).push(product);
-      return acc;
-    }, {});
+    return this.productService.list({ page: 1, limit: 100 }).pipe(
+      map((response) => {
+        const grouped = response.data.items.reduce<Record<string, Product[]>>((acc, product) => {
+          const key = product.department || "Unassigned";
+          (acc[key] ??= []).push(product);
+          return acc;
+        }, {});
 
-    const signals = Object.entries(grouped).slice(0, 4).map(([label, items]) => {
-      const low = items.filter((item) => this.productStatus(item) !== "healthy").length;
-      const detail = low > 0 ? `${low} items need review.` : "Healthy sell-through and stock levels.";
-      const status: NonNullable<Product["status"]> = low > Math.ceil(items.length / 2) ? "out_of_stock" : low > 0 ? "low_stock" : "healthy";
-      return { label, detail, status };
-    });
-
-    return this.respond(signals as Array<{ label: string; detail: string; status: NonNullable<Product["status"]> }>);
+        return Object.entries(grouped)
+          .slice(0, 4)
+          .map(([label, items]) => {
+            const low = items.filter((item) => (item.status ?? this.productStatus(item)) !== "healthy").length;
+            const detail = low > 0 ? `${low} items need review.` : "Healthy sell-through and stock levels.";
+            const status: NonNullable<Product["status"]> = low > Math.ceil(items.length / 2) ? "out_of_stock" : low > 0 ? "low_stock" : "healthy";
+            return { label, detail, status };
+          });
+      }),
+      catchError(() => this.respond(this.getLocalDepartmentSignals()))
+    );
   }
 
   getRecentSales(): Observable<SaleRecord[]> {
-    return this.respond([...this.state.sales].slice().sort((a, b) => b.time.localeCompare(a.time)));
+    return this.analyticsService.getSummary().pipe(
+      map((summary) =>
+        summary.recentTransactions.map((transaction): SaleRecord => ({
+          id: transaction.id,
+          orderId: transaction.reference,
+          cashier: "MallOS POS",
+          department: transaction.department,
+          itemCount: transaction.itemCount,
+          subtotal: transaction.amount,
+          discount: 0,
+          total: transaction.amount,
+          paymentMethod: transaction.paymentMethod,
+          time: transaction.timestamp,
+          status: "completed"
+        }))
+      ),
+      catchError(() => this.respond(this.getLocalRecentSales()))
+    );
   }
 
   getReportCards(query = ""): Observable<ReportCard[]> {
