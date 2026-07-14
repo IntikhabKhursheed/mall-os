@@ -1,0 +1,13 @@
+
+    <header class="page-header surface-panel">
+      <div class="page-header-copy">
+        <div *ngIf="eyebrow" class="eyebrow">{{ eyebrow }}</div>
+        <h1>{{ title }}</h1>
+        <p *ngIf="subtitle" class="muted">{{ subtitle }}</p>
+      </div>
+
+      <div class="page-header-actions">
+        <ng-content select="[actions]"></ng-content>
+      </div>
+    </header>
+  
