@@ -1,0 +1,136 @@
+
+    <div class="dashboard-shell" [class.sidebar-open]="sidebarOpen">
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <div class="sidebar-head">
+            <div class="brand-shell">
+              <div class="brand-mark">M</div>
+              <div class="brand-copy">
+                <div class="brand-title">MallOS</div>
+                <div class="muted brand-subtitle">Grand Central Mall</div>
+              </div>
+            </div>
+          </div>
+
+          <nav class="nav">
+            <section class="nav-group" *ngFor="let group of groups">
+              <div class="nav-label">{{ group }}</div>
+              <div class="nav-items">
+                <a
+                  *ngFor="let item of visibleByGroup(group)"
+                  [routerLink]="item.link"
+                  routerLinkActive="active"
+                  (click)="handleNavClick()"
+                >
+                  <span class="item-icon" [ngStyle]="{ background: item.iconBg, color: item.iconColor }">
+                    <i [class]="item.icon"></i>
+                  </span>
+                  <span>{{ item.label }}</span>
+                </a>
+              </div>
+            </section>
+          </nav>
+
+          <div class="sidebar-footer">
+            <div class="profile-row">
+              <div class="avatar">{{ userInitials }}</div>
+              <div class="profile-copy">
+                <div class="profile-name">{{ currentUserName }}</div>
+                <div class="role-badge">{{ currentRole }}</div>
+              </div>
+              <button type="button" class="ghost logout-icon" (click)="logout()" aria-label="Logout">
+                <i class="pi pi-sign-out"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div class="topbar-copy">
+            <div class="topbar-left">
+              <button type="button" class="icon-button ghost menu-toggle" (click)="toggleSidebar()" aria-label="Toggle navigation">
+                <i class="pi pi-bars"></i>
+              </button>
+              <div>
+                <div class="muted breadcrumb">{{ activeGroup }}</div>
+                <div class="topbar-title">{{ currentRouteLabel }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topbar-search">
+            <div class="search-shell">
+              <i class="pi pi-search"></i>
+              <input
+                [(ngModel)]="globalSearch"
+                (input)="updateSearchMatches()"
+                (keydown.enter)="openFirstMatch()"
+                type="search"
+                placeholder="Search dashboards, products, employees..."
+                aria-label="Search navigation"
+              />
+              <kbd>Enter</kbd>
+            </div>
+
+            <div class="search-results" *ngIf="globalSearch.trim() && searchMatches.length">
+              <button type="button" class="search-result" *ngFor="let item of searchMatches" (click)="goTo(item.link)">
+                <i [class]="item.icon"></i>
+                <span>{{ item.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <span class="status-pill">
+              <span class="status-dot"></span>
+              Opened
+              <i class="pi pi-chevron-down"></i>
+            </span>
+
+            <button type="button" class="icon-button ghost notification-button" (click)="toggleNotifications($event)" aria-label="Notifications">
+              <i class="pi pi-bell"></i>
+              <span class="notification-dot" *ngIf="notifications.length"></span>
+            </button>
+
+            <button type="button" class="icon-button ghost" (click)="toggleTheme()" [attr.aria-label]="themeLabel">
+              <i class="pi" [class.pi-moon]="theme === 'light'" [class.pi-sun]="theme === 'dark'"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="dropdown-panel notifications-panel" *ngIf="showNotifications" (click)="$event.stopPropagation()">
+          <div class="dropdown-head">
+            <strong>Notifications</strong>
+            <button type="button" class="ghost clear-action" (click)="clearAllNotifications()">Clear all</button>
+          </div>
+
+          <div class="dropdown-list" *ngIf="notifications.length; else emptyNotifications">
+            <article class="notification-item" *ngFor="let note of notifications">
+              <div class="notification-tone" [ngClass]="note.tone"></div>
+              <div class="notification-copy">
+                <strong>{{ note.title }}</strong>
+                <p>{{ note.detail }}</p>
+                <span>{{ note.time }}</span>
+              </div>
+              <button type="button" class="ghost dismiss-button" (click)="dismissNotification(note.id)" aria-label="Dismiss notification">
+                <i class="pi pi-times"></i>
+              </button>
+            </article>
+          </div>
+          <ng-template #emptyNotifications>
+            <div class="empty-notice">No notifications left.</div>
+          </ng-template>
+        </div>
+
+        <div class="content-scroll" (click)="closePanels()">
+          <section class="content">
+            <router-outlet />
+          </section>
+        </div>
+      </main>
+
+      <div class="mobile-backdrop" *ngIf="sidebarOpen && isMobile" (click)="sidebarOpen = false"></div>
+    </div>
+  
