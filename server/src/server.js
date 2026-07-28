@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
@@ -13,9 +14,13 @@ const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// Build the allowed origins list dynamically so Vercel env vars are picked up
 const allowedOrigins = new Set(
   [process.env.CLIENT_URL, "http://localhost:4200", "http://localhost:4201"].filter(Boolean)
 );
+
+app.set("trust proxy", 1);
 
 app.use(
   cors({
@@ -23,16 +28,41 @@ app.use(
       if (!origin || allowedOrigins.has(origin)) {
         return callback(null, true);
       }
-
+      console.error("Blocked by CORS:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.options("*", cors());
 app.use(express.json());
 
+// Health check (no DB required)
 app.get("/api/health", (req, res) => {
-  res.json({ success: true, message: "MallOS API is running" });
+  res.json({
+    success: true,
+    message: "MallOS API is running",
+    dbState: mongoose.connection.readyState,
+  });
+});
+
+// Lazy DB connect middleware – ensures Vercel cold starts reconnect to MongoDB
+app.use("/api", async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await connectDB();
+    }
+    next();
+  } catch (error) {
+    console.error("DB connection error in middleware:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+      error: error.message,
+    });
+  }
 });
 
 app.use("/api/auth", authRoutes);
@@ -49,13 +79,19 @@ app.use((req, res) => {
 
 app.use(errorMiddleware);
 
-connectDB()
-  .then(() => {
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
+// In Vercel's serverless environment, we export app and do NOT call listen().
+// Locally (NODE_ENV=development or no VERCEL env var), start the server normally.
+if (process.env.VERCEL !== "1") {
+  connectDB()
+    .then(() => {
+      app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+      });
+    })
+    .catch((error) => {
+      console.error("Database connection failed:", error.message);
+      process.exit(1);
     });
-  })
-  .catch((error) => {
-    console.error("Database connection failed:", error.message);
-    process.exit(1);
-  });
+}
+
+module.exports = app;
