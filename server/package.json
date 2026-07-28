@@ -2,11 +2,11 @@
   "name": "mallos-server",
   "version": "1.0.0",
   "description": "MallOS backend API",
-  "main": "src/server.js",
+  "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js",
     "seed": "node src/scripts/seed.js"
   },
   "dependencies": {
