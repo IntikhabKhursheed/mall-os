@@ -11,11 +11,15 @@
   box-sizing: border-box;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-h1, h2, p {
+h1,
+h2,
+p {
   color: #ffffff;
 }
 
@@ -35,7 +39,7 @@ h1, h2, p {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, rgba(30,15,0,0.85) 0%, rgba(80,45,5,0.4) 40%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(90deg, rgba(30, 15, 0, 0.85) 0%, rgba(80, 45, 5, 0.4) 40%, rgba(0, 0, 0, 0.1) 100%);
   z-index: 1;
 }
 
@@ -76,7 +80,8 @@ h1, h2, p {
 
 .brand-name span {
   font-weight: 800;
-  color: #e5b05c; /* Gold color */
+  color: #e5b05c;
+  /* Gold color */
 }
 
 .brand-subtitle {
@@ -110,7 +115,7 @@ h1, h2, p {
   gap: 0.75rem;
   font-size: 0.95rem;
   font-weight: 300;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .check-icon {
@@ -138,7 +143,7 @@ h1, h2, p {
   width: 100%;
   max-width: 480px;
   color: #fff;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(229, 176, 92, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(229, 176, 92, 0.1);
 }
 
 .form-shell {
@@ -189,18 +194,41 @@ h1, h2, p {
 }
 
 @keyframes wave-animation {
-    0% { transform: rotate( 0.0deg) }
-   10% { transform: rotate(14.0deg) }
-   20% { transform: rotate(-8.0deg) }
-   30% { transform: rotate(14.0deg) }
-   40% { transform: rotate(-4.0deg) }
-   50% { transform: rotate(10.0deg) }
-   60% { transform: rotate( 0.0deg) }
-  100% { transform: rotate( 0.0deg) }
+  0% {
+    transform: rotate(0.0deg)
+  }
+
+  10% {
+    transform: rotate(14.0deg)
+  }
+
+  20% {
+    transform: rotate(-8.0deg)
+  }
+
+  30% {
+    transform: rotate(14.0deg)
+  }
+
+  40% {
+    transform: rotate(-4.0deg)
+  }
+
+  50% {
+    transform: rotate(10.0deg)
+  }
+
+  60% {
+    transform: rotate(0.0deg)
+  }
+
+  100% {
+    transform: rotate(0.0deg)
+  }
 }
 
 .form-header p {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
   margin: 0 0 1.5rem 0;
 }
@@ -237,7 +265,7 @@ form {
 
 .input-group label {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
 }
 
@@ -245,7 +273,7 @@ form {
   display: flex;
   align-items: center;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 0 1rem;
   height: 48px;
@@ -254,7 +282,7 @@ form {
 
 .input-wrapper:focus-within {
   border-color: #e5b05c;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .input-wrapper.invalid-wrapper {
@@ -262,7 +290,7 @@ form {
 }
 
 .input-icon {
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   margin-right: 0.75rem;
   font-size: 1.1rem;
 }
@@ -278,7 +306,7 @@ form {
 }
 
 .input-wrapper input::placeholder {
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .select-wrapper select {
@@ -289,6 +317,7 @@ form {
   font-size: 0.95rem;
   outline: none;
 }
+
 .select-wrapper select option {
   background: #2a2015;
   color: #fff;
@@ -297,7 +326,7 @@ form {
 .toggle {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -326,7 +355,7 @@ small {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .checkbox-container input {
@@ -350,7 +379,7 @@ small {
   color: #e5b05c;
 }
 
-.checkbox-container input:checked ~ .checkmark i {
+.checkbox-container input:checked~.checkmark i {
   display: block;
 }
 
@@ -401,11 +430,11 @@ small {
 .divider .line {
   flex: 1;
   height: 1px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .divider .text {
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.8rem;
 }
 
@@ -422,7 +451,7 @@ small {
   gap: 0.5rem;
   height: 44px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   color: #fff;
   font-size: 0.9rem;
@@ -431,8 +460,8 @@ small {
 }
 
 .social-btn:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .social-btn svg {
@@ -443,7 +472,7 @@ small {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .auth-switch a {
@@ -461,11 +490,12 @@ small {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1.5rem;
 }
 
-.footer-left, .footer-right {
+.footer-left,
+.footer-right {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -474,7 +504,7 @@ small {
 .footer-icon {
   position: relative;
   font-size: 1.4rem;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .star-badge {
@@ -500,12 +530,12 @@ small {
 }
 
 .footer-text strong {
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
 }
 
 .footer-text span {
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* Theme Controls & Credit */
@@ -524,7 +554,7 @@ small {
   position: absolute;
   bottom: 2rem;
   left: 2rem;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   z-index: 2;
   font-weight: 400;
@@ -537,19 +567,19 @@ small {
   background: rgba(20, 15, 10, 0.8);
   padding: 0.4rem 0.75rem;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
 .theme-toggle i {
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .toggle-switch {
   width: 32px;
   height: 18px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   position: relative;
   cursor: pointer;
@@ -580,30 +610,40 @@ small {
   border-radius: 0.5rem;
   background: #fff;
   color: #000;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   font-weight: 600;
 }
-.toast.success { border-left: 4px solid #22c55e; }
-.toast.error { border-left: 4px solid #ef4444; }
+
+.toast.success {
+  border-left: 4px solid #22c55e;
+}
+
+.toast.error {
+  border-left: 4px solid #ef4444;
+}
 
 .spinner {
   width: 1.2rem;
   height: 1.2rem;
   border-radius: 50%;
-  border: 2px solid rgba(0,0,0,0.2);
+  border: 2px solid rgba(0, 0, 0, 0.2);
   border-top-color: #000;
   animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 900px) {
   .brand-panel {
     display: none;
   }
+
   .form-panel-container {
     flex: 1;
   }
+}
 }
