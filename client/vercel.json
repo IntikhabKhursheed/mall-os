@@ -1,4 +1,7 @@
 {
+  "installCommand": "npm install",
+  "buildCommand": "npx ng build --configuration=production",
+  "outputDirectory": "dist/mallos-client/browser",
   "rewrites": [
     {
       "source": "/(.*)",
