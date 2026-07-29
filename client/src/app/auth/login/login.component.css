@@ -128,6 +128,7 @@ p {
 .form-panel-container {
   flex: 0 0 550px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
@@ -555,13 +556,12 @@ small {
 }
 
 .developer-credit {
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
-  z-index: 2;
+  margin-top: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
   font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .theme-toggle {
