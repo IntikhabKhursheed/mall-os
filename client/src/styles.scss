@@ -97,6 +97,10 @@
   --shadow-xl: 0 30px 70px rgba(0, 0, 0, 0.54);
 }
 
+html {
+  font-size: 15px;
+}
+
 html,
 body {
   height: 100%;
@@ -110,6 +114,12 @@ body {
   transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
   background-image: var(--bg-page);
   background-attachment: fixed;
+  overflow: hidden;
+}
+
+app-root {
+  display: block;
+  height: 100%;
 }
 
 a {
