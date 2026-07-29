@@ -129,6 +129,15 @@ const defaultSettings: AppSettings = {
   autoRefresh: true
 };
 
+const normalizeSettings = (settings?: Partial<AppSettings>): AppSettings => ({
+  storeName: settings?.storeName?.trim() || defaultSettings.storeName,
+  currency: "PKR",
+  taxRate: Number.isFinite(Number(settings?.taxRate)) ? Number(settings?.taxRate) : defaultSettings.taxRate,
+  theme: settings?.theme === "dark" ? "dark" : "light",
+  notificationsEnabled: settings?.notificationsEnabled ?? defaultSettings.notificationsEnabled,
+  autoRefresh: settings?.autoRefresh ?? defaultSettings.autoRefresh
+});
+
 const seedState = (): MallState => {
   const departments: Department[] = [
     { _id: "dept-fashion", name: "Fashion", category: "Apparel", manager: "Mariam Khan", status: "active" },
@@ -359,7 +368,12 @@ export class MallDataService {
     }
 
     try {
-      return { ...seedState(), ...JSON.parse(raw) } as MallState;
+      const parsed = JSON.parse(raw) as MallState;
+      return {
+        ...seedState(),
+        ...parsed,
+        settings: normalizeSettings(parsed.settings)
+      } as MallState;
     } catch {
       const seeded = seedState();
       localStorage.setItem(this.stateKey, JSON.stringify(seeded));
@@ -758,11 +772,11 @@ export class MallDataService {
   }
 
   getSettings(): Observable<AppSettings> {
-    return this.respond({ ...this.state.settings });
+    return this.respond(normalizeSettings(this.state.settings));
   }
 
   updateSettings(patch: Partial<AppSettings>): Observable<AppSettings> {
-    this.state.settings = { ...this.state.settings, ...patch };
+    this.state.settings = normalizeSettings({ ...this.state.settings, ...patch });
     this.persist();
     return this.respond({ ...this.state.settings });
   }
