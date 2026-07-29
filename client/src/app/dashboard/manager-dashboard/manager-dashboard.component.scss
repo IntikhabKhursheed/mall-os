@@ -12,6 +12,9 @@
         display: grid;
         gap: 0.95rem;
       }
+      .sales{
+        margin: 1rem;
+      }
 
       .welcome-card,
       .kpi-card,
@@ -37,13 +40,13 @@
       }
 
       .metric-icon.accent {
-        background: rgba(20, 184, 166, 0.14);
+        background: rgba(210, 138, 27, 0.14);
         color: var(--accent);
       }
 
       .metric-icon.info {
-        background: rgba(59, 130, 246, 0.14);
-        color: #2563eb;
+        background: rgba(190, 153, 101, 0.16);
+        color: #8a5b2e;
       }
 
       .metric-icon.success {
@@ -72,7 +75,7 @@
       .chart-bar {
         flex: 1;
         border-radius: 999px 999px 8px 8px;
-        background: linear-gradient(180deg, rgba(20, 184, 166, 0.45), rgba(20, 184, 166, 0.92));
+        background: linear-gradient(180deg, rgba(247, 198, 107, 0.5), rgba(210, 138, 27, 0.95));
       }
 
       .team-row,
@@ -90,7 +93,7 @@
         width: 2.3rem;
         height: 2.3rem;
         border-radius: 999px;
-        background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+        background: linear-gradient(135deg, #f7c66b, #d28a1b);
         color: #ffffff;
         display: grid;
         place-items: center;

@@ -34,18 +34,18 @@ export class DashboardLayoutComponent implements OnInit {
   currentRouteLabel = "Dashboard";
 
   navItems = [
-    { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar", iconBg: "#14b8a620", iconColor: "#14b8a6", roles: ["admin"], group: "Overview" as NavGroup },
-    { label: "Manager Dashboard", link: "/dashboard/manager", icon: "pi pi-briefcase", iconBg: "#8b5cf620", iconColor: "#8b5cf6", roles: ["admin", "manager"], group: "Overview" as NavGroup },
-    { label: "Cashier Dashboard", link: "/dashboard/cashier", icon: "pi pi-desktop", iconBg: "#3b82f620", iconColor: "#3b82f6", roles: ["admin", "cashier"], group: "Overview" as NavGroup },
-    { label: "Employees", link: "/employees", icon: "pi pi-users", iconBg: "#8b5cf620", iconColor: "#8b5cf6", roles: ["admin", "manager"], group: "Operations" as NavGroup },
-    { label: "Departments", link: "/departments", icon: "pi pi-building", iconBg: "#3b82f620", iconColor: "#3b82f6", roles: ["admin", "manager"], group: "Operations" as NavGroup },
-    { label: "Products", link: "/products", icon: "pi pi-tag", iconBg: "#f59e0b20", iconColor: "#f59e0b", roles: ["admin", "manager"], group: "Operations" as NavGroup },
-    { label: "POS", link: "/pos", icon: "pi pi-shopping-cart", iconBg: "#22c55e20", iconColor: "#22c55e", roles: ["admin", "cashier"], group: "Operations" as NavGroup },
-    { label: "Sales", link: "/sales", icon: "pi pi-chart-line", iconBg: "#eab30820", iconColor: "#eab308", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
-    { label: "Reports", link: "/reports", icon: "pi pi-file", iconBg: "#ec489920", iconColor: "#ec4899", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
-    { label: "AI Insights", link: "/ai-insights", icon: "pi pi-sparkles", iconBg: "#7c3aed20", iconColor: "#7c3aed", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
-    { label: "Users", link: "/users", icon: "pi pi-id-card", iconBg: "#6b728020", iconColor: "#6b7280", roles: ["admin"], group: "System" as NavGroup },
-    { label: "Settings", link: "/settings", icon: "pi pi-cog", iconBg: "#64748b20", iconColor: "#64748b", roles: ["admin", "manager", "cashier"], group: "System" as NavGroup }
+    { label: "Admin Dashboard", link: "/dashboard/admin", icon: "pi pi-chart-bar", iconBg: "#f7c66b40", iconColor: "#d28a1b", roles: ["admin"], group: "Overview" as NavGroup },
+    { label: "Manager Dashboard", link: "/dashboard/manager", icon: "pi pi-briefcase", iconBg: "#f2b55a40", iconColor: "#b87510", roles: ["admin", "manager"], group: "Overview" as NavGroup },
+    { label: "Cashier Dashboard", link: "/dashboard/cashier", icon: "pi pi-desktop", iconBg: "#d9a24b36", iconColor: "#8f5a15", roles: ["admin", "cashier"], group: "Overview" as NavGroup },
+    { label: "Employees", link: "/employees", icon: "pi pi-users", iconBg: "#e1c6a340", iconColor: "#8a5b2e", roles: ["admin", "manager"], group: "Operations" as NavGroup },
+    { label: "Departments", link: "/departments", icon: "pi pi-building", iconBg: "#f7c66b40", iconColor: "#c67a12", roles: ["admin", "manager"], group: "Operations" as NavGroup },
+    { label: "Products", link: "/products", icon: "pi pi-tag", iconBg: "#f59e0b33", iconColor: "#d97706", roles: ["admin", "manager"], group: "Operations" as NavGroup },
+    { label: "POS", link: "/pos", icon: "pi pi-shopping-cart", iconBg: "#22c55e22", iconColor: "#16a34a", roles: ["admin", "cashier"], group: "Operations" as NavGroup },
+    { label: "Sales", link: "/sales", icon: "pi pi-chart-line", iconBg: "#eab3082d", iconColor: "#ca8a04", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
+    { label: "Reports", link: "/reports", icon: "pi pi-file", iconBg: "#f59e0b25", iconColor: "#b45309", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
+    { label: "AI Insights", link: "/ai-insights", icon: "pi pi-sparkles", iconBg: "#8b5cf62e", iconColor: "#7c3aed", roles: ["admin", "manager"], group: "Analytics" as NavGroup },
+    { label: "Users", link: "/users", icon: "pi pi-id-card", iconBg: "#6b728024", iconColor: "#6b5a4a", roles: ["admin"], group: "System" as NavGroup },
+    { label: "Settings", link: "/settings", icon: "pi pi-cog", iconBg: "#8a5b2e26", iconColor: "#7c5a3a", roles: ["admin", "manager", "cashier"], group: "System" as NavGroup }
   ];
 
   constructor() {
