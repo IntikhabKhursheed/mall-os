@@ -1,38 +1,35 @@
 
-      :host {
-        display: grid;
-        gap: 1.1rem;
-      }
+:host {
+  display: grid;
+  gap: 0.9rem;
+}
 
-      .page-grid,
-      .kpi-row,
-      .content-split,
-      .team-list,
-      .stock-list {
-        display: grid;
-        gap: 0.95rem;
-      }
-      .sales{
-        margin: 1rem;
-      }
+.page-grid,
+.kpi-row,
+.content-split,
+.team-list,
+.stock-list {
+  display: grid;
+  gap: 0.8rem;
+}
 
-      .welcome-card,
-      .kpi-card,
-      .chart-card,
-      .team-card,
-      .stock-card {
-        padding: 1.15rem;
-      }
+.welcome-card,
+.kpi-card,
+.chart-card,
+.team-card,
+.stock-card {
+  padding: 1rem;
+}
 
-      .kpi-card {
-        display: grid;
-        gap: 0.55rem;
-        align-content: start;
-      }
+.kpi-card {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
 
-      .metric-icon {
-        width: 2.6rem;
-        height: 2.6rem;
+.metric-icon {
+  width: 2.35rem;
+  height: 2.35rem;
         border-radius: 14px;
         display: grid;
         place-items: center;
@@ -58,13 +55,13 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .content-split {
-        grid-template-columns: 1.2fr 0.95fr;
-      }
+.content-split {
+  grid-template-columns: 1.2fr 0.95fr;
+}
 
-      .chart-placeholder {
-        min-height: 170px;
-        border-radius: var(--radius-lg);
+.chart-placeholder {
+  min-height: 150px;
+  border-radius: var(--radius-lg);
         background: linear-gradient(180deg, var(--bg-panel-muted), transparent);
         display: flex;
         align-items: end;
@@ -78,16 +75,16 @@
         background: linear-gradient(180deg, rgba(247, 198, 107, 0.5), rgba(210, 138, 27, 0.95));
       }
 
-      .team-row,
-      .stock-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 0.85rem;
-        align-items: center;
-        padding: 0.85rem;
-        border-radius: var(--radius-md);
-        background: var(--bg-panel-muted);
-      }
+.team-row,
+.stock-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-muted);
+}
 
       .avatar {
         width: 2.3rem;

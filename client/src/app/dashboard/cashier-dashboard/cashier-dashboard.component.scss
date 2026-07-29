@@ -1,36 +1,36 @@
 
-      :host {
-        display: grid;
-        gap: 1.1rem;
-      }
+:host {
+  display: grid;
+  gap: 0.9rem;
+}
 
-      .page-grid,
-      .stats-row,
-      .content-split,
-      .search-results {
-        display: grid;
-        gap: 0.95rem;
-      }
+.page-grid,
+.stats-row,
+.content-split,
+.search-results {
+  display: grid;
+  gap: 0.8rem;
+}
 
       .stats-row {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .stat-card,
-      .transactions-card,
-      .search-card {
-        padding: 1.15rem;
-      }
+.stat-card,
+.transactions-card,
+.search-card {
+  padding: 1rem;
+}
 
-      .stat-card {
-        display: grid;
-        gap: 0.55rem;
-        align-content: start;
-      }
+.stat-card {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
 
-      .metric-icon {
-        width: 2.6rem;
-        height: 2.6rem;
+.metric-icon {
+  width: 2.35rem;
+  height: 2.35rem;
         border-radius: 14px;
         display: grid;
         place-items: center;
@@ -69,15 +69,15 @@
         cursor: pointer;
       }
 
-      .result-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 0.85rem;
-        align-items: center;
-        padding: 0.9rem;
-        border-radius: var(--radius-md);
-        background: var(--bg-panel-muted);
-      }
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-panel-muted);
+}
 
       .result-row p {
         margin: 0.25rem 0 0;
