@@ -5,10 +5,11 @@
 .dashboard-shell {
   min-height: 100vh;
   display: flex;
-  margin-top: 76px;
-  height: calc(100vh - 76px);
+  margin-top: 64px;
+  height: calc(100vh - 64px);
   background: var(--bg-page);
   position: relative;
+  overflow: hidden;
 }
 
 .dashboard-shell::before {
@@ -37,9 +38,9 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 304px;
+  width: 272px;
   height: 100vh;
-  overflow-y: auto;
+  overflow: hidden;
   background:
     linear-gradient(180deg, rgba(33, 20, 7, 0.98), rgba(21, 13, 4, 0.94)),
     url("/assets/Shopping_hero.png") center / cover no-repeat;
@@ -72,14 +73,15 @@
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  gap: 1rem;
+  height: 100%;
+  padding: 0.85rem;
+  gap: 0.85rem;
 }
 
 .sidebar-head,
 .sidebar-footer {
-  padding: 1rem;
-  border-radius: 22px;
+  padding: 0.75rem;
+  border-radius: 16px;
   background: rgba(255, 245, 229, 0.08);
   border: 1px solid rgba(255, 232, 204, 0.12);
   backdrop-filter: blur(14px);
@@ -88,23 +90,27 @@
 .brand-shell,
 .profile-row,
 .topbar-left {
+  font-size: 10px;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   min-width: 0;
+}
+.ghost{
+  font-size: 10px;
 }
 
 .brand-mark {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 1rem;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: 0.9rem;
   background: linear-gradient(135deg, rgba(255, 236, 203, 0.18), rgba(210, 138, 27, 0.75));
   border: 1px solid rgba(255, 226, 185, 0.24);
   color: #fff7ec;
   display: grid;
   place-items: center;
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   box-shadow: 0 16px 28px rgba(0, 0, 0, 0.22);
 }
 
@@ -129,13 +135,22 @@
 
 .nav {
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-group {
   display: grid;
-  gap: 0.55rem;
-  margin-top: 0.75rem;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
 }
 
 .nav-group:first-child {
@@ -153,17 +168,17 @@
 
 .nav-items {
   display: grid;
-  gap: 0.35rem;
-  margin-top: 0.4rem;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
 }
 
 .nav-items a {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  min-height: 46px;
-  padding: 0.68rem 1rem;
-  border-radius: 16px;
+  gap: 0.65rem;
+  min-height: 38px;
+  padding: 0.55rem 0.85rem;
+  border-radius: 13px;
   border: 1px solid transparent;
   color: rgba(255, 242, 226, 0.82);
   background: rgba(255, 255, 255, 0.035);
@@ -176,12 +191,13 @@
 }
 
 .item-icon {
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 999px;
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
+  font-size: 0.82rem;
 }
 
 .nav-items a:hover {
@@ -218,15 +234,16 @@
 }
 
 .avatar {
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(255, 214, 156, 0.2), rgba(210, 138, 27, 0.7));
   color: #fff8ef;
   display: grid;
   place-items: center;
   font-weight: 800;
-  box-shadow: 0 16px 24px rgba(0, 0, 0, 0.2);
+  font-size: 0.76rem;
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.16);
 }
 
 .profile-copy {
@@ -236,12 +253,12 @@
 
 .role-badge {
   display: inline-flex;
-  margin-top: 0.35rem;
-  padding: 0.28rem 0.6rem;
+  margin-top: 0.3rem;
+  padding: 0.24rem 0.55rem;
   border-radius: 999px;
   background: rgba(255, 210, 137, 0.12);
   color: #ffcf82;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: capitalize;
 }
@@ -249,11 +266,11 @@
 .logout-icon,
 .menu-toggle,
 .icon-button {
-  width: 42px;
-  min-width: 42px;
-  min-height: 42px;
+  width: 36px;
+  min-width: 36px;
+  min-height: 36px;
   padding: 0;
-  border-radius: 14px;
+  border-radius: 11px;
   display: inline-grid;
   place-items: center;
 }
@@ -261,8 +278,8 @@
 .workspace {
   min-width: 0;
   flex: 1;
-  margin-left: 304px;
-  padding-top: 76px;
+  margin-left: 272px;
+  padding-top: 64px;
   height: 100vh;
   background: transparent;
   overflow-y: auto;
@@ -293,7 +310,7 @@
 .topbar {
   position: fixed;
   top: 0;
-  left: 304px;
+  left: 272px;
   right: 0;
   z-index: 1000;
   margin: 0;
@@ -302,7 +319,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  height: 76px;
+  height: 64px;
   border-radius: 0;
   background: rgba(255, 250, 244, 0.72);
   border-bottom: 1px solid rgba(194, 162, 116, 0.24);
@@ -334,7 +351,7 @@
 }
 
 .search-shell {
-  min-height: 46px;
+  min-height: 40px;
   width: min(100%, 620px);
   padding: 0 1rem;
   border-radius: 999px;
@@ -407,7 +424,7 @@
 
 .topbar-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.9rem;
   align-items: center;
   justify-content: flex-end;
 }
@@ -453,7 +470,7 @@
 }
 
 .notifications-panel {
-  top: 76px;
+  top: 64px;
   right: 1rem;
   width: min(100%, 380px);
   padding: 0.95rem;
@@ -529,7 +546,7 @@
 .content-scroll {
   position: relative;
   z-index: 1;
-  padding: 24px;
+  padding: 14px;
 }
 
 .content {
@@ -551,7 +568,7 @@
 
   .workspace {
     margin-left: 0;
-    padding-top: 76px;
+    padding-top: 64px;
     height: 100vh;
   }
 
@@ -568,7 +585,7 @@
   }
 
   .content-scroll {
-    padding: 18px;
+    padding: 12px;
   }
 
   .mobile-backdrop {
