@@ -117,13 +117,13 @@
       }
 
       .metric-icon.accent {
-        background: rgba(20, 184, 166, 0.14);
+        background: rgba(210, 138, 27, 0.14);
         color: var(--accent);
       }
 
       .metric-icon.info {
-        background: rgba(59, 130, 246, 0.14);
-        color: #2563eb;
+        background: rgba(190, 153, 101, 0.16);
+        color: #8a5b2e;
       }
 
       .metric-icon.success {
@@ -133,7 +133,7 @@
 
       .primary-support {
         background:
-          radial-gradient(circle at top right, rgba(20, 184, 166, 0.1), transparent 30%),
+          radial-gradient(circle at top right, rgba(210, 138, 27, 0.12), transparent 30%),
           linear-gradient(180deg, var(--bg-panel), color-mix(in srgb, var(--bg-panel-muted) 60%, transparent));
       }
 
@@ -166,7 +166,7 @@
         width: 2.4rem;
         height: 2.4rem;
         border-radius: 12px;
-        background: rgba(20, 184, 166, 0.12);
+        background: rgba(210, 138, 27, 0.12);
         color: var(--accent);
         display: grid;
         place-items: center;
@@ -207,7 +207,7 @@
       .chart-bar {
         flex: 1;
         border-radius: 999px 999px 10px 10px;
-        background: linear-gradient(180deg, rgba(20, 184, 166, 0.48), rgba(20, 184, 166, 0.95));
+        background: linear-gradient(180deg, rgba(247, 198, 107, 0.5), rgba(210, 138, 27, 0.95));
       }
 
       .signal-list {
