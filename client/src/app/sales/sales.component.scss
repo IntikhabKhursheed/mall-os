@@ -10,7 +10,9 @@
         gap: 0.75rem;
         padding: 1rem;
       }
-
+      .secondary{
+        margin: 0.7rem;
+      }
       .sales-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
